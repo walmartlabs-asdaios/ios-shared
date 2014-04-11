@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2008D37A188DAA9700255BC4 /* SDApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 2008D379188DAA9700255BC4 /* SDApplication.m */; };
+		4372897E18F5B7C900FD8647 /* SDQuiltLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 4372897D18F5B7C900FD8647 /* SDQuiltLayout.m */; };
 		CA01F1B117D7A6F000E7C553 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA80792C17C94199009574BB /* Foundation.framework */; };
 		CA01F1B817D7A6F000E7C553 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = CA01F1B617D7A6F000E7C553 /* InfoPlist.strings */; };
 		CA01F1BA17D7A6F000E7C553 /* ios_shared_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = CA01F1B917D7A6F000E7C553 /* ios_shared_Tests.m */; };
@@ -210,6 +211,8 @@
 /* Begin PBXFileReference section */
 		2008D378188DAA9700255BC4 /* SDApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDApplication.h; sourceTree = "<group>"; };
 		2008D379188DAA9700255BC4 /* SDApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDApplication.m; sourceTree = "<group>"; };
+		4372897C18F5B7C900FD8647 /* SDQuiltLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDQuiltLayout.h; sourceTree = "<group>"; };
+		4372897D18F5B7C900FD8647 /* SDQuiltLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDQuiltLayout.m; sourceTree = "<group>"; };
 		CA01F1AF17D7A6EF00E7C553 /* ios-shared Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ios-shared Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA01F1B517D7A6F000E7C553 /* ios-shared Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ios-shared Tests-Info.plist"; sourceTree = "<group>"; };
 		CA01F1B717D7A6F000E7C553 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -672,6 +675,8 @@
 				E2C8A2171853E660000DD265 /* SDPullNavigationBarTabButton.m */,
 				E2C8A21A1853E660000DD265 /* SDPullNavigationManager.h */,
 				E2C8A21B1853E660000DD265 /* SDPullNavigationManager.m */,
+				4372897C18F5B7C900FD8647 /* SDQuiltLayout.h */,
+				4372897D18F5B7C900FD8647 /* SDQuiltLayout.m */,
 				CA0E773518284DD600B4398F /* SDSearchBar.h */,
 				CA0E773618284DD600B4398F /* SDSearchBar.m */,
 				CA0E773718284DD600B4398F /* SDSearchDisplayController.h */,
@@ -1030,6 +1035,7 @@
 				CA0E77C818284DD600B4398F /* UIViewController+SDExtensions.m in Sources */,
 				CA0E779918284DD600B4398F /* SDContainerViewController.m in Sources */,
 				CA0E77D218284DD600B4398F /* Reachability.m in Sources */,
+				4372897E18F5B7C900FD8647 /* SDQuiltLayout.m in Sources */,
 				E2C8A21E1853E660000DD265 /* SDPullNavigationBarControlsView.m in Sources */,
 				CA0E77C618284DD600B4398F /* UIView+SDExtensions.m in Sources */,
 				CA0E77B518284DD600B4398F /* SDWebViewCell.m in Sources */,
