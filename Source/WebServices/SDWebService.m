@@ -699,19 +699,12 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
             [self will302RedirectToUrl:httpResponse.URL];
         }
 
-        [_dataProcessingQueue addOperationWithBlock:^{
-            id dataObject = nil;
-            if (code != NSURLErrorCancelled)
-            {
-                if (dataProcessingBlock)
-                    dataObject = dataProcessingBlock(response, code, responseData, error);
-            }
-            
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (uiUpdateBlock)
-                    uiUpdateBlock(dataObject, error);
-            }];
-        }];
+        [self addDataProcessBlock:dataProcessingBlock
+                    uiUpdateBlock:uiUpdateBlock
+                     withResponse:response
+                     responseCode:code
+                     responseData:responseData
+                            error:error];
 
         [self decrementRequests];
 	};
@@ -779,18 +772,38 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
         // we have mock data for this service call.
         // attempt to recreate the path as best we can.
 
-        [_dataProcessingQueue addOperationWithBlock:^{
-            id dataObject = nil;
-            if (dataProcessingBlock)
-                dataObject = dataProcessingBlock(nil, 200, mockData, nil);
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (uiUpdateBlock)
-                    uiUpdateBlock(dataObject, nil);
-            }];
-        }];
+        [self addDataProcessBlock:dataProcessingBlock
+                    uiUpdateBlock:uiUpdateBlock
+                     withResponse:nil
+                     responseCode:200
+                     responseData:mockData
+                            error:nil];
     }
 
 	return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
+}
+
+- (void) addDataProcessBlock:(SDWebServiceDataCompletionBlock) dataProcessingBlock
+               uiUpdateBlock:(SDWebServiceUICompletionBlock) uiUpdateBlock
+                withResponse:(NSURLResponse *) response
+                responseCode:(NSInteger) responseCode
+                responseData:(NSData *) responseData
+                       error:(NSError *) error
+{
+    [_dataProcessingQueue addOperationWithBlock:^{
+        id dataObject = nil;
+        if (responseCode != NSURLErrorCancelled)
+        {
+            if (dataProcessingBlock) {
+                dataObject = dataProcessingBlock(response, responseCode, responseData, error);
+            }
+        }
+
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (uiUpdateBlock)
+                uiUpdateBlock(dataObject, error);
+        }];
+    }];
 }
 
 - (void)cancelRequestForIdentifier:(NSString *)identifier
