@@ -603,14 +603,7 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     BOOL showNoConnectionAlert = showNoConnectionAlertObj != nil ? [showNoConnectionAlertObj boolValue] : YES;
     if (![self isReachable:showNoConnectionAlert])
     {
-        // we ain't got no connection Lt. Dan
-        NSError *error = [NSError errorWithDomain:SDWebServiceError code:SDWebServiceErrorNoConnection userInfo:nil];
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (uiUpdateBlock)
-                uiUpdateBlock(nil, error);
-        }];
-
-        return [SDRequestResult objectForResult:SDWebServiceResultFailed identifier:nil request:request];
+        return [self reachabilityFailureResultForRequest:request uiUpdateBlock:uiUpdateBlock];
     }
 
     // setup caching, default is to let the server decide.
@@ -737,6 +730,20 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 	return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
 }
 
+- (SDRequestResult *) reachabilityFailureResultForRequest:(NSURLRequest *) request uiUpdateBlock:(SDWebServiceUICompletionBlock)uiUpdateBlock
+{
+    // we ain't got no connection Lt. Dan
+    NSError *error = [NSError errorWithDomain:SDWebServiceError code:SDWebServiceErrorNoConnection userInfo:nil];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (uiUpdateBlock) {
+            uiUpdateBlock(nil, error);
+        }
+    }];
+
+    return [SDRequestResult objectForResult:SDWebServiceResultFailed identifier:nil request:request];
+}
+
+
 - (void) retryRequest:(NSURLRequest *) request
        withIdentifier:(NSString *) identifier
           requestName:(NSString *) requestName
@@ -842,8 +849,9 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
         }
 
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (uiUpdateBlock)
+            if (uiUpdateBlock) {
                 uiUpdateBlock(dataObject, error);
+            }
         }];
     }];
 }
