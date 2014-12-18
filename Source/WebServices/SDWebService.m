@@ -591,7 +591,11 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     NSNumber *cache = [requestDetails objectForKey:@"cache"];
     NSNumber *cacheTTL = [requestDetails objectForKey:@"cacheTTL"];
     
+    // attempt to find any mock data if available, we need it going forward.
+    NSData *mockData = nil;
 #ifdef DEBUG
+    mockData = [self.mockResponseProvider getMockDataForRequest:request];
+
     if (self.disableCaching)
         cache = [NSNumber numberWithBool:NO];
 #endif
@@ -712,12 +716,6 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
         [self decrementRequests];
 	};
     
-    // attempt to find any mock data if available, we need it going forward.
-    NSData *mockData = nil;
-#ifdef DEBUG
-    mockData = [self.mockResponseProvider getMockResponseForRequest:request];
-#endif
-
     // check the cache if we're not working with a mock.
     if (!mockData)
     {

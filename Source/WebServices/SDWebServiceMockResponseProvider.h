@@ -17,10 +17,21 @@
 @protocol SDWebServiceMockResponseProvider <NSObject>
 
 /**
- Returns value for responseData to use in SDWebService performRequest methods
+ Returns value for response to use in SDWebService performRequest methods, 
+ value will be replace all the normal response handling in SDWebService
 
  @param request providers may use the request values to determine what mock response they should return, but providers can also ignore it and do whatever they want
- @return mock data to use in response, it may be nil if the provider decides it does not have any mock data for the particular request
+ @return mock response to use
  */
-- (NSData *) getMockResponseForRequest:(NSURLRequest *) request;
+- (NSURLResponse *) getMockResponseForRequest:(NSURLRequest *) request;
+
+/**
+ Returns value for responseData to use in SDWebService performRequest methods
+ If getMockResponseForRequest returns a value, then getMockDataForRequest will not be called.
+
+ @param request providers may use the request values to determine what mock response they should return, but providers can also ignore it and do whatever they want
+ @return mock data to use in final part of response processing
+ */
+- (NSData *) getMockDataForRequest:(NSURLRequest *) request;
+
 @end

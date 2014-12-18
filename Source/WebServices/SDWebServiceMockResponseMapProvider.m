@@ -63,7 +63,12 @@
     return self;
 }
 
-- (NSData *) getMockResponseForRequest:(NSURLRequest *)request
+- (NSURLResponse *) getMockResponseForRequest:(NSURLRequest *)request
+{
+    return nil;
+}
+
+- (NSData *) getMockDataForRequest:(NSURLRequest *)request
 {
     NSData *result = nil;
     for (SDWebServiceMockResponseRequestMappingEntry *entry in self.requestMappings)

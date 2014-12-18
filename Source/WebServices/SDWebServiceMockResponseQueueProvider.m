@@ -25,6 +25,12 @@
 
 - (NSData *)getMockResponseForRequest:(NSURLRequest *)request
 {
+     // This provider only returns response data, not full responses
+    return nil;
+}
+
+- (NSData *)getMockDataForRequest:(NSURLRequest *)request
+{
     @synchronized(self)
     {
         if (_mockStack.count == 0)
