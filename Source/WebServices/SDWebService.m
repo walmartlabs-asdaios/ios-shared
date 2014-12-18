@@ -721,27 +721,8 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 	[self incrementRequests];
 
 	// see if this is a singleton request.
-    BOOL singleRequest = NO;
-	NSNumber *singleRequestNumber = [requestDetails objectForKey:@"singleRequest"];
-    if (singleRequestNumber)
-    {
-        singleRequest = [singleRequestNumber boolValue];
+    BOOL singleRequest = [self checkForSingleRequestWithRequestName:requestName requestDetails:requestDetails];
 
-        // if it is, lets cancel any with matching names.
-        if (singleRequest)
-        {
-            @synchronized(self) {
-                SDURLConnection *existingConnection = [_singleRequests objectForKey:requestName];
-                if (existingConnection)
-                {
-                    SDLog(@"Cancelling call.");
-                    [existingConnection cancel];
-                    [_singleRequests removeObjectForKey:requestName];
-                }
-            }
-        }
-    }
-    
     if (!mockData)
     {
         // no mock data was found, or we don't want to use mocks.  send out the request.
@@ -769,6 +750,31 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     }
 
 	return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
+}
+
+- (BOOL) checkForSingleRequestWithRequestName:(NSString *) requestName requestDetails:(NSDictionary *) requestDetails
+{
+    BOOL singleRequest = NO;
+    NSNumber *singleRequestNumber = [requestDetails objectForKey:@"singleRequest"];
+    if (singleRequestNumber)
+    {
+        singleRequest = [singleRequestNumber boolValue];
+
+        // if it is, lets cancel any with matching names.
+        if (singleRequest)
+        {
+            @synchronized(self) {
+                SDURLConnection *existingConnection = [_singleRequests objectForKey:requestName];
+                if (existingConnection)
+                {
+                    SDLog(@"Cancelling call.");
+                    [existingConnection cancel];
+                    [_singleRequests removeObjectForKey:requestName];
+                }
+            }
+        }
+    }
+    return singleRequest;
 }
 
 - (SDRequestResult *) lookupCachedResultForRequest:(NSURLRequest *) request
