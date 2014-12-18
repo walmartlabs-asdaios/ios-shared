@@ -37,6 +37,34 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
 
 @implementation SDPromise
 
++ (instancetype) promiseWithAnd:(NSArray *)promises
+{
+    SDPromise *andPromise = [[SDPromise alloc] init];
+
+    NSMutableArray *allResults = [NSMutableArray array];
+    NSUInteger totalCount = [promises count];
+    
+    for (SDPromise *promise in promises)
+    {
+        [promise then:^id(id dataObject) {
+            BOOL isComplete = NO;
+            @synchronized(allResults)
+            {
+                [allResults addObject:dataObject];
+                isComplete = totalCount == [allResults count];
+            }
+            if ( isComplete )
+                [andPromise resolve:allResults];
+            return nil;
+        }];
+        [promise failed:^(NSError *error) {
+            [andPromise reject:error];
+        }];
+    }
+    
+    return andPromise;
+}
+
 - (instancetype) init
 {
     self = [super init];

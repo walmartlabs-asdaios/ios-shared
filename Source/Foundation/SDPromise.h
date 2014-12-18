@@ -15,6 +15,11 @@ typedef void (^SDPromiseFailBlock)(NSError *error);
 
 @interface SDPromise : NSObject
 
+// Logically AND all the passed in SDPromises. When all the passed in promises
+//  are resolved, then the created promise is resolved. If one of the passed in
+//  promises fails, then the created promise is rejected once, with that error.
++ (instancetype) promiseWithAnd:(NSArray *)promises;
+
 @property (nonatomic, readonly) BOOL isFulfilled;
 
 // Consumer interface. The returned SDPromise is the promise for the result of
