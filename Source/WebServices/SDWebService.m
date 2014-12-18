@@ -589,8 +589,7 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 
     // get cache details
     NSNumber *cache = [requestDetails objectForKey:@"cache"];
-    NSNumber *cacheTTL = [requestDetails objectForKey:@"cacheTTL"];
-    
+
     // attempt to find any mock data if available, we need it going forward.
     NSData *mockData = nil;
 #ifdef DEBUG
@@ -712,21 +711,10 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     // check the cache if we're not working with a mock.
     if (!mockData)
     {
-        NSURLCache *urlCache = [NSURLCache sharedURLCache];
-        NSCachedURLResponse *cachedResponse = [urlCache validCachedResponseForRequest:request forTime:[cacheTTL unsignedLongValue] removeIfInvalid:YES];
-        if ([cache boolValue] && cachedResponse && cachedResponse.response)
+        SDRequestResult *cachedResult = [self lookupCachedResultForRequest:request requestDetails:requestDetails urlCompletionBlock:urlCompletionBlock];
+        if (cachedResult)
         {
-            NSString *cachedString = [cachedResponse.responseData stringRepresentation];
-            if (cachedString)
-            {
-                SDLog(@"***USING CACHED RESPONSE***");
-
-                [self incrementRequests];
-
-                urlCompletionBlock(nil, cachedResponse.response, cachedResponse.responseData, nil);
-
-                return [SDRequestResult objectForResult:SDWebServiceResultCached identifier:nil request:request];
-            }
+            return cachedResult;
         }
     }
     
@@ -782,6 +770,36 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 
 	return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
 }
+
+- (SDRequestResult *) lookupCachedResultForRequest:(NSURLRequest *) request
+                                    requestDetails:(NSDictionary *) requestDetails
+                                urlCompletionBlock:(SDURLConnectionResponseBlock) urlCompletionBlock
+{
+    SDRequestResult *result = nil;
+
+    // get cache details
+    NSNumber *cache = [requestDetails objectForKey:@"cache"];
+    NSNumber *cacheTTL = [requestDetails objectForKey:@"cacheTTL"];
+
+    NSURLCache *urlCache = [NSURLCache sharedURLCache];
+    NSCachedURLResponse *cachedResponse = [urlCache validCachedResponseForRequest:request forTime:[cacheTTL unsignedLongValue] removeIfInvalid:YES];
+    if ([cache boolValue] && cachedResponse && cachedResponse.response)
+    {
+        NSString *cachedString = [cachedResponse.responseData stringRepresentation];
+        if (cachedString)
+        {
+            SDLog(@"***USING CACHED RESPONSE***");
+
+            [self incrementRequests];
+
+            urlCompletionBlock(nil, cachedResponse.response, cachedResponse.responseData, nil);
+
+            result = [SDRequestResult objectForResult:SDWebServiceResultCached identifier:nil request:request];
+        }
+    }
+    return result;
+}
+
 
 - (void) addDataProcessBlock:(SDWebServiceDataCompletionBlock) dataProcessingBlock
                uiUpdateBlock:(SDWebServiceUICompletionBlock) uiUpdateBlock
