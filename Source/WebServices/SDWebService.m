@@ -590,10 +590,13 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     // get cache details
     NSNumber *cache = [requestDetails objectForKey:@"cache"];
 
-    // attempt to find any mock data if available, we need it going forward.
+    // attempt to find any mock response or data if available, we need it going forward.
+    NSURLResponse *mockResponse = nil;
     NSData *mockData = nil;
+    BOOL usingMock = NO;
 #ifdef DEBUG
     mockData = [self.mockResponseProvider getMockDataForRequest:request];
+    usingMock = (mockData != nil) || (mockResponse != nil);
 
     if (self.disableCaching)
         cache = [NSNumber numberWithBool:NO];
@@ -601,7 +604,7 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 
     NSNumber *showNoConnectionAlertObj = [requestDetails objectForKey:@"showNoConnectionAlert"];
     BOOL showNoConnectionAlert = showNoConnectionAlertObj != nil ? [showNoConnectionAlertObj boolValue] : YES;
-    if (![self isReachable:showNoConnectionAlert])
+    if (!usingMock && ![self isReachable:showNoConnectionAlert])
     {
         return [self reachabilityFailureResultForRequest:request uiUpdateBlock:uiUpdateBlock];
     }
