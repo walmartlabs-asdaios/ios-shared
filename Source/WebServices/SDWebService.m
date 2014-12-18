@@ -648,28 +648,13 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 
                 if (shouldRetry)
                 {
-                    // remove it from the cache if its there.
-                    NSURLCache *blockCache = [NSURLCache sharedURLCache];
-                    if ([request isValid])
-                        [blockCache removeCachedResponseForRequest:request];
-
-                    SDRequestResult *newObject = [self performRequestWithMethod:requestName headers:headers routeReplacements:replacements dataProcessingBlock:dataProcessingBlock uiUpdateBlock:uiUpdateBlock shouldRetry:NO];
-
-                    @synchronized(self) { // NSMutableDictionary isn't thread-safe
-                        // do some sync/cleanup stuff here.
-                        SDURLConnection *newConnection = [_normalRequests objectForKey:newObject.identifier];
-                        
-                        // If for some unknown reason the second performRequestWithMethod hits the cache, then we'll get a nil identifier, which means a nil newConnection
-                        if (newConnection)
-                        {
-                            [_normalRequests setObject:newConnection forKey:identifier];
-                            [_normalRequests removeObjectForKey:newObject.identifier];
-                        }
-                        else
-                        {
-                            [_normalRequests removeObjectForKey:identifier];
-                        }
-                    }
+                    [self retryRequest:request
+                        withIdentifier:identifier
+                           requestName:requestName
+                               headers:headers
+                          replacements:replacements
+                      dataProcessBlock:dataProcessingBlock
+                         uiUpdateBlock:uiUpdateBlock];
 
                     [self decrementRequests];
                     return;
@@ -750,6 +735,39 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     }
 
 	return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
+}
+
+- (void) retryRequest:(NSURLRequest *) request
+       withIdentifier:(NSString *) identifier
+          requestName:(NSString *) requestName
+              headers:(NSDictionary *) headers
+         replacements:(NSDictionary *) replacements
+     dataProcessBlock:(SDWebServiceDataCompletionBlock) dataProcessingBlock
+        uiUpdateBlock:(SDWebServiceUICompletionBlock) uiUpdateBlock
+{
+    // remove it from the cache if its there.
+    NSURLCache *blockCache = [NSURLCache sharedURLCache];
+    if ([request isValid]) {
+        [blockCache removeCachedResponseForRequest:request];
+    }
+
+    SDRequestResult *newObject = [self performRequestWithMethod:requestName headers:headers routeReplacements:replacements dataProcessingBlock:dataProcessingBlock uiUpdateBlock:uiUpdateBlock shouldRetry:NO];
+
+    @synchronized(self) { // NSMutableDictionary isn't thread-safe
+        // do some sync/cleanup stuff here.
+        SDURLConnection *newConnection = [_normalRequests objectForKey:newObject.identifier];
+
+        // If for some unknown reason the second performRequestWithMethod hits the cache, then we'll get a nil identifier, which means a nil newConnection
+        if (newConnection)
+        {
+            [_normalRequests setObject:newConnection forKey:identifier];
+            [_normalRequests removeObjectForKey:newObject.identifier];
+        }
+        else
+        {
+            [_normalRequests removeObjectForKey:identifier];
+        }
+    }
 }
 
 - (BOOL) checkForSingleRequestWithRequestName:(NSString *) requestName requestDetails:(NSDictionary *) requestDetails
