@@ -34,7 +34,9 @@
 - (void) initMatchRegularExpressionWithTemplate:(NSString *)route
 {
     static NSString *SDURLSegmentMatchingPattern = @"([^\\/\\?\n\r]+)";
-    
+    static NSString *SDURLCatchRestMatchingPattern = @"([^\n\r]+)";
+    static NSString *SDEllipsis = @"...";
+
     NSMutableString *matchingString = [NSMutableString string];
     [matchingString appendString:@"^"];
     
@@ -48,10 +50,18 @@
         {
             parsingName = YES;
             parameterName = [NSMutableString string];
-            [matchingString appendString:SDURLSegmentMatchingPattern];
         }
         else if ( [substring isEqualToString:@"}"] )
         {
+            if ( [parameterName hasSuffix:SDEllipsis] )
+            {
+                [parameterName deleteCharactersInRange:NSMakeRange([parameterName length] - [SDEllipsis length], [SDEllipsis length])];
+                [matchingString appendString:SDURLCatchRestMatchingPattern];
+            }
+            else
+            {
+                [matchingString appendString:SDURLSegmentMatchingPattern];
+            }
             [_parameterNames addObject:parameterName];
             parameterName = nil;
             parsingName = NO;
