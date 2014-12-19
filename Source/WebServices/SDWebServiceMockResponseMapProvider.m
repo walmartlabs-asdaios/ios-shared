@@ -106,7 +106,7 @@
         if (self.httpVersion == nil) {
             // HTTP/1.1 200 OK
             NSArray *values = [cleanLine componentsSeparatedByString:@" "];
-            self.httpVersion = [values[0] componentsSeparatedByString:@"/"][0];
+            self.httpVersion = values[0];
             if ([values count] > 1) {
                 self.statusCode = [values[1] integerValue];
             }
@@ -142,6 +142,11 @@
                 HTTPVersion:self.httpVersion
                 headerFields:self.headers];
     }
+}
+
+- (NSString *) description;
+{
+    return [NSString stringWithFormat:@"Entry hv=%@, dl=%ld, mapping=%@, ", self.httpVersion, (long) [self.responseData length], self.requestMapping];
 }
 
 @end
