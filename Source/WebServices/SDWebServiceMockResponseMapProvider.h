@@ -36,6 +36,20 @@
 /**
  Adds single mapping for request -> responseData
 
+ @param data the resourceData to return
+ @param requestMapping the mapping to use to determine when this responseData should be used
+ @param maximumResponses the maximum number of times this responseData will be returned for any matching requestMappings
+ */
+- (void)addMockData:(NSData *) data forRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping maximumResponses:(NSUInteger) maximumResponses;
+
+/**
+ Convenience method to only check the request URL's path value, sets maximumResponses to NSIntegerMax
+ */
+- (void)addMockData:(NSData *) data forPath:(NSString *) path;
+
+/**
+ Adds single mapping for request -> responseData
+
  @param filename the resource filename to load responseData from
  @param bundle the bundle to use for the resource
  @param requestMapping the mapping to use to determine when this responseData should be used

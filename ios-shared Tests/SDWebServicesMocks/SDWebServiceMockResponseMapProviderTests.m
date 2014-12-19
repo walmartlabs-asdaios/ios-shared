@@ -70,6 +70,11 @@
     return [NSData dataWithContentsOfFile:filepath];
 }
 
+- (void) mapMockDataWithData:(NSData *) data mapping:(SDWebServiceMockResponseRequestMapping *) mapping maximumResponses:(NSUInteger) maximumResponses
+{
+    [self.mockResponseMapProvider addMockData:data forRequestMapping:mapping maximumResponses:maximumResponses];
+}
+
 - (NSData *) mapMockHTTPURLResponseWithFilename:(NSString *) filename mapping:(SDWebServiceMockResponseRequestMapping *) mapping maximumResponses:(NSUInteger) maximumResponses
 {
     [self.mockResponseMapProvider addMockHTTPURLResponseFile:filename bundle:self.bundle forRequestMapping:mapping maximumResponses:maximumResponses];
@@ -328,6 +333,35 @@
                        replacements:nil
                               block:^(NSURLResponse *response, NSInteger responseCode, NSData *responseData, NSError *error) {
                                   XCTAssertTrue([responseData length] > 0, @"empty lines with CR characters should not keep responseData from being interpreted correctly");
+                              }];
+
+    [self waitForExpectationsWithTimeout:5.0 handler:nil];
+}
+
+#pragma mark - methods that supply responseData directly
+
+- (void)testDirectlySuppliedMockDataResponse
+{
+    SDWebServiceMockResponseRequestMapping *mapping =
+    [[SDWebServiceMockResponseRequestMapping alloc]
+     initWithPath:@"^/api/route$" queryParameters:nil];
+    NSString *expectedJSONString = @"{\"type\":\"directlySupplied\",\"value\":\"testValue\"}";
+    NSData *expectedData = [expectedJSONString dataUsingEncoding:NSUTF8StringEncoding];
+    [self mapMockDataWithData:expectedData mapping:mapping maximumResponses:1];
+
+    [self checkWebServiceWithMethod:@"testGETNoRouteParams"
+                       replacements:nil
+                              block:^(NSURLResponse *response, NSInteger responseCode, NSData *responseData, NSError *error) {
+                                  NSLog(@"actual:\n%@", [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding]);
+                                  XCTAssertNil(response);
+                                  XCTAssertEqualObjects(expectedData, responseData, @"mock should supply data from mock response A mapped above");
+                              }];
+
+    [self checkWebServiceWithMethod:@"testGETNoRouteParams"
+                       replacements:nil
+                              block:^(NSURLResponse *response, NSInteger responseCode, NSData *responseData, NSError *error) {
+                                  XCTAssertNil(response);
+                                  XCTAssertEqual(0, [responseData length], @"mock should NOT supply data from any mock response");
                               }];
 
     [self waitForExpectationsWithTimeout:5.0 handler:nil];
