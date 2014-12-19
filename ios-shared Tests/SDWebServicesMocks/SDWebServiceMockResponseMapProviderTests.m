@@ -284,13 +284,13 @@
     [[SDWebServiceMockResponseRequestMapping alloc]
      initWithPath:@"^/api/route$" queryParameters:nil];
     [self mapMockHTTPURLResponseWithFilename:@"SDWebServiceMockTest_bundleC_v123_sc999.response" mapping:mapping maximumResponses:1];
-/*
-HTTP/123 999 OK
-Header1: bundleCHeader1
-Header2: bundleCHeader2
+    /*
+     HTTP/123 999 OK
+     Header1: bundleCHeader1
+     Header2: bundleCHeader2
 
-{"name":"SDWebServiceMockTest_bundleC","bundleCValue":"bundle C value"}
-*/
+     {"name":"SDWebServiceMockTest_bundleC","bundleCValue":"bundle C value"}
+     */
 
     NSString *expectedResponseDataString = @"{\"name\":\"SDWebServiceMockTest_bundleC\",\"bundleCValue\":\"bundle C value\"}";
     NSData *expectedData = [expectedResponseDataString dataUsingEncoding:NSUTF8StringEncoding];
@@ -312,6 +312,22 @@ Header2: bundleCHeader2
                               block:^(NSURLResponse *response, NSInteger responseCode, NSData *responseData, NSError *error) {
                                   XCTAssertNil(response);
                                   XCTAssertEqual(0, [responseData length], @"mock should NOT supply data from any mock response");
+                              }];
+
+    [self waitForExpectationsWithTimeout:5.0 handler:nil];
+}
+
+- (void)testSingleSimpleMockHTTPURLResponseWithCR
+{
+    SDWebServiceMockResponseRequestMapping *mapping =
+    [[SDWebServiceMockResponseRequestMapping alloc]
+     initWithPath:@"^/api/route$" queryParameters:nil];
+    [self mapMockHTTPURLResponseWithFilename:@"SDWebServiceMockTest_bundleD_withCR.response" mapping:mapping maximumResponses:1];
+
+    [self checkWebServiceWithMethod:@"testGETNoRouteParams"
+                       replacements:nil
+                              block:^(NSURLResponse *response, NSInteger responseCode, NSData *responseData, NSError *error) {
+                                  XCTAssertTrue([responseData length] > 0, @"empty lines with CR characters should not keep responseData from being interpreted correctly");
                               }];
 
     [self waitForExpectationsWithTimeout:5.0 handler:nil];

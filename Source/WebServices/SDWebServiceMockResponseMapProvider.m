@@ -93,24 +93,26 @@
     NSArray *lines = [responseString componentsSeparatedByString:@"\n"];
 
     for (NSString *line in lines) {
+        NSString *cleanLine = [line stringByReplacingOccurrencesOfString:@"\r" withString:@""];
         if (self.httpVersion == nil) {
             // HTTP/1.1 200 OK
-            NSArray *values = [line componentsSeparatedByString:@" "];
+            NSArray *values = [cleanLine componentsSeparatedByString:@" "];
             self.httpVersion = [values[0] componentsSeparatedByString:@"/"][0];
             if ([values count] > 1) {
                 self.statusCode = [values[1] integerValue];
             }
 
         } else if (dataLines == nil) {
-            if ([line length] == 0) {
+            if ([cleanLine length] == 0) {
                 dataLines = [NSMutableArray array];
             } else {
-                NSArray *values = [line componentsSeparatedByString:@": "];
+                NSArray *values = [cleanLine componentsSeparatedByString:@": "];
                 NSString *parameterName = values[0];
                 NSString *parameterValue = ([values count] > 1) ? values[1] : @"";
                 headers[parameterName] = parameterValue;
             }
         } else {
+            // store original line so we can faithfully recreate the responseData
             [dataLines addObject:line];
         }
     }
