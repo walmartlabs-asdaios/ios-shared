@@ -13,6 +13,7 @@
 #import "NSData+SDExtensions.h"
 #import "NSURLRequest+SDExtensions.h"
 #import "SDWebServiceMockResponseQueueProvider.h"
+#import "SDWebServiceMockResponseProvider.h"
 
 NSString *const SDWebServiceError = @"SDWebServiceError";
 
@@ -591,16 +592,34 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     NSNumber *cache = [requestDetails objectForKey:@"cache"];
 
     // attempt to find any mock response or data if available, we need it going forward.
-    NSURLResponse *mockResponse = nil;
+    NSHTTPURLResponse *mockHTTPURLResponse = nil;
     NSData *mockData = nil;
     BOOL usingMock = NO;
 #ifdef DEBUG
-    mockData = [self.mockResponseProvider getMockDataForRequest:request];
-    usingMock = (mockData != nil) || (mockResponse != nil);
+    mockHTTPURLResponse = [self.mockResponseProvider getMockHTTPURLResponseForRequest:request];
+    if (mockHTTPURLResponse) {
+        mockData = self.mockResponseProvider.lastMatchingResponseData;
+    } else {
+        mockData = [self.mockResponseProvider getMockDataForRequest:request];
+    }
+    usingMock = (mockData != nil) || (mockHTTPURLResponse != nil);
 
     if (self.disableCaching)
+    {
         cache = [NSNumber numberWithBool:NO];
+    }
 #endif
+
+    if (mockHTTPURLResponse)
+    {
+        [self addDataProcessBlock:dataProcessingBlock
+                    uiUpdateBlock:uiUpdateBlock
+                     withResponse:mockHTTPURLResponse
+                     responseCode:mockHTTPURLResponse.statusCode
+                     responseData:mockData
+                            error:nil];
+        return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
+    }
 
     NSNumber *showNoConnectionAlertObj = [requestDetails objectForKey:@"showNoConnectionAlert"];
     BOOL showNoConnectionAlert = showNoConnectionAlertObj != nil ? [showNoConnectionAlertObj boolValue] : YES;
@@ -738,7 +757,8 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     // we ain't got no connection Lt. Dan
     NSError *error = [NSError errorWithDomain:SDWebServiceError code:SDWebServiceErrorNoConnection userInfo:nil];
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if (uiUpdateBlock) {
+        if (uiUpdateBlock)
+        {
             uiUpdateBlock(nil, error);
         }
     }];
@@ -757,7 +777,8 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 {
     // remove it from the cache if its there.
     NSURLCache *blockCache = [NSURLCache sharedURLCache];
-    if ([request isValid]) {
+    if ([request isValid])
+    {
         [blockCache removeCachedResponseForRequest:request];
     }
 
@@ -846,13 +867,15 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
         id dataObject = nil;
         if (responseCode != NSURLErrorCancelled)
         {
-            if (dataProcessingBlock) {
+            if (dataProcessingBlock)
+            {
                 dataObject = dataProcessingBlock(response, responseCode, responseData, error);
             }
         }
 
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (uiUpdateBlock) {
+            if (uiUpdateBlock)
+            {
                 uiUpdateBlock(dataObject, error);
             }
         }];
@@ -925,8 +948,10 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     SDWebServiceMockResponseQueueProvider *result = nil;
     @synchronized(self)
     {
-        if (![self.mockResponseProvider isKindOfClass:[SDWebServiceMockResponseQueueProvider class]]) {
-            if (self.mockResponseProvider == nil) {
+        if (![self.mockResponseProvider isKindOfClass:[SDWebServiceMockResponseQueueProvider class]])
+        {
+            if (self.mockResponseProvider == nil)
+            {
                 SDLog(@"Setting mockResponseProvider to instance of SDWebServiceMockResponseQueueProvider");
             } else {
                 SDLog(@"Replacing current mockResponseProvider (%@) with instance of SDWebServiceMockResponseQueueProvider", NSStringFromClass([self.mockResponseProvider class]));

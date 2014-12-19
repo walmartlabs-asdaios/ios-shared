@@ -23,15 +23,25 @@
  @param request providers may use the request values to determine what mock response they should return, but providers can also ignore it and do whatever they want
  @return mock response to use
  */
-- (NSURLResponse *) getMockResponseForRequest:(NSURLRequest *) request;
+- (NSHTTPURLResponse *) getMockHTTPURLResponseForRequest:(NSURLRequest *) request;
 
 /**
  Returns value for responseData to use in SDWebService performRequest methods
- If getMockResponseForRequest returns a value, then getMockDataForRequest will not be called.
 
  @param request providers may use the request values to determine what mock response they should return, but providers can also ignore it and do whatever they want
  @return mock data to use in final part of response processing
  */
 - (NSData *) getMockDataForRequest:(NSURLRequest *) request;
+
+/**
+ Remember HTTPURLResponse/responseData values for the last matching request
+ so they can be retrieved later if needed without triggering a match request
+ which can update the match count.
+
+ This is needed so we can retrieve the responseData portion for an HTTPURLResponse already retrieved
+ */
+@property (nonatomic,strong,readonly) NSHTTPURLResponse *lastMatchingHTTPURLResponse;
+@property (nonatomic,strong,readonly) NSData *lastMatchingResponseData;
+
 
 @end

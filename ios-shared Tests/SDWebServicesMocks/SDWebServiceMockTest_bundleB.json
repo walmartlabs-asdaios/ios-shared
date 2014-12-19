@@ -1,3 +1,4 @@
 {
-    "name":"SDWebServiceMockTest_bundleA"
+    "name":"SDWebServiceMockTest_bundleB",
+    "bundleBValue":"this value only pertains to bundle B"
 }
