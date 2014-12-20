@@ -13,7 +13,6 @@
 #import "NSData+SDExtensions.h"
 #import "NSURLRequest+SDExtensions.h"
 #import "SDWebServiceMockResponseQueueProvider.h"
-#import "SDWebServiceMockResponseProvider.h"
 
 NSString *const SDWebServiceError = @"SDWebServiceError";
 

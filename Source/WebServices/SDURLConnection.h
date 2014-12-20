@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SDWebServiceMockResponseProvider.h"
 
 /**
  SDURLConnection is a subclass of NSURLConnection that manages the concurrency and queueing of multiple asynchronous connections.
@@ -39,5 +40,18 @@ typedef void (^SDURLConnectionResponseBlock)(SDURLConnection *connection, NSURLR
  @param handler The block to execute when the response has been received completely.
  */
 + (SDURLConnection *)sendAsynchronousRequest:(NSURLRequest *)request withResponseHandler:(SDURLConnectionResponseBlock)handler;
+
+#pragma mark - Unit Testing
+
+#ifdef DEBUG
+
+/**
+ Allows for multiple mock response provider implementations
+ */
++ (id<SDWebServiceMockResponseProvider>) mockResponseProvider;
+
++ (void) setMockResponseProvider:(id<SDWebServiceMockResponseProvider>) mockResponseProvider;
+
+#endif
 
 @end

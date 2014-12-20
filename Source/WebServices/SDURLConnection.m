@@ -171,22 +171,61 @@ static NSOperationQueue *networkOperationQueue = nil;
         @throw @"sendAsynchronousRequest must be given a handler!";
     
     SDURLConnectionAsyncDelegate *delegate = [[SDURLConnectionAsyncDelegate alloc] initWithResponseHandler:handler];
-    SDURLConnection *connection = [[SDURLConnection alloc] initWithRequest:request delegate:delegate startImmediately:NO];
-    
-    if (!connection)
-        SDLog(@"Unable to create a connection!");
 
-    [connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
-    
-    // the sole purpose of this is to enforce a maximum active connection count.
-    // eventually, these max connection numbers will change based on reachability data.
-    [networkOperationQueue addOperationWithBlock:^{
-        [connection performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:YES];
-        while (delegate.isRunning)
-            sleep(1);
-    }];
-    
-    return connection;
+    // attempt to find any mock response or data if available, we need it going forward.
+    NSHTTPURLResponse *mockHTTPURLResponse = nil;
+    NSData *mockData = nil;
+    BOOL usingMock = NO;
+#ifdef DEBUG
+    mockHTTPURLResponse = [[self mockResponseProvider] getMockHTTPURLResponseForRequest:request];
+    if (mockHTTPURLResponse) {
+        mockData = self.mockResponseProvider.lastMatchingResponseData;
+    } else {
+        mockData = [self.mockResponseProvider getMockDataForRequest:request];
+    }
+    usingMock = (mockData != nil) || (mockHTTPURLResponse != nil);
+#endif
+
+    if (usingMock)
+    {
+        handler(nil, mockHTTPURLResponse, mockData, nil);
+        return nil;
+    }
+    else
+    {
+        SDURLConnection *connection = [[SDURLConnection alloc] initWithRequest:request delegate:delegate startImmediately:NO];
+
+        if (!connection)
+            SDLog(@"Unable to create a connection!");
+
+        [connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+
+        // the sole purpose of this is to enforce a maximum active connection count.
+        // eventually, these max connection numbers will change based on reachability data.
+        [networkOperationQueue addOperationWithBlock:^{
+            [connection performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:YES];
+            while (delegate.isRunning)
+                sleep(1);
+        }];
+        
+        return connection;
+    }
 }
+
+#if DEBUG
+
+static id<SDWebServiceMockResponseProvider> _mockResponseProvider;
+
++ (id<SDWebServiceMockResponseProvider>) mockResponseProvider;
+{
+    return _mockResponseProvider;
+}
+
++ (void) setMockResponseProvider:(id<SDWebServiceMockResponseProvider>) mockResponseProvider;
+{
+    _mockResponseProvider = mockResponseProvider;
+}
+
+#endif
 
 @end
