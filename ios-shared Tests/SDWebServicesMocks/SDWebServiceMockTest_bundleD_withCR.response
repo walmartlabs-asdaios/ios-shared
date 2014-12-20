@@ -1,0 +1,36 @@
+HTTP/1.1 200 OK
+X-Mashery-Responder: mashery-web4-lax.mashery.com
+X-Mashery-Message-ID: ff4b24a6-3c12-4cca-b166-2d38d19b344a
+Server: Apache
+Access-Control-Allow-Headers: X-Requested-With, Content-Type
+Access-Control-Allow-Methods: OPTIONS, GET, POST, PUT
+Access-Control-Allow-Credentials: true
+X-Powered-By: Tomcat/JBOSS
+X-V: UKESTBD20
+Cache-Control: no-cache,no-store
+Expires: Wed, 24 Jul 2013 15:21:59 GMT
+Content-Type: text/javascript;charset=UTF-8
+Vary: User-Agent
+Date: Wed, 24 Jul 2013 15:21:59 GMT
+Content-Length: 4569
+Connection: keep-alive
+Set-Cookie: KNOWN_USER=yes; path=/;
+Set-Cookie: MTEP_EXISTING_SESSION=yes; path=/;
+Set-Cookie: JSESSIONID=ElJJ9jsw35YQ4Xi9qidZ2A**.oses4004-atg12; path=/;
+Access-Control-Allow-Origin: http://m.groceries.asda.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+{"statusCode":"0","statusMessage":"The API Get Item by Id was executed successfully","errors":[],"items":[{"deptId":"910000975210","deptName":"Fresh Fruit, Veg & Flowers","primaryShelf":"910001112609","itemName":"Bananas","cin":"488374","id":"22746","avgWeight":"","shelfName":"Bananas","brandName":"ASDA Organic","images":{"smallImage":["https://i2-groceries.asda.com:443/g/036/871/23036871_6000_OutofPackLidoff_3.jpeg","https://i2-groceries.asda.com:443/g/036/871/23036871_6000_Aspirational_4.jpeg"],"thumbnailImage":"https://i1-groceries.asda.com:443/g/036/871/23036871_6000_IDShot_1.jpeg","largeImage":"https://i3-groceries.asda.com:443/g/036/871/23036871_21000_IDShot_2.jpeg"},"upcNumbers":[{"upcNumber":"23036871"},{"upcNumber":"23036871"},{"upcNumber":"23036871"}],"statusInStore":"A","availability":"A","pricePerWt":"Each","price":"£1.16","aisleId":"910000975615","promoEndDate":"","promoType":"No promo","name":"ASDA Organic Bananas","crossSell":[{"imageURL":"https://i1-groceries.asda.com:443/g/261/866/27261866_6000_IDShot_1.jpeg","asdaSuggest":"No","isFavourite":"false","itemName":"Apples","promoOfferTypeCode":"","cin":"930671","maxQty":"24.0","id":"41769","pricePerUOM":"0.0p/kg","brandName":"ASDA Organic","promoDetailFull":"","wasPrice":"","availability":"I","pricePerWt":"Each","price":"","promoDetail":"","name":"ASDA Organic Apples","promoType":"No promo","promoId":"","weight":"750GR"},{"imageURL":"https://i3-groceries.asda.com:443/g/013/940/23013940_6000_IDShot_1.jpeg","asdaSuggest":"No","isFavourite":"false","itemName":"Clementines","promoOfferTypeCode":"","cin":"381128","maxQty":"24.0","id":"397693","pricePerUOM":"0.0p/kg","brandName":"ASDA","promoDetailFull":"","wasPrice":"","availability":"I","pricePerWt":"Each","price":"","promoDetail":"","name":"ASDA Clementines","promoType":"No Promo","promoId":"","weight":"700G"},{"imageURL":"https://i1-groceries.asda.com:443/g/512/760/27512760_6000_IDShot_1.jpeg","asdaSuggest":"No","isFavourite":"false","itemName":"Grapes Seedless Mixed","promoOfferTypeCode":"","cin":"824939","maxQty":"24.0","id":"42137","pricePerUOM":"£4.00/kg","brandName":"ASDA","promoDetailFull":"","wasPrice":"","availability":"A","pricePerWt":"Each","price":"£2.00","promoDetail":"","name":"ASDA Grapes Seedless Mixed","promoType":"No promo","promoId":"","weight":"500G"},{"imageURL":"https://i3-groceries.asda.com:443/g/008/267/23008267_6000_IDShot_1.jpeg","asdaSuggest":"No","isFavourite":"false","itemName":"Pears Conference","promoOfferTypeCode":"","cin":"414767","maxQty":"24.0","id":"21716","pricePerUOM":"£1.50/kg","brandName":"ASDA","promoDetailFull":"","wasPrice":"","availability":"I","pricePerWt":"Each","price":"£1.50","promoDetail":"","name":"ASDA Pears Conference","promoType":"No Promo","promoId":"","weight":"1KG"},{"imageURL":"https://i3-groceries.asda.com:443/g/825/501/5051413825501_6000_IDShot_1.jpeg","asdaSuggest":"No","isFavourite":"false","itemName":"Banana Box","promoOfferTypeCode":"","cin":"3231007","maxQty":"24.0","id":"910000272125","pricePerUOM":"0.0p/each","brandName":"ASDA","promoDetailFull":"","wasPrice":"","availability":"I","pricePerWt":"Each","price":"","promoDetail":"","name":"ASDA Banana Box","promoType":"No promo","promoId":"","weight":"EACH"}],"asdaSuggest":"No","isFavourite":"false","promoOfferTypeCode":"","pickerDesc":"Asda Pre-Packed Organic Bananas Bag","aisleName":"Fruit","maxQty":"24.0","promoStDate":"","promoDetailFull":"","cartDesc":"Bananas","wasPrice":"","promoDetail":"","shelfId":"910001112609","weight":"5PK","promoId":"","productDetails":{"ingredients":"","nutritionalValues":{},"packaging":"Bag - Plastic","consumerItemNumber":"488374","countryOfOrigin":"","manufacturerPath":"Asda Stores Limited,\nLeeds,\nLS11 5AD.","alcohol":"","colour":"","grapeVariety":"","nappy":[],"dietaryInfo":"Organic","dietaryInfoformatted":"Organic.","allergyInfo":"","allergyInfoformatted":"","additivesInfo":"Genetically Modified IngredientsFree From","additivesInfoformatted":"Free From Genetically Modified Ingredients.","cookingGuidelines":[],"storage":"Store at room temperature"},"description":"Country of Origin ; Dominican Republic, Ecuador.\nPortion sizes - approximately 5 medium bananas per pack.        Our pickers will pick your shopping as if it were their own. That means they will always be searching for the best quality, freshness and date codes available.        The average shelf life of bananas is 3 days.","productURL":"https://api-groceries.asda.com:443/api/items/view?itemid=22746","pricePerUOM":"23.2p/each"}],"invalidItemIds":[]}
+
+

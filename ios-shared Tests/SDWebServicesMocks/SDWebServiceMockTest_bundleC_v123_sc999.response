@@ -1,0 +1,5 @@
+HTTP/123 999 OK
+Header1: bundleCHeader1
+Header2: bundleCHeader2
+
+{"name":"SDWebServiceMockTest_bundleC","bundleCValue":"bundle C value"}

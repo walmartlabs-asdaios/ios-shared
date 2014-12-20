@@ -589,25 +589,42 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 
     // get cache details
     NSNumber *cache = [requestDetails objectForKey:@"cache"];
-    NSNumber *cacheTTL = [requestDetails objectForKey:@"cacheTTL"];
-    
+
+    // attempt to find any mock response or data if available, we need it going forward.
+    NSHTTPURLResponse *mockHTTPURLResponse = nil;
+    NSData *mockData = nil;
+    BOOL usingMock = NO;
 #ifdef DEBUG
+    mockHTTPURLResponse = [self.mockResponseProvider getMockHTTPURLResponseForRequest:request];
+    if (mockHTTPURLResponse) {
+        mockData = self.mockResponseProvider.lastMatchingResponseData;
+    } else {
+        mockData = [self.mockResponseProvider getMockDataForRequest:request];
+    }
+    usingMock = (mockData != nil) || (mockHTTPURLResponse != nil);
+
     if (self.disableCaching)
+    {
         cache = [NSNumber numberWithBool:NO];
+    }
 #endif
+
+    if (mockHTTPURLResponse)
+    {
+        [self addDataProcessBlock:dataProcessingBlock
+                    uiUpdateBlock:uiUpdateBlock
+                     withResponse:mockHTTPURLResponse
+                     responseCode:mockHTTPURLResponse.statusCode
+                     responseData:mockData
+                            error:nil];
+        return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
+    }
 
     NSNumber *showNoConnectionAlertObj = [requestDetails objectForKey:@"showNoConnectionAlert"];
     BOOL showNoConnectionAlert = showNoConnectionAlertObj != nil ? [showNoConnectionAlertObj boolValue] : YES;
-    if (![self isReachable:showNoConnectionAlert])
+    if (!usingMock && ![self isReachable:showNoConnectionAlert])
     {
-        // we ain't got no connection Lt. Dan
-        NSError *error = [NSError errorWithDomain:SDWebServiceError code:SDWebServiceErrorNoConnection userInfo:nil];
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (uiUpdateBlock)
-                uiUpdateBlock(nil, error);
-        }];
-
-        return [SDRequestResult objectForResult:SDWebServiceResultFailed identifier:nil request:request];
+        return [self reachabilityFailureResultForRequest:request uiUpdateBlock:uiUpdateBlock];
     }
 
     // setup caching, default is to let the server decide.
@@ -645,28 +662,13 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 
                 if (shouldRetry)
                 {
-                    // remove it from the cache if its there.
-                    NSURLCache *blockCache = [NSURLCache sharedURLCache];
-                    if ([request isValid])
-                        [blockCache removeCachedResponseForRequest:request];
-
-                    SDRequestResult *newObject = [self performRequestWithMethod:requestName headers:headers routeReplacements:replacements dataProcessingBlock:dataProcessingBlock uiUpdateBlock:uiUpdateBlock shouldRetry:NO];
-
-                    @synchronized(self) { // NSMutableDictionary isn't thread-safe
-                        // do some sync/cleanup stuff here.
-                        SDURLConnection *newConnection = [_normalRequests objectForKey:newObject.identifier];
-                        
-                        // If for some unknown reason the second performRequestWithMethod hits the cache, then we'll get a nil identifier, which means a nil newConnection
-                        if (newConnection)
-                        {
-                            [_normalRequests setObject:newConnection forKey:identifier];
-                            [_normalRequests removeObjectForKey:newObject.identifier];
-                        }
-                        else
-                        {
-                            [_normalRequests removeObjectForKey:identifier];
-                        }
-                    }
+                    [self retryRequest:request
+                        withIdentifier:identifier
+                           requestName:requestName
+                               headers:headers
+                          replacements:replacements
+                      dataProcessBlock:dataProcessingBlock
+                         uiUpdateBlock:uiUpdateBlock];
 
                     [self decrementRequests];
                     return;
@@ -695,74 +697,31 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
             [self will302RedirectToUrl:httpResponse.URL];
         }
 
-        [_dataProcessingQueue addOperationWithBlock:^{
-            id dataObject = nil;
-            if (code != NSURLErrorCancelled)
-            {
-                if (dataProcessingBlock)
-                    dataObject = dataProcessingBlock(response, code, responseData, error);
-            }
-            
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (uiUpdateBlock)
-                    uiUpdateBlock(dataObject, error);
-            }];
-        }];
+        [self addDataProcessBlock:dataProcessingBlock
+                    uiUpdateBlock:uiUpdateBlock
+                     withResponse:response
+                     responseCode:code
+                     responseData:responseData
+                            error:error];
 
         [self decrementRequests];
 	};
     
-    // attempt to find any mock data if available, we need it going forward.
-    NSData *mockData = nil;
-#ifdef DEBUG
-    mockData = [self.mockResponseProvider getMockResponseForRequest:request];
-#endif
-
     // check the cache if we're not working with a mock.
     if (!mockData)
     {
-        NSURLCache *urlCache = [NSURLCache sharedURLCache];
-        NSCachedURLResponse *cachedResponse = [urlCache validCachedResponseForRequest:request forTime:[cacheTTL unsignedLongValue] removeIfInvalid:YES];
-        if ([cache boolValue] && cachedResponse && cachedResponse.response)
+        SDRequestResult *cachedResult = [self lookupCachedResultForRequest:request requestDetails:requestDetails urlCompletionBlock:urlCompletionBlock];
+        if (cachedResult)
         {
-            NSString *cachedString = [cachedResponse.responseData stringRepresentation];
-            if (cachedString)
-            {
-                SDLog(@"***USING CACHED RESPONSE***");
-
-                [self incrementRequests];
-
-                urlCompletionBlock(nil, cachedResponse.response, cachedResponse.responseData, nil);
-
-                return [SDRequestResult objectForResult:SDWebServiceResultCached identifier:nil request:request];
-            }
+            return cachedResult;
         }
     }
     
 	[self incrementRequests];
 
 	// see if this is a singleton request.
-    BOOL singleRequest = NO;
-	NSNumber *singleRequestNumber = [requestDetails objectForKey:@"singleRequest"];
-    if (singleRequestNumber)
-    {
-        singleRequest = [singleRequestNumber boolValue];
+    BOOL singleRequest = [self checkForSingleRequestWithRequestName:requestName requestDetails:requestDetails];
 
-        // if it is, lets cancel any with matching names.
-        if (singleRequest)
-        {
-            @synchronized(self) {
-                SDURLConnection *existingConnection = [_singleRequests objectForKey:requestName];
-                if (existingConnection)
-                {
-                    SDLog(@"Cancelling call.");
-                    [existingConnection cancel];
-                    [_singleRequests removeObjectForKey:requestName];
-                }
-            }
-        }
-    }
-    
     if (!mockData)
     {
         // no mock data was found, or we don't want to use mocks.  send out the request.
@@ -781,18 +740,145 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
         // we have mock data for this service call.
         // attempt to recreate the path as best we can.
 
-        [_dataProcessingQueue addOperationWithBlock:^{
-            id dataObject = nil;
-            if (dataProcessingBlock)
-                dataObject = dataProcessingBlock(nil, 200, mockData, nil);
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (uiUpdateBlock)
-                    uiUpdateBlock(dataObject, nil);
-            }];
-        }];
+        [self addDataProcessBlock:dataProcessingBlock
+                    uiUpdateBlock:uiUpdateBlock
+                     withResponse:nil
+                     responseCode:200
+                     responseData:mockData
+                            error:nil];
     }
 
 	return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
+}
+
+- (SDRequestResult *) reachabilityFailureResultForRequest:(NSURLRequest *) request uiUpdateBlock:(SDWebServiceUICompletionBlock)uiUpdateBlock
+{
+    // we ain't got no connection Lt. Dan
+    NSError *error = [NSError errorWithDomain:SDWebServiceError code:SDWebServiceErrorNoConnection userInfo:nil];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if (uiUpdateBlock)
+        {
+            uiUpdateBlock(nil, error);
+        }
+    }];
+
+    return [SDRequestResult objectForResult:SDWebServiceResultFailed identifier:nil request:request];
+}
+
+
+- (void) retryRequest:(NSURLRequest *) request
+       withIdentifier:(NSString *) identifier
+          requestName:(NSString *) requestName
+              headers:(NSDictionary *) headers
+         replacements:(NSDictionary *) replacements
+     dataProcessBlock:(SDWebServiceDataCompletionBlock) dataProcessingBlock
+        uiUpdateBlock:(SDWebServiceUICompletionBlock) uiUpdateBlock
+{
+    // remove it from the cache if its there.
+    NSURLCache *blockCache = [NSURLCache sharedURLCache];
+    if ([request isValid])
+    {
+        [blockCache removeCachedResponseForRequest:request];
+    }
+
+    SDRequestResult *newObject = [self performRequestWithMethod:requestName headers:headers routeReplacements:replacements dataProcessingBlock:dataProcessingBlock uiUpdateBlock:uiUpdateBlock shouldRetry:NO];
+
+    @synchronized(self) { // NSMutableDictionary isn't thread-safe
+        // do some sync/cleanup stuff here.
+        SDURLConnection *newConnection = [_normalRequests objectForKey:newObject.identifier];
+
+        // If for some unknown reason the second performRequestWithMethod hits the cache, then we'll get a nil identifier, which means a nil newConnection
+        if (newConnection)
+        {
+            [_normalRequests setObject:newConnection forKey:identifier];
+            [_normalRequests removeObjectForKey:newObject.identifier];
+        }
+        else
+        {
+            [_normalRequests removeObjectForKey:identifier];
+        }
+    }
+}
+
+- (BOOL) checkForSingleRequestWithRequestName:(NSString *) requestName requestDetails:(NSDictionary *) requestDetails
+{
+    BOOL singleRequest = NO;
+    NSNumber *singleRequestNumber = [requestDetails objectForKey:@"singleRequest"];
+    if (singleRequestNumber)
+    {
+        singleRequest = [singleRequestNumber boolValue];
+
+        // if it is, lets cancel any with matching names.
+        if (singleRequest)
+        {
+            @synchronized(self) {
+                SDURLConnection *existingConnection = [_singleRequests objectForKey:requestName];
+                if (existingConnection)
+                {
+                    SDLog(@"Cancelling call.");
+                    [existingConnection cancel];
+                    [_singleRequests removeObjectForKey:requestName];
+                }
+            }
+        }
+    }
+    return singleRequest;
+}
+
+- (SDRequestResult *) lookupCachedResultForRequest:(NSURLRequest *) request
+                                    requestDetails:(NSDictionary *) requestDetails
+                                urlCompletionBlock:(SDURLConnectionResponseBlock) urlCompletionBlock
+{
+    SDRequestResult *result = nil;
+
+    // get cache details
+    NSNumber *cache = [requestDetails objectForKey:@"cache"];
+    NSNumber *cacheTTL = [requestDetails objectForKey:@"cacheTTL"];
+
+    NSURLCache *urlCache = [NSURLCache sharedURLCache];
+    NSCachedURLResponse *cachedResponse = [urlCache validCachedResponseForRequest:request forTime:[cacheTTL unsignedLongValue] removeIfInvalid:YES];
+    if ([cache boolValue] && cachedResponse && cachedResponse.response)
+    {
+        NSString *cachedString = [cachedResponse.responseData stringRepresentation];
+        if (cachedString)
+        {
+            SDLog(@"***USING CACHED RESPONSE***");
+
+            [self incrementRequests];
+
+            urlCompletionBlock(nil, cachedResponse.response, cachedResponse.responseData, nil);
+
+            result = [SDRequestResult objectForResult:SDWebServiceResultCached identifier:nil request:request];
+        }
+    }
+    return result;
+}
+
+
+- (void) addDataProcessBlock:(SDWebServiceDataCompletionBlock) dataProcessingBlock
+               uiUpdateBlock:(SDWebServiceUICompletionBlock) uiUpdateBlock
+                withResponse:(NSURLResponse *) response
+                responseCode:(NSInteger) responseCode
+                responseData:(NSData *) responseData
+                       error:(NSError *) error
+{
+    [_dataProcessingQueue addOperationWithBlock:^{
+        id dataObject = nil;
+        if (responseCode != NSURLErrorCancelled)
+        {
+            if (dataProcessingBlock)
+            {
+                dataObject = dataProcessingBlock(response, responseCode, responseData, error);
+            }
+        }
+
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (uiUpdateBlock)
+            {
+                uiUpdateBlock(dataObject, error);
+            }
+        }];
+    }];
 }
 
 - (void)cancelRequestForIdentifier:(NSString *)identifier
@@ -861,8 +947,10 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     SDWebServiceMockResponseQueueProvider *result = nil;
     @synchronized(self)
     {
-        if (![self.mockResponseProvider isKindOfClass:[SDWebServiceMockResponseQueueProvider class]]) {
-            if (self.mockResponseProvider == nil) {
+        if (![self.mockResponseProvider isKindOfClass:[SDWebServiceMockResponseQueueProvider class]])
+        {
+            if (self.mockResponseProvider == nil)
+            {
                 SDLog(@"Setting mockResponseProvider to instance of SDWebServiceMockResponseQueueProvider");
             } else {
                 SDLog(@"Replacing current mockResponseProvider (%@) with instance of SDWebServiceMockResponseQueueProvider", NSStringFromClass([self.mockResponseProvider class]));

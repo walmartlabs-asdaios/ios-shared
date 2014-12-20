@@ -8,6 +8,11 @@
 
 #import "SDWebServiceMockResponseQueueProvider.h"
 
+@interface SDWebServiceMockResponseQueueProvider()
+@property (nonatomic,strong,readwrite) NSHTTPURLResponse *lastMatchingHTTPURLResponse;
+@property (nonatomic,strong,readwrite) NSData *lastMatchingResponseData;
+@end
+
 @implementation SDWebServiceMockResponseQueueProvider {
     // always access the mutable array inside of @synchronized(self)
     NSMutableArray *_mockStack;
@@ -19,11 +24,19 @@
     {
         _autoPopMocks = YES;
         _mockStack = [NSMutableArray array];
+        _lastMatchingHTTPURLResponse = nil;
+        _lastMatchingResponseData = nil;
     }
     return self;
 }
 
-- (NSData *)getMockResponseForRequest:(NSURLRequest *)request
+- (NSHTTPURLResponse *)getMockHTTPURLResponseForRequest:(NSURLRequest *)request
+{
+     // This provider only returns response data, not full responses
+    return nil;
+}
+
+- (NSData *)getMockDataForRequest:(NSURLRequest *)request
 {
     @synchronized(self)
     {
@@ -37,7 +50,11 @@
         {
             [self popMockResponseFile];
         }
-        
+
+        if (result)
+        {
+            self.lastMatchingResponseData = result;
+        }
         return result;
     }
 }
