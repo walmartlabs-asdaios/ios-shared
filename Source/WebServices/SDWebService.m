@@ -620,13 +620,6 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
         return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
     }
 
-    NSNumber *showNoConnectionAlertObj = [requestDetails objectForKey:@"showNoConnectionAlert"];
-    BOOL showNoConnectionAlert = showNoConnectionAlertObj != nil ? [showNoConnectionAlertObj boolValue] : YES;
-    if (!usingMock && ![self isReachable:showNoConnectionAlert])
-    {
-        return [self reachabilityFailureResultForRequest:request uiUpdateBlock:uiUpdateBlock];
-    }
-
     // setup caching, default is to let the server decide.
     [request setCachePolicy:NSURLRequestUseProtocolCachePolicy];
     
@@ -750,21 +743,6 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 
 	return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
 }
-
-- (SDRequestResult *) reachabilityFailureResultForRequest:(NSURLRequest *) request uiUpdateBlock:(SDWebServiceUICompletionBlock)uiUpdateBlock
-{
-    // we ain't got no connection Lt. Dan
-    NSError *error = [NSError errorWithDomain:SDWebServiceError code:SDWebServiceErrorNoConnection userInfo:nil];
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if (uiUpdateBlock)
-        {
-            uiUpdateBlock(nil, error);
-        }
-    }];
-
-    return [SDRequestResult objectForResult:SDWebServiceResultFailed identifier:nil request:request];
-}
-
 
 - (void) retryRequest:(NSURLRequest *) request
        withIdentifier:(NSString *) identifier
