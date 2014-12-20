@@ -34,6 +34,11 @@
 @interface SDWebServiceMockResponseMapProvider : NSObject<SDWebServiceMockResponseProvider>
 
 /**
+ Allow test classes to use a common mockResponseMapProvider if they wish
+ */
++ (SDWebServiceMockResponseMapProvider *) sharedMockResponseMapProvider;
+
+/**
  Adds single mapping for request -> responseData
 
  @param data the resourceData to return

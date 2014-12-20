@@ -159,6 +159,16 @@
 
 @implementation SDWebServiceMockResponseMapProvider
 
++ (SDWebServiceMockResponseMapProvider *) sharedMockResponseMapProvider;
+{
+    static dispatch_once_t onceToken;
+    static SDWebServiceMockResponseMapProvider *_instance;
+    dispatch_once(&onceToken, ^{
+        _instance = [[SDWebServiceMockResponseMapProvider alloc] init];
+    });
+    return _instance;
+}
+
 - (instancetype) init
 {
     if ((self = [super init]))
