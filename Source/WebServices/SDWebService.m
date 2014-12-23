@@ -593,7 +593,6 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     // attempt to find any mock response or data if available, we need it going forward.
     NSHTTPURLResponse *mockHTTPURLResponse = nil;
     NSData *mockData = nil;
-    BOOL usingMock = NO;
 #ifdef DEBUG
     mockHTTPURLResponse = [self.mockResponseProvider getMockHTTPURLResponseForRequest:request];
     if (mockHTTPURLResponse) {
@@ -601,7 +600,6 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     } else {
         mockData = [self.mockResponseProvider getMockDataForRequest:request];
     }
-    usingMock = (mockData != nil) || (mockHTTPURLResponse != nil);
 
     if (self.disableCaching)
     {
