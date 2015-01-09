@@ -105,7 +105,7 @@
         [self.parameterNames enumerateObjectsUsingBlock:^(NSString *parameterName, NSUInteger idx, BOOL *stop)
         {
             NSRange valueRange = [result rangeAtIndex:idx + 1];
-            parameters[parameterName] = [urlString substringWithRange:valueRange];
+            parameters[parameterName] = [[urlString substringWithRange:valueRange] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
         }];
         [parameters addEntriesFromDictionary:[self parametersFromQuery:query]];
     }
