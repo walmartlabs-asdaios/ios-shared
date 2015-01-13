@@ -68,7 +68,15 @@ SDTextFieldValidationBlock SDTextFieldOptionalFieldValidationBlock = ^(SDTextFie
 
 - (void)configureView
 {
-    self.delegate = self;
+    // On iOS 8, deleteBackward stopped being invoked. The workaround is to be
+    //  our own delegate (ugh). Unfortunately, on iOS 7, being our own delegate
+    //  causes crashes when the autocorrect/complete function kicks in. So,
+    //  on iOS 7, use deleteBackward, and on iOS 8, use a delegate. See
+    //  AIOS-1652 and it's many, many duplicates.
+    if ([UIDevice bcdSystemVersion] >= 0x080000)
+    {
+        self.delegate = self;
+    }
 
     self.validationBlock = ^(SDTextField *textField) {
         if (textField.text.length > 0)
@@ -99,6 +107,15 @@ SDTextFieldValidationBlock SDTextFieldOptionalFieldValidationBlock = ^(SDTextFie
     {
         self.validationBlock(self);
     }
+}
+
+- (void)deleteBackward
+{
+    // This will not get called on iOS 8, but it is required for iOS 7
+    //  compatibility.
+    [super deleteBackward];
+    
+    [self backspaceKeypressFired];
 }
 
 - (void)backspaceKeypressFired
