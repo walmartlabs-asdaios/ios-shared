@@ -159,6 +159,8 @@
 
 @implementation SDWebServiceMockResponseMapProvider
 
+@synthesize defaultMockDataBlock = _defaultMockDataBlock;
+
 + (SDWebServiceMockResponseMapProvider *) sharedMockResponseMapProvider;
 {
     static dispatch_once_t onceToken;
