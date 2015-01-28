@@ -25,6 +25,7 @@
 
 - (NSUInteger)indexOfObject:(id)anObject;
 - (void)removeObject:(id)anObject;
+- (void)removeAllObjects;
 
 - (void) compact;
 
