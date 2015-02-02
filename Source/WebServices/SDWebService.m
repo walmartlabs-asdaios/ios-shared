@@ -600,6 +600,11 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     } else {
         mockData = [self.mockResponseProvider getMockDataForRequest:request];
     }
+    if ((mockHTTPURLResponse == nil) && (mockData == nil)) {
+        if (self.mockResponseProvider.defaultMockDataBlock) {
+            mockData = self.mockResponseProvider.defaultMockDataBlock(request);
+        }
+    }
 
     if (self.disableCaching)
     {

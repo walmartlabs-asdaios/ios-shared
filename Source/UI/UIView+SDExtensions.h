@@ -81,5 +81,7 @@
  */
 - (UIImage *)screenshot;
 
+- (UIView *) findFirstResponder;
++ (UIView *) findFirstResponderInView:(UIView*) view;
 
 @end

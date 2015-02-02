@@ -123,6 +123,11 @@
         [self removeObjectAtIndex:index];
 }
 
+- (void)removeAllObjects
+{
+    [_boxedObjects removeAllObjects];
+}
+
 - (void)replaceObjectAtIndex:(NSUInteger)index withObject:(id)anObject
 {
     [_boxedObjects replaceObjectAtIndex:index withObject:[[SDWeakPointer alloc] initWithObject:anObject]];
