@@ -10,6 +10,7 @@
 #import "NSString+SDExtensions.h"
 #import "NSCachedURLResponse+LeakFix.h"
 #import "NSURLCache+SDExtensions.h"
+#import "SDLog.h"
 
 #import <libkern/OSAtomic.h>
 

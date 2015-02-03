@@ -11,6 +11,7 @@
 #import "NSURLCache+SDExtensions.h"
 #import "NSCachedURLResponse+LeakFix.h"
 #import "NSURLRequest+SDExtensions.h"
+#import "SDLog.h"
 
 #import <objc/runtime.h>
 

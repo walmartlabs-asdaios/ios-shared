@@ -7,6 +7,7 @@
 //
 
 #import "NSData+SDExtensions.h"
+#import "SDLog.h"
 
 @implementation NSData (SDExtensions)
 

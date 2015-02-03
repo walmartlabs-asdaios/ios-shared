@@ -9,6 +9,7 @@
 #import "SDTextFieldPicker.h"
 #import "SDPickerView.h"
 #import "UIDevice+machine.h"
+#import "SDMacros.h"
 
 @interface SDPickerView()
 @property (nonatomic, readonly) UIToolbar *pickerBar;

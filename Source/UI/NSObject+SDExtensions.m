@@ -6,6 +6,7 @@
 //  Copyright 2011 SetDirection. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
 #import "NSObject+SDExtensions.h"
 
 #import <objc/runtime.h>

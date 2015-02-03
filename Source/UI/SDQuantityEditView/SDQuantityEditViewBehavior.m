@@ -6,6 +6,8 @@
 //
 
 #import "SDQuantityEditViewBehavior.h"
+#import "SDMacros.h"
+#import "SDLog.h"
 
 @implementation NSDecimalNumber (CurrencyExtension)
 

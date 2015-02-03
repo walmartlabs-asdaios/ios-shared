@@ -6,6 +6,7 @@
 //
 
 #import "UIView+PaintCode.h"
+#import "UIView+SDExtensions.h"
 
 @implementation UIView(PaintCode)
 

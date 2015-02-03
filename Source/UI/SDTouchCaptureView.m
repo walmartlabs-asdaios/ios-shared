@@ -7,6 +7,7 @@
 //
 
 #import "SDTouchCaptureView.h"
+#import "SDMacros.h"
 
 @interface SDTouchCaptureView ()
 

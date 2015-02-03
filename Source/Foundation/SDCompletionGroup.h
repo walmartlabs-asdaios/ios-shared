@@ -12,6 +12,8 @@
  operation.
  */
 
+#import <Foundation/Foundation.h>
+
 @interface SDCompletionGroup : NSObject
 
 @property (nonatomic, copy) void(^completion)();

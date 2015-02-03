@@ -7,6 +7,7 @@
 //
 
 #import "SDWebServiceMockResponseRequestMapping.h"
+#import "NSString+SDExtensions.h"
 
 @interface SDWebServiceMockResponseRequestMapping()
 @property (nonatomic,copy,readwrite) NSString *pathPattern;

@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #import "SDAdjustableItem.h"
 
 typedef void (^SDQuantityEditViewBehaviorWillChangeQuantityBlock)(BOOL increment);
