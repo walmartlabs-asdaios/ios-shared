@@ -6,6 +6,7 @@
 //
 
 #import "SDSpanParser.h"
+#import "NSError+SDExtensions.h"
 
 typedef NS_ENUM(NSUInteger, SRSpanMatchType)
 {

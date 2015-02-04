@@ -6,6 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NSObject+SDExtensions.h"
 
 @interface SDApplication : UIApplication
 

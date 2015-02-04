@@ -6,6 +6,7 @@
 //
 
 #import "SDCCTextField.h"
+#import "SDMacros.h"
 
 static NSString* const kSDTextFieldSpaceChar = @"\u200B";
 

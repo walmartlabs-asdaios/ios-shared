@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 SetDirection. All rights reserved.
 //
 
+#import "SDMacros.h"
 #import "SDSearchSuggestionsViewController.h"
 
 @interface SDSearchSuggestionsViewController ()

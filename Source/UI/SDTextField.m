@@ -26,6 +26,9 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "SDTextField.h"
+#import "UIDevice+machine.h"
+#import "SDMacros.h"
+#import "UIView+SDExtensions.h"
 
 SDTextFieldValidationBlock SDTextFieldOptionalFieldValidationBlock = ^(SDTextField *textField){ return YES; };
 

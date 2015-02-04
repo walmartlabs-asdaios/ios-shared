@@ -7,6 +7,7 @@
 
 #import "SDQuantityEditView.h"
 #import "SDQuantityView.h"
+#import "SDMacros.h"
 
 @interface SDQuantityEditView()
 @property (nonatomic, strong) NSLayoutConstraint *editTotalSpaceToTopContraint;

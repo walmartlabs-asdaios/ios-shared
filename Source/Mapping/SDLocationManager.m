@@ -9,6 +9,8 @@
 
 #import "SDLocationManager.h"
 #import "NSArray+SDExtensions.h"
+#import "UIDevice+machine.h"
+#import "SDLog.h"
 
 #import <objc/message.h>
 

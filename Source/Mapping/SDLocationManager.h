@@ -6,6 +6,7 @@
 //
 
 #import <CoreLocation/CoreLocation.h>
+#import "SDMacros.h"
 
 typedef NS_ENUM(NSUInteger,SDLocationManagerAuthorizationScheme) {
     SDLocationManagerAuthorizationAlways,

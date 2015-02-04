@@ -16,6 +16,8 @@
 #import <float.h>
 #include <tgmath.h>
 
+#import "SDLog.h"
+
 @implementation UIImage (SDExtensions)
 
 + (UIImage *)imageFromView:(UIView *)view

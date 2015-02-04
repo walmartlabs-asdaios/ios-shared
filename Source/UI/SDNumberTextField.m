@@ -6,6 +6,7 @@
 //
 
 #import "SDNumberTextField.h"
+#import "SDMacros.h"
 #import "NSString+SDExtensions.h"
 
 @interface SDTextField()

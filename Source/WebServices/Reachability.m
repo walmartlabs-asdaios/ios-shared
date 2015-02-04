@@ -27,8 +27,9 @@
 
 @import SystemConfiguration;
 
+#import <Foundation/Foundation.h>
 #import "Reachability.h"
-
+#import "SDLog.h"
 
 NSString *const kSDReachabilityChangedNotification = @"kSDReachabilityChangedNotification";
 

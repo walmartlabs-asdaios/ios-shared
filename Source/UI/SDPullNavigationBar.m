@@ -15,6 +15,7 @@
 #import "UIDevice+machine.h"
 #import "UIColor+SDExtensions.h"
 #import "UIImage+SDExtensions.h"
+#import "NSString+SDExtensions.h"
 
 static const CGFloat kDefaultMenuWidth = 320.0f;
 static const CGFloat kDefaultMenuHeightBuffer = 44.0f;  // Keeps the bottom of the menu from getting too close to the bottom of the screen

@@ -9,6 +9,7 @@
 
 #import "SDContentAlertView.h"
 #import "UIDevice+machine.h"
+#import "SDLog.h"
 
 static const CGFloat kSDContentAlertViewWidth = 270.0;
 static const CGFloat kSDContentAlertViewContentMargin = 9;

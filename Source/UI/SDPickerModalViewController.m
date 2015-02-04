@@ -7,6 +7,7 @@
 //
 
 #import "SDPickerModalViewController.h"
+#import "UIDevice+machine.h"
 
 @interface SDPickerModalViewController ()
 

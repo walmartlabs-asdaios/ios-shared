@@ -10,6 +10,7 @@
 #import "SDModelObject.h"
 #import "NSObject+SDExtensions.h"
 #import "objc/runtime.h"
+#import "SDLog.h"
 
 @interface SDObjectProperty : NSObject
 

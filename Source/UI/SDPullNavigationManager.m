@@ -12,6 +12,8 @@
 #import "NSObject+SDExtensions.h"
 #import "SDPullNavigationBarControlsView.h"
 #import "SDPullNavigationAutomation.h"
+#import "UIViewController+SDExtensions.h"
+#import "UIDevice+machine.h"
 
 @interface SDPullNavigationManager()
 

@@ -10,6 +10,7 @@
 		08EFCA2218FDCB70006547E0 /* NSDate+SDExtensionsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 08EFCA2118FDCB70006547E0 /* NSDate+SDExtensionsTests.m */; };
 		08EFCA2818FEFAC6006547E0 /* NSDictionary+SDExtensionsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 08EFCA2718FEFAC6006547E0 /* NSDictionary+SDExtensionsTests.m */; };
 		2008D37A188DAA9700255BC4 /* SDApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 2008D379188DAA9700255BC4 /* SDApplication.m */; };
+		201BC1261A79C2BF0095957D /* SDAssert.m in Sources */ = {isa = PBXBuildFile; fileRef = 201BC1251A79C2BF0095957D /* SDAssert.m */; };
 		487BE86419DCCBA5009D295E /* SDSpanParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E2B31B9E189342BF0006970E /* SDSpanParser.m */; };
 		487BE86B19DCD2CC009D295E /* SpanTest_missingclass.txt in Resources */ = {isa = PBXBuildFile; fileRef = 487BE86519DCD2CC009D295E /* SpanTest_missingclass.txt */; };
 		487BE86C19DCD2CC009D295E /* SpanTest_missingclose.txt in Resources */ = {isa = PBXBuildFile; fileRef = 487BE86619DCD2CC009D295E /* SpanTest_missingclose.txt */; };
@@ -241,6 +242,8 @@
 		08EFCA2718FEFAC6006547E0 /* NSDictionary+SDExtensionsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+SDExtensionsTests.m"; sourceTree = "<group>"; };
 		2008D378188DAA9700255BC4 /* SDApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDApplication.h; sourceTree = "<group>"; };
 		2008D379188DAA9700255BC4 /* SDApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDApplication.m; sourceTree = "<group>"; };
+		201BC1251A79C2BF0095957D /* SDAssert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDAssert.m; sourceTree = "<group>"; };
+		201BC1271A79C2CD0095957D /* SDAssert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDAssert.h; sourceTree = "<group>"; };
 		487BE86519DCD2CC009D295E /* SpanTest_missingclass.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SpanTest_missingclass.txt; sourceTree = "<group>"; };
 		487BE86619DCD2CC009D295E /* SpanTest_missingclose.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SpanTest_missingclose.txt; sourceTree = "<group>"; };
 		487BE86719DCD2CC009D295E /* SpanTest_extraspace.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SpanTest_extraspace.txt; sourceTree = "<group>"; };
@@ -657,6 +660,8 @@
 		CA0E770A18284DD500B4398F /* Macros */ = {
 			isa = PBXGroup;
 			children = (
+				201BC1271A79C2CD0095957D /* SDAssert.h */,
+				201BC1251A79C2BF0095957D /* SDAssert.m */,
 				CA0E770B18284DD500B4398F /* ObjectiveCGenerics.h */,
 				CA0E770C18284DD500B4398F /* SDMacros.h */,
 			);
@@ -1222,6 +1227,7 @@
 				CA0E77A118284DD600B4398F /* SDImageButton.m in Sources */,
 				E2B31BA2189342BF0006970E /* SDSpanParser.m in Sources */,
 				E2136B3318A4387200000D1B /* SDLog.m in Sources */,
+				201BC1261A79C2BF0095957D /* SDAssert.m in Sources */,
 				CA0E77D018284DD600B4398F /* NSURLRequest+SDExtensions.m in Sources */,
 				E2C8A21C1853E660000DD265 /* SDPullNavigationBar.m in Sources */,
 				CA0E77AF18284DD600B4398F /* SDSearchBar.m in Sources */,

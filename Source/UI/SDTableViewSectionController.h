@@ -7,7 +7,7 @@
 //  Copyright (c) 2014 SetDirection. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #define SECTIONCONTROLLER_MAX_HEIGHT MAXFLOAT
 

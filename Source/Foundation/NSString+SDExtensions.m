@@ -7,6 +7,7 @@
 //
 
 #import "NSString+SDExtensions.h"
+#import "NSData+SDExtensions.h"
 
 GENERICSABLE_IMPLEMENTATION(NSString)
 
@@ -446,7 +447,6 @@ GENERICSABLE_IMPLEMENTATION(NSString)
 + (BOOL) isNotEmpty:(NSString *)string {
     return (string && [string length] > 0);
 }
-
 
 @end
 

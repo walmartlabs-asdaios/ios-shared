@@ -7,6 +7,7 @@
 //
 
 #import "SDWebServiceMockResponseQueueProvider.h"
+#import "SDLog.h"
 
 @interface SDWebServiceMockResponseQueueProvider()
 @property (nonatomic,strong,readwrite) NSHTTPURLResponse *lastMatchingHTTPURLResponse;

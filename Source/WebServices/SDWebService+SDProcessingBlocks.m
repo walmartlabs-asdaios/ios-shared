@@ -8,6 +8,8 @@
 
 #import "SDWebService+SDProcessingBlocks.h"
 #import "SDModelObject.h"
+#import "NSData+SDExtensions.h"
+#import "SDLog.h"
 
 @implementation SDWebService (SDProcessingBlocks)
 

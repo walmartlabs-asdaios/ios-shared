@@ -8,6 +8,8 @@
 
 #import "UIImageView+SDExtensions.h"
 #import "SDURLConnection.h"
+#import "NSError+SDExtensions.h"
+#import "SDMacros.h"
 
 #import <objc/runtime.h>
 

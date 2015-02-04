@@ -7,6 +7,7 @@
 //
 
 #import "SDButton.h"
+#import "UIDevice+machine.h"
 
 @implementation SDButton
 

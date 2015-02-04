@@ -8,6 +8,7 @@
 
 #import "NSDictionary+SDExtensions.h"
 #import "NSString+SDExtensions.h"
+#import "SDLog.h"
 
 @implementation NSDictionary (SDExtensions)
 

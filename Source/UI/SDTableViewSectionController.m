@@ -8,6 +8,7 @@
 //
 
 #import "SDTableViewSectionController.h"
+#import "SDMacros.h"
 
 // Define USES_RESPONDS_TO_SELECTOR_SHORTCUT in your project to have SDTableViewSectionController figure out which methods are actually implemented by
 // sections.  This code, while more "proper' in terms of what is actually implemented, appears to be causing

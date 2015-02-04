@@ -16,6 +16,7 @@
 #import "SDMacros.h"
 #import "ObjectiveCGenerics.h"
 #import "SDLog.h"
+#import "SDAssert.h"
 
 // Foundation Extensions
 #import "NSError+SDExtensions.h"

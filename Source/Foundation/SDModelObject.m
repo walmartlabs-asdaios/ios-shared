@@ -7,6 +7,7 @@
 //
 
 #import "SDModelObject.h"
+#import "NSDictionary+SDExtensions.h"
 
 #pragma mark - SDObjectProperty interface declaration
 
