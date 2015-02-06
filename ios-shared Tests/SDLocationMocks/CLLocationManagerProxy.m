@@ -27,7 +27,11 @@
     NSString *selectorString = NSStringFromSelector(invocation.selector);
     NSUInteger count = [self.receivedMessageCounts[selectorString] unsignedIntegerValue];
     self.receivedMessageCounts[selectorString] = @(count + 1);
-    [invocation invokeWithTarget:self.object];
+    SDLog(@"Ignoring call to CLLocationManager %@", selectorString);
+    if (self.failOnMethodCallMessage) {
+        SDLog(@"failOnMethodCallMessage: %@", self.failOnMethodCallMessage);
+        assert(false);
+    }
 }
 
 - (NSUInteger)receivedMessageCountForSelector:(SEL)selector;

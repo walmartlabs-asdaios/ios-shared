@@ -11,6 +11,7 @@
 @interface CLLocationManagerProxy : NSProxy
 @property (nonatomic,strong) NSObject *object;
 @property (nonatomic,strong) NSMutableDictionary *receivedMessageCounts;
+@property (nonatomic,strong) NSString *failOnMethodCallMessage;
 
 - (instancetype)initWithObject:(NSObject *)object;
 - (NSUInteger)receivedMessageCountForSelector:(SEL)selector;

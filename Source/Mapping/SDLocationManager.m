@@ -219,9 +219,6 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
 
 - (BOOL)startUpdatingLocationWithDelegate:(id<SDLocationManagerDelegate>)delegate desiredAccuracy:(CLLocationAccuracy)accuracy distanceFilter:(CLLocationDistance)distanceFilter authorization:(SDLocationManagerAuthorizationScheme)authorization
 {
-#ifdef DEBUG
-    [self.mockUpdateProvider locationUpdatesWillStartWithDelegate:delegate desiredAccuracy:accuracy distanceFilter:distanceFilter];
-#endif
     LocLog(@"startUpdatingLocationWithDelegate:%@ desiredAccuracy:%@ distanceFilter:%@",delegate,@(accuracy),@(distanceFilter));
     _authorizationScheme = authorization;
     if (NO == [self _delegate:delegate isRegisteredForDesiredAccuracy:accuracy distanceFilter:distanceFilter]) {
@@ -243,9 +240,6 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
     if ([self.delegates count] < 1) {
         [self _internalStop];
     }
-#ifdef DEBUG
-    [self.mockUpdateProvider locationUpdatesDidStopWithDelegate:delegate];
-#endif
 }
 
 - (void)stopUpdatingLocationForAllDelegates {

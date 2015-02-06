@@ -1,5 +1,5 @@
 //
-//  SDLocationManualMockUpdateProviderTests.m
+//  CLLocationManagerManualMockProviderTests.m
 //  ios-shared
 //
 //  Created by Douglas Sjoquist on 2/6/15.
@@ -8,27 +8,26 @@
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
-#import "SDLocationManager.h"
 #import <CoreLocation/CoreLocation.h>
 #import "CLLocationManagerProxy.h"
-#import "SDLocationManualMockUpdateProvider.h"
+#import "CLLocationManagerManualMockProvider.h"
 
 @interface SDLocationManager ()
 @property (nonatomic,strong) CLLocationManager *locationManager;
 @end
 
-@interface SDLocationManualMockUpdateProviderTests : XCTestCase<SDLocationManagerDelegate>
+@interface CLLocationManagerManualMockProviderTests : XCTestCase<SDLocationManagerDelegate>
 @property (nonatomic,strong) SDLocationManager *locationManager;
 @property (nonatomic,strong) CLLocationManagerProxy *locationManagerProxy;
 @end
 
-@implementation SDLocationManualMockUpdateProviderTests
+@implementation CLLocationManagerManualMockProviderTests
 
 - (void)setUp {
     [super setUp];
 
     self.locationManager = [[SDLocationManager alloc] init];
-    self.locationManager.mockUpdateProvider = [[SDLocationManualMockUpdateProvider alloc] init];
+    self.locationManager.mockUpdateProvider = [[CLLocationManagerManualMockProvider alloc] init];
     self.locationManagerProxy = [[CLLocationManagerProxy alloc] initWithObject:self.locationManager.locationManager];
     self.locationManager.locationManager = (id) self.locationManagerProxy;
 }
