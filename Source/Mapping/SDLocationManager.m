@@ -137,25 +137,11 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
 
 @dynamic authorizationStatus;
 - (CLAuthorizationStatus)authorizationStatus {
-    CLAuthorizationStatus result;
-#ifdef DEBUG
-    if (self.mockUpdateProvider) {
-        result = [self.mockUpdateProvider authorizationStatus];
-    } else {
-#endif
-    result = [CLLocationManager authorizationStatus];
-#ifdef DEBUG
-    }
-#endif
-    return result;
+    return [CLLocationManager authorizationStatus];
 }
 
 - (CLLocation *)currentLocation {
-#ifdef DEBUG
-    return self.mockUpdateProvider.location;
-#else
     return (self.locationManager.location);
-#endif
 }
 
 // ========================================================================== //
@@ -191,11 +177,6 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
 - (void)dealloc {
 	[_timeoutTimer invalidate];
 	_timeoutTimer = nil;
-}
-
-- (CLLocationManager *) locationManager;
-{
-    return _locationManager;
 }
 
 
@@ -283,15 +264,7 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
     // Must request permission here
     if ([UIDevice systemMajorVersion] >= 8.0)
     {
-#ifdef DEBUG
-        if (self.mockUpdateProvider) {
-            [self.mockUpdateProvider requestAlwaysAuthorization];
-        } else {
-#endif
         [self.locationManager requestAlwaysAuthorization];
-#ifdef DEBUG
-        }
-#endif
     }
 #endif
 
@@ -303,15 +276,7 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
     // Must request permission here
     if ([UIDevice systemMajorVersion] >= 8.0)
     {
-#ifdef DEBUG
-        if (self.mockUpdateProvider) {
-            [self.mockUpdateProvider requestWhenInUseAuthorization];
-        } else {
-#endif
-            [self.locationManager requestWhenInUseAuthorization];
-#ifdef DEBUG
-        }
-#endif
+        [self.locationManager requestWhenInUseAuthorization];
     }
 #endif
 }
@@ -350,15 +315,8 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
         [self requestAlwaysAuthorization];
     }
 
-#ifdef DEBUG
-    if (self.mockUpdateProvider) {
-        [self.mockUpdateProvider startUpdatingLocation];
-    } else {
-#endif
-        [self.locationManager startUpdatingLocation];
-#ifdef DEBUG
-    }
-#endif
+    [self.locationManager startUpdatingLocation];
+
     _isUpdatingLocation = YES;
 
     LocLog(@"Location updates ** STARTED **");
@@ -367,21 +325,12 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
 
 - (void) _internalStop {
     LocLog(@"%@",NSStringFromSelector(_cmd));
-
-    [_timeoutTimer invalidate];
+	[_timeoutTimer invalidate];
 	_timeoutTimer = nil;
 
 	_timestamp = nil;
 
-#ifdef DEBUG
-    if (self.mockUpdateProvider) {
-        [self.mockUpdateProvider stopUpdatingLocation];
-    } else {
-#endif
     [self.locationManager stopUpdatingLocation];
-#ifdef DEBUG
-    }
-#endif
 
     _isUpdatingLocation = NO;
     _gotFirstLocationUpdate = NO;
@@ -447,17 +396,8 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
     dispatch_async(dispatch_get_main_queue(), ^{
         BOOL wasUpdating = _isUpdatingLocation;
         [self _internalStop];
-#ifdef DEBUG
-        if (self.mockUpdateProvider) {
-            [self.mockUpdateProvider setDesiredAccuracy:[self _greatestDesiredAccuracy]];
-            [self.mockUpdateProvider setDistanceFilter:[self _finestDistanceFilter]];
-        } else {
-#endif
         [self.locationManager setDesiredAccuracy:[self _greatestDesiredAccuracy]];
         [self.locationManager setDistanceFilter:[self _finestDistanceFilter]];
-#ifdef DEBUG
-        }
-#endif
         if (wasUpdating)
         {
             [self _internalStart];
@@ -678,12 +618,5 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
         [self stopUpdatingLocationForAllDelegates];
     }
 }
-
-#pragma mark - Unit Testing
-
-#ifdef DEBUG
-
-
-#endif
 
 @end

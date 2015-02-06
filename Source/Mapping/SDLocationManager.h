@@ -7,7 +7,6 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import "SDMacros.h"
-#import "CLLocationManagerMockProvider.h"
 
 typedef NS_ENUM(NSUInteger,SDLocationManagerAuthorizationScheme) {
     SDLocationManagerAuthorizationAlways,
@@ -56,17 +55,5 @@ extern NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey; /** All
 //- (BOOL) startMonitoringForSignificantLocationChangesWithDelegate:(id<SDLocationManagerDelegate>)delegate;
 //- (void) stopMonitoringSignificantLocationChangesWithDelegate:(id<SDLocationManagerDelegate>)delegate;
 //- (void) stopMonitoringSignificantLocationChangesForAllDelegates;
-
-
-#pragma mark - Unit Testing
-
-#ifdef DEBUG
-
-/**
- Allows for multiple mock update provider implementations
- */
-@property (nonatomic, strong) id<CLLocationManagerMockProvider> mockUpdateProvider;
-
-#endif
 
 @end
