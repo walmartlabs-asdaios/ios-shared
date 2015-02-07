@@ -275,15 +275,17 @@
 		F8AF676D1A8547D600399389 /* SDWebServiceMockResponseRequestMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AF66861A8547D600399389 /* SDWebServiceMockResponseRequestMapping.m */; };
 		F8AF676E1A8547D600399389 /* UIImageView+SDExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AF66881A8547D600399389 /* UIImageView+SDExtensions.m */; };
 		F8AF676F1A8547D600399389 /* UIImageView+SDExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AF66881A8547D600399389 /* UIImageView+SDExtensions.m */; };
-		F8AF67751A854DBF00399389 /* CLLocationManagerManualMockProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AF67741A854DBF00399389 /* CLLocationManagerManualMockProviderTests.m */; };
-		F8AF67771A854DCF00399389 /* CLLocationManagerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AF67761A854DCF00399389 /* CLLocationManagerProxy.m */; };
-		F8AF677B1A85502100399389 /* CLLocationManagerManualMockProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AF677A1A85502100399389 /* CLLocationManagerManualMockProvider.m */; };
-		F8AF677C1A85502100399389 /* CLLocationManagerManualMockProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AF677A1A85502100399389 /* CLLocationManagerManualMockProvider.m */; };
+		F8AF67751A854DBF00399389 /* CLLocationManagerBaseMockTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AF67741A854DBF00399389 /* CLLocationManagerBaseMockTests.m */; };
+		F8AF67811A8569BB00399389 /* SDBaseMockCLLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AF67801A8569BB00399389 /* SDBaseMockCLLocationManager.m */; };
+		F8AF67821A8569BB00399389 /* SDBaseMockCLLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AF67801A8569BB00399389 /* SDBaseMockCLLocationManager.m */; };
+		F8AF67851A85717D00399389 /* SDLocationManagerTestingDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AF67841A85717D00399389 /* SDLocationManagerTestingDelegate.m */; };
 		F8BD64D31A3F38F80090D65E /* SDWebServiceMockTest_bundleB.json in Resources */ = {isa = PBXBuildFile; fileRef = F8BD64D21A3F38F80090D65E /* SDWebServiceMockTest_bundleB.json */; };
 		F8BD64DA1A3F50320090D65E /* SDWebServiceValidateDeprecatedMockProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F8BD64D91A3F50320090D65E /* SDWebServiceValidateDeprecatedMockProviderTests.m */; };
 		F8BD64E41A3F63190090D65E /* SDWebServiceMockResponseRequestMappingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F8BD64E31A3F63190090D65E /* SDWebServiceMockResponseRequestMappingTests.m */; };
 		F8BD64E61A3F81540090D65E /* SDWebServiceMockResponseMapProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F8BD64E51A3F81540090D65E /* SDWebServiceMockResponseMapProviderTests.m */; };
 		F8F3E5361A3B53DA00B14095 /* SDWebServiceMockTest_bundleA.json in Resources */ = {isa = PBXBuildFile; fileRef = F8F3E5351A3B53DA00B14095 /* SDWebServiceMockTest_bundleA.json */; };
+		F8FBB49F1A86B14E006F0EBC /* SDCLLocationManagerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = F8FBB49E1A86B14E006F0EBC /* SDCLLocationManagerProxy.m */; };
+		F8FBB4A01A86B419006F0EBC /* SDCLLocationManagerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = F8FBB49E1A86B14E006F0EBC /* SDCLLocationManagerProxy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -423,7 +425,6 @@
 		F8AF65D21A8547D600399389 /* MKMapView+SDExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKMapView+SDExtensions.m"; sourceTree = "<group>"; };
 		F8AF65D31A8547D600399389 /* SDLocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDLocationManager.h; sourceTree = "<group>"; };
 		F8AF65D41A8547D600399389 /* SDLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDLocationManager.m; sourceTree = "<group>"; };
-		F8AF65D51A8547D600399389 /* CLLocationManagerMockProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLLocationManagerMockProvider.h; sourceTree = "<group>"; };
 		F8AF65D71A8547D600399389 /* SDKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDKeychain.h; sourceTree = "<group>"; };
 		F8AF65D81A8547D600399389 /* SDKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDKeychain.m; sourceTree = "<group>"; };
 		F8AF65D91A8547D600399389 /* SDTouchID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDTouchID.h; sourceTree = "<group>"; };
@@ -597,16 +598,18 @@
 		F8AF66861A8547D600399389 /* SDWebServiceMockResponseRequestMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDWebServiceMockResponseRequestMapping.m; sourceTree = "<group>"; };
 		F8AF66871A8547D600399389 /* UIImageView+SDExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImageView+SDExtensions.h"; sourceTree = "<group>"; };
 		F8AF66881A8547D600399389 /* UIImageView+SDExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+SDExtensions.m"; sourceTree = "<group>"; };
-		F8AF67741A854DBF00399389 /* CLLocationManagerManualMockProviderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLLocationManagerManualMockProviderTests.m; sourceTree = "<group>"; };
-		F8AF67761A854DCF00399389 /* CLLocationManagerProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLLocationManagerProxy.m; sourceTree = "<group>"; };
-		F8AF67781A854DD800399389 /* CLLocationManagerProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLLocationManagerProxy.h; sourceTree = "<group>"; };
-		F8AF67791A85502100399389 /* CLLocationManagerManualMockProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLLocationManagerManualMockProvider.h; sourceTree = "<group>"; };
-		F8AF677A1A85502100399389 /* CLLocationManagerManualMockProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLLocationManagerManualMockProvider.m; sourceTree = "<group>"; };
+		F8AF67741A854DBF00399389 /* CLLocationManagerBaseMockTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLLocationManagerBaseMockTests.m; sourceTree = "<group>"; };
+		F8AF677F1A8569BB00399389 /* SDBaseMockCLLocationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDBaseMockCLLocationManager.h; sourceTree = "<group>"; };
+		F8AF67801A8569BB00399389 /* SDBaseMockCLLocationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDBaseMockCLLocationManager.m; sourceTree = "<group>"; };
+		F8AF67831A85717D00399389 /* SDLocationManagerTestingDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDLocationManagerTestingDelegate.h; sourceTree = "<group>"; };
+		F8AF67841A85717D00399389 /* SDLocationManagerTestingDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDLocationManagerTestingDelegate.m; sourceTree = "<group>"; };
 		F8BD64D21A3F38F80090D65E /* SDWebServiceMockTest_bundleB.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = SDWebServiceMockTest_bundleB.json; sourceTree = "<group>"; };
 		F8BD64D91A3F50320090D65E /* SDWebServiceValidateDeprecatedMockProviderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDWebServiceValidateDeprecatedMockProviderTests.m; sourceTree = "<group>"; };
 		F8BD64E31A3F63190090D65E /* SDWebServiceMockResponseRequestMappingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDWebServiceMockResponseRequestMappingTests.m; sourceTree = "<group>"; };
 		F8BD64E51A3F81540090D65E /* SDWebServiceMockResponseMapProviderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDWebServiceMockResponseMapProviderTests.m; sourceTree = "<group>"; };
 		F8F3E5351A3B53DA00B14095 /* SDWebServiceMockTest_bundleA.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = SDWebServiceMockTest_bundleA.json; sourceTree = "<group>"; };
+		F8FBB49D1A86B13C006F0EBC /* SDCLLocationManagerProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDCLLocationManagerProxy.h; sourceTree = "<group>"; };
+		F8FBB49E1A86B14E006F0EBC /* SDCLLocationManagerProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDCLLocationManagerProxy.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -863,9 +866,10 @@
 				F8AF65D21A8547D600399389 /* MKMapView+SDExtensions.m */,
 				F8AF65D31A8547D600399389 /* SDLocationManager.h */,
 				F8AF65D41A8547D600399389 /* SDLocationManager.m */,
-				F8AF65D51A8547D600399389 /* CLLocationManagerMockProvider.h */,
-				F8AF67791A85502100399389 /* CLLocationManagerManualMockProvider.h */,
-				F8AF677A1A85502100399389 /* CLLocationManagerManualMockProvider.m */,
+				F8FBB49D1A86B13C006F0EBC /* SDCLLocationManagerProxy.h */,
+				F8FBB49E1A86B14E006F0EBC /* SDCLLocationManagerProxy.m */,
+				F8AF677F1A8569BB00399389 /* SDBaseMockCLLocationManager.h */,
+				F8AF67801A8569BB00399389 /* SDBaseMockCLLocationManager.m */,
 			);
 			path = Mapping;
 			sourceTree = "<group>";
@@ -1090,9 +1094,9 @@
 		F8AF67731A854DBF00399389 /* SDLocationMocks */ = {
 			isa = PBXGroup;
 			children = (
-				F8AF67781A854DD800399389 /* CLLocationManagerProxy.h */,
-				F8AF67761A854DCF00399389 /* CLLocationManagerProxy.m */,
-				F8AF67741A854DBF00399389 /* CLLocationManagerManualMockProviderTests.m */,
+				F8AF67831A85717D00399389 /* SDLocationManagerTestingDelegate.h */,
+				F8AF67841A85717D00399389 /* SDLocationManagerTestingDelegate.m */,
+				F8AF67741A854DBF00399389 /* CLLocationManagerBaseMockTests.m */,
 			);
 			path = SDLocationMocks;
 			sourceTree = "<group>";
@@ -1216,6 +1220,7 @@
 				F8AF67131A8547D600399389 /* SDPullNavigationBarAdornmentView.m in Sources */,
 				F8AF671F1A8547D600399389 /* SDQuantityEditView.m in Sources */,
 				CA01F1C617D7A72D00E7C553 /* UIImageViewTests.m in Sources */,
+				F8AF67821A8569BB00399389 /* SDBaseMockCLLocationManager.m in Sources */,
 				F8AF66D71A8547D600399389 /* SDApplication.m in Sources */,
 				F8AF673E1A8547D600399389 /* SDWebViewCell.m in Sources */,
 				F8AF67361A8547D600399389 /* SDTableViewSectionController.m in Sources */,
@@ -1236,9 +1241,10 @@
 				F8AF670A1A8547D600399389 /* SDPickerModalViewController.m in Sources */,
 				F8AF66A91A8547D600399389 /* SDDataMap.m in Sources */,
 				F8AF66BD1A8547D600399389 /* UIDevice+machine.m in Sources */,
-				F8AF67751A854DBF00399389 /* CLLocationManagerManualMockProviderTests.m in Sources */,
+				F8AF67751A854DBF00399389 /* CLLocationManagerBaseMockTests.m in Sources */,
 				F8AF66AF1A8547D600399389 /* SDModelObject.m in Sources */,
 				F8AF66E91A8547D600399389 /* SDCCTextField.m in Sources */,
+				F8AF67851A85717D00399389 /* SDLocationManagerTestingDelegate.m in Sources */,
 				F8AF67151A8547D600399389 /* SDPullNavigationBarBackground.m in Sources */,
 				F8AF668D1A8547D600399389 /* README.md in Sources */,
 				F8AF67111A8547D600399389 /* SDPullNavigationBar.m in Sources */,
@@ -1276,7 +1282,6 @@
 				F8AF66A51A8547D600399389 /* SDBase64.m in Sources */,
 				F8AF67191A8547D600399389 /* SDPullNavigationBarTabButton.m in Sources */,
 				F8AF67381A8547D600399389 /* SDTextField.m in Sources */,
-				F8AF67771A854DCF00399389 /* CLLocationManagerProxy.m in Sources */,
 				F8AF670F1A8547D600399389 /* SDPullNavigationAutomation.m in Sources */,
 				F8AF66C91A8547D600399389 /* SDLocationManager.m in Sources */,
 				F8AF674B1A8547D600399389 /* UINavigationController+SDExtensions.m in Sources */,
@@ -1286,6 +1291,7 @@
 				F8AF67071A8547D600399389 /* SDPhotoImageView.m in Sources */,
 				F8AF66971A8547D600399389 /* NSError+SDExtensions.m in Sources */,
 				F8AF66CF1A8547D600399389 /* SDABTesting.m in Sources */,
+				F8FBB4A01A86B419006F0EBC /* SDCLLocationManagerProxy.m in Sources */,
 				F8AF671B1A8547D600399389 /* SDPullNavigationManager.m in Sources */,
 				F8AF67571A8547D600399389 /* NSCachedURLResponse+LeakFix.m in Sources */,
 				F8AF66FB1A8547D600399389 /* SDLabel.m in Sources */,
@@ -1297,7 +1303,6 @@
 				F8AF66AD1A8547D600399389 /* SDISO8601DateTransformer.m in Sources */,
 				F8AF66ED1A8547D600399389 /* SDDeckController.m in Sources */,
 				F8AF67631A8547D600399389 /* SDURLConnection.m in Sources */,
-				F8AF677C1A85502100399389 /* CLLocationManagerManualMockProvider.m in Sources */,
 				F8AF66FF1A8547D600399389 /* SDNavigationBarSearchField.m in Sources */,
 				CAAB5A3518564CEE006737D4 /* RxModelObject.m in Sources */,
 				CAAB5A2618564B0E006737D4 /* SDDataMapTests.m in Sources */,
@@ -1377,7 +1382,7 @@
 				F8AF66D81A8547D600399389 /* SDAutolayoutStackView.m in Sources */,
 				F8AF675E1A8547D600399389 /* Reachability.m in Sources */,
 				F8AF66CA1A8547D600399389 /* SDKeychain.m in Sources */,
-				F8AF677B1A85502100399389 /* CLLocationManagerManualMockProvider.m in Sources */,
+				F8AF67811A8569BB00399389 /* SDBaseMockCLLocationManager.m in Sources */,
 				F8AF66C21A8547D600399389 /* SDAssert.m in Sources */,
 				F8AF66DE1A8547D600399389 /* SDCollapsableContainerView.m in Sources */,
 				F8AF66EE1A8547D600399389 /* SDDragDropGestureRecognizer.m in Sources */,
@@ -1431,6 +1436,7 @@
 				F8AF671C1A8547D600399389 /* SDPaintCodeButton.m in Sources */,
 				F8AF66C61A8547D600399389 /* MKMapView+SDExtensions.m in Sources */,
 				F8AF668E1A8547D600399389 /* NSArray+SDExtensions.m in Sources */,
+				F8FBB49F1A86B14E006F0EBC /* SDCLLocationManagerProxy.m in Sources */,
 				F8AF672F1A8547D600399389 /* SDStackView.m in Sources */,
 				F8AF669E1A8547D600399389 /* NSRunLoop+SDExtensions.m in Sources */,
 				F8AF672D1A8547D600399389 /* SDSpanParser.m in Sources */,
