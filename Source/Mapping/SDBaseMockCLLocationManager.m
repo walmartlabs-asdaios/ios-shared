@@ -8,6 +8,82 @@
 
 #import "SDBaseMockCLLocationManager.h"
 #import "NSArray+SDExtensions.h"
+#import "SDLocationManager.h"
+
+#pragma mark - SDCLLocationManagerProxy
+
+@interface SDCLLocationManagerProxy : NSProxy
+@property (nonatomic,strong) CLLocationManager *clLocationManager;
+@property (nonatomic,strong) SDBaseMockCLLocationManager *baseMockCLLocationManager;
+@end
+
+@implementation SDCLLocationManagerProxy
+
+static Class _baseMockCLLocationManagerClass = nil;
+
++ (Class) baseMockCLLocationManagerClass;
+{
+    return _baseMockCLLocationManagerClass;
+}
+
++ (void) setBaseMockCLLocationManagerClass:(Class) clazz;
+{
+    _baseMockCLLocationManagerClass = clazz;
+}
+
+- (instancetype) initWithBaseMockCLLocationManager:(SDBaseMockCLLocationManager *) baseMockCLLocationManager;
+{
+    _clLocationManager = [[CLLocationManager alloc] init];
+    _baseMockCLLocationManager = baseMockCLLocationManager;
+    [[self class] setBaseMockCLLocationManagerClass:[baseMockCLLocationManager class]];
+    return self;
+}
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
+{
+    NSMethodSignature *result = [self.baseMockCLLocationManager methodSignatureForSelector:selector];
+    if (result == nil) {
+        result = [self.clLocationManager methodSignatureForSelector:selector];
+    }
+    return result;
+}
+
+- (void)forwardInvocation:(NSInvocation *)invocation
+{
+    if ([self.baseMockCLLocationManager respondsToSelector:invocation.selector]) {
+        [invocation invokeWithTarget:self.baseMockCLLocationManager];
+    } else {
+        NSString *selectorString = NSStringFromSelector(invocation.selector);
+        SDLog(@"WARNING: Ignoring call to SDBaseMockCLLocationManager instance %@", selectorString);
+    }
+}
+
++ (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
+{
+    NSMethodSignature *result = [[self baseMockCLLocationManagerClass] methodSignatureForSelector:selector];
+    if (result == nil) {
+        result = [[CLLocationManager class] methodSignatureForSelector:selector];
+    }
+    return result;
+}
+
++ (void)forwardInvocation:(NSInvocation *)invocation
+{
+    if ([[self baseMockCLLocationManagerClass] respondsToSelector:invocation.selector]) {
+        [invocation invokeWithTarget:[self baseMockCLLocationManagerClass]];
+    } else {
+        NSString *selectorString = NSStringFromSelector(invocation.selector);
+        SDLog(@"WARNING: Ignoring call to SDBaseMockCLLocationManager class %@", selectorString);
+    }
+}
+
+@end
+
+#pragma mark - SDBaseMockCLLocationManager
+
+@interface SDLocationManager()
+@property (nonatomic, readwrite, strong) CLLocationManager *locationManager;
+@end
 
 @interface SDBaseMockCLLocationManager()
 @end
@@ -268,4 +344,15 @@ monitoringDidFailForRegion:(CLRegion *)region
 
  */
 
+#pragma mark helper method
+
++ (instancetype) mockCLLocationManagerWith:(SDLocationManager *) sdLocationManager;
+{
+    id result = [[self alloc] init];
+    sdLocationManager.locationManager = (id) [[SDCLLocationManagerProxy alloc] initWithBaseMockCLLocationManager:result];
+    sdLocationManager.locationManager.delegate = sdLocationManager;
+    return result;
+}
+
 @end
+

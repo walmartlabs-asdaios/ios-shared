@@ -8,6 +8,8 @@
 
 #import <CoreLocation/CoreLocation.h>
 
+@class SDLocationManager;
+
 @interface SDBaseMockCLLocationManager : NSObject
 
 @property (nonatomic,assign,readonly) BOOL isAuthorized;
@@ -43,5 +45,10 @@
 
 + (CLAuthorizationStatus) authorizationStatus;
 + (void) setAuthorizationStatus:(CLAuthorizationStatus) authorizationStatus;
+
+
+#pragma mark helper method
+
++ (instancetype) mockCLLocationManagerWith:(SDLocationManager *) sdLocationManager;
 
 @end

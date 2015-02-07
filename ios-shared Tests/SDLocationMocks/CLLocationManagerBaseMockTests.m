@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 #import <CoreLocation/CoreLocation.h>
-#import "SDCLLocationManagerProxy.h"
 #import "SDBaseMockCLLocationManager.h"
 #import "SDLocationManager.h"
 #import "SDLocationManagerTestingDelegate.h"
@@ -21,7 +20,6 @@
 @interface SDBaseMockCLLocationManagerTests : XCTestCase<SDLocationManagerDelegate>
 @property (nonatomic,strong) SDLocationManager *locationManager;
 @property (nonatomic,strong) SDBaseMockCLLocationManager *mock;
-@property (nonatomic,strong) SDLocationManagerTestingDelegate *testingDelegate;
 @end
 
 @implementation SDBaseMockCLLocationManagerTests
@@ -29,25 +27,62 @@
 - (void)setUp {
     [super setUp];
 
-    self.testingDelegate = [[SDLocationManagerTestingDelegate alloc] init];
     self.locationManager = [[SDLocationManager alloc] init];
-    self.mock = [[SDBaseMockCLLocationManager alloc] init];
-    self.locationManager.locationManager = (id) [[SDCLLocationManagerProxy alloc] initWithBaseMockCLLocationManager:self.mock];
-    self.locationManager.locationManager.delegate = self.locationManager;
+    self.mock = [SDBaseMockCLLocationManager mockCLLocationManagerWith:self.locationManager];
 }
 
 - (void)testNotDetermined {
+    SDLocationManagerTestingDelegate *testingDelegate = [[SDLocationManagerTestingDelegate alloc] init];
     [[self.mock class] setAuthorizationStatus:kCLAuthorizationStatusNotDetermined];
-    [self.locationManager startUpdatingLocationWithDelegate:self.testingDelegate desiredAccuracy:1000.0];
+    [self.locationManager startUpdatingLocationWithDelegate:testingDelegate desiredAccuracy:1000.0];
     self.mock.location = [[CLLocation alloc] initWithLatitude:40.0 longitude:-80];
-    XCTAssertTrue(self.testingDelegate.receivedMessageCount == 0, @"no methods should have been called on the delegate");
+
+    NSUInteger count = [testingDelegate receivedMessageCountForSelector:@selector(locationManager:didUpdateLocations:)];
+    XCTAssertEqual(0, count, @"didUpdateLocations should NOT have been called");
 }
 
-- (void)testAuthorizedAlways {
+- (void)testAuthorizedAlwaysInForeground {
+    self.mock.simulateBackgroundProcess = NO;
+    SDLocationManagerTestingDelegate *testingDelegate = [[SDLocationManagerTestingDelegate alloc] init];
     [[self.mock class] setAuthorizationStatus:kCLAuthorizationStatusAuthorizedAlways];
-    [self.locationManager startUpdatingLocationWithDelegate:self.testingDelegate desiredAccuracy:1000.0];
+    [self.locationManager startUpdatingLocationWithDelegate:testingDelegate desiredAccuracy:1000.0];
     self.mock.location = [[CLLocation alloc] initWithLatitude:40.0 longitude:-80];
-    XCTAssertTrue(self.testingDelegate.receivedMessageCount > 0, @"some methods should have been called on the delegate");
+
+    NSUInteger count = [testingDelegate receivedMessageCountForSelector:@selector(locationManager:didUpdateLocations:)];
+    XCTAssertEqual(1, count, @"didUpdateLocations should have been called once");
+}
+
+- (void)testAuthorizedAlwaysInBackground {
+    self.mock.simulateBackgroundProcess = YES;
+    SDLocationManagerTestingDelegate *testingDelegate = [[SDLocationManagerTestingDelegate alloc] init];
+    [[self.mock class] setAuthorizationStatus:kCLAuthorizationStatusAuthorizedAlways];
+    [self.locationManager startUpdatingLocationWithDelegate:testingDelegate desiredAccuracy:1000.0];
+    self.mock.location = [[CLLocation alloc] initWithLatitude:40.0 longitude:-80];
+
+    NSUInteger count = [testingDelegate receivedMessageCountForSelector:@selector(locationManager:didUpdateLocations:)];
+    XCTAssertEqual(1, count, @"didUpdateLocations should have been called once");
+}
+
+- (void)testAuthorizedWhenInUseInForeground {
+    self.mock.simulateBackgroundProcess = NO;
+    SDLocationManagerTestingDelegate *testingDelegate = [[SDLocationManagerTestingDelegate alloc] init];
+    [[self.mock class] setAuthorizationStatus:kCLAuthorizationStatusAuthorizedWhenInUse];
+    [self.locationManager startUpdatingLocationWithDelegate:testingDelegate desiredAccuracy:1000.0];
+    self.mock.location = [[CLLocation alloc] initWithLatitude:40.0 longitude:-80];
+
+    NSUInteger count = [testingDelegate receivedMessageCountForSelector:@selector(locationManager:didUpdateLocations:)];
+    XCTAssertEqual(1, count, @"didUpdateLocations should have been called once");
+}
+
+- (void)testAuthorizedWhenInUseInBackground {
+    self.mock.simulateBackgroundProcess = YES;
+    SDLocationManagerTestingDelegate *testingDelegate = [[SDLocationManagerTestingDelegate alloc] init];
+    [[self.mock class] setAuthorizationStatus:kCLAuthorizationStatusAuthorizedWhenInUse];
+    [self.locationManager startUpdatingLocationWithDelegate:testingDelegate desiredAccuracy:1000.0];
+    self.mock.location = [[CLLocation alloc] initWithLatitude:40.0 longitude:-80];
+
+    NSUInteger count = [testingDelegate receivedMessageCountForSelector:@selector(locationManager:didUpdateLocations:)];
+    XCTAssertEqual(0, count, @"didUpdateLocations should NOT have been called");
 }
 
 @end

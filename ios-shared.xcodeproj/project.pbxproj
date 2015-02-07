@@ -284,8 +284,6 @@
 		F8BD64E41A3F63190090D65E /* SDWebServiceMockResponseRequestMappingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F8BD64E31A3F63190090D65E /* SDWebServiceMockResponseRequestMappingTests.m */; };
 		F8BD64E61A3F81540090D65E /* SDWebServiceMockResponseMapProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F8BD64E51A3F81540090D65E /* SDWebServiceMockResponseMapProviderTests.m */; };
 		F8F3E5361A3B53DA00B14095 /* SDWebServiceMockTest_bundleA.json in Resources */ = {isa = PBXBuildFile; fileRef = F8F3E5351A3B53DA00B14095 /* SDWebServiceMockTest_bundleA.json */; };
-		F8FBB49F1A86B14E006F0EBC /* SDCLLocationManagerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = F8FBB49E1A86B14E006F0EBC /* SDCLLocationManagerProxy.m */; };
-		F8FBB4A01A86B419006F0EBC /* SDCLLocationManagerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = F8FBB49E1A86B14E006F0EBC /* SDCLLocationManagerProxy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -608,8 +606,6 @@
 		F8BD64E31A3F63190090D65E /* SDWebServiceMockResponseRequestMappingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDWebServiceMockResponseRequestMappingTests.m; sourceTree = "<group>"; };
 		F8BD64E51A3F81540090D65E /* SDWebServiceMockResponseMapProviderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDWebServiceMockResponseMapProviderTests.m; sourceTree = "<group>"; };
 		F8F3E5351A3B53DA00B14095 /* SDWebServiceMockTest_bundleA.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = SDWebServiceMockTest_bundleA.json; sourceTree = "<group>"; };
-		F8FBB49D1A86B13C006F0EBC /* SDCLLocationManagerProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDCLLocationManagerProxy.h; sourceTree = "<group>"; };
-		F8FBB49E1A86B14E006F0EBC /* SDCLLocationManagerProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDCLLocationManagerProxy.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -866,8 +862,6 @@
 				F8AF65D21A8547D600399389 /* MKMapView+SDExtensions.m */,
 				F8AF65D31A8547D600399389 /* SDLocationManager.h */,
 				F8AF65D41A8547D600399389 /* SDLocationManager.m */,
-				F8FBB49D1A86B13C006F0EBC /* SDCLLocationManagerProxy.h */,
-				F8FBB49E1A86B14E006F0EBC /* SDCLLocationManagerProxy.m */,
 				F8AF677F1A8569BB00399389 /* SDBaseMockCLLocationManager.h */,
 				F8AF67801A8569BB00399389 /* SDBaseMockCLLocationManager.m */,
 			);
@@ -1291,7 +1285,6 @@
 				F8AF67071A8547D600399389 /* SDPhotoImageView.m in Sources */,
 				F8AF66971A8547D600399389 /* NSError+SDExtensions.m in Sources */,
 				F8AF66CF1A8547D600399389 /* SDABTesting.m in Sources */,
-				F8FBB4A01A86B419006F0EBC /* SDCLLocationManagerProxy.m in Sources */,
 				F8AF671B1A8547D600399389 /* SDPullNavigationManager.m in Sources */,
 				F8AF67571A8547D600399389 /* NSCachedURLResponse+LeakFix.m in Sources */,
 				F8AF66FB1A8547D600399389 /* SDLabel.m in Sources */,
@@ -1436,7 +1429,6 @@
 				F8AF671C1A8547D600399389 /* SDPaintCodeButton.m in Sources */,
 				F8AF66C61A8547D600399389 /* MKMapView+SDExtensions.m in Sources */,
 				F8AF668E1A8547D600399389 /* NSArray+SDExtensions.m in Sources */,
-				F8FBB49F1A86B14E006F0EBC /* SDCLLocationManagerProxy.m in Sources */,
 				F8AF672F1A8547D600399389 /* SDStackView.m in Sources */,
 				F8AF669E1A8547D600399389 /* NSRunLoop+SDExtensions.m in Sources */,
 				F8AF672D1A8547D600399389 /* SDSpanParser.m in Sources */,
