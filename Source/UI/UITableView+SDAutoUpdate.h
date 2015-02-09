@@ -49,7 +49,7 @@
  *
  *  @return hash based on attributes of the row item.
  */
-- (NSInteger)attributeHash;
+- (NSUInteger)attributeHash;
 @end
 
 /**
