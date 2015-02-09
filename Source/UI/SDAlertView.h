@@ -14,7 +14,6 @@ typedef void(^SDAlertViewCompletionBlock)(UIAlertView *alertView, NSInteger tapp
 
 @interface SDAlertView : UIAlertView
 
-@property (nonatomic, weak) id<UIAlertViewDelegate> delegate;
 
 /**
  *  Show an alert view.

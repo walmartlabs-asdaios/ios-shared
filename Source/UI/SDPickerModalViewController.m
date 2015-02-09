@@ -27,7 +27,7 @@
         self = [super initWithNibName:nil bundle:nil];
     if (self) {
         // Custom initialization
-        [self view];
+        __attribute__((unused))UIView *view = [self view];
     }
     return self;
 }
