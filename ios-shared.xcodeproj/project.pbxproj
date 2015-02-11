@@ -44,6 +44,7 @@
 		F812F95C1A1146CB00312E52 /* SDWebServiceMockTests.plist in Resources */ = {isa = PBXBuildFile; fileRef = F812F95B1A1146CB00312E52 /* SDWebServiceMockTests.plist */; };
 		F849C2AB1A438C0900DECB22 /* SDWebServiceMockTest_bundleC_v123_sc999.response in Resources */ = {isa = PBXBuildFile; fileRef = F849C2AA1A438C0900DECB22 /* SDWebServiceMockTest_bundleC_v123_sc999.response */; };
 		F849C2AD1A43C64A00DECB22 /* SDWebServiceMockTest_bundleD_withCR.response in Resources */ = {isa = PBXBuildFile; fileRef = F849C2AC1A43C64A00DECB22 /* SDWebServiceMockTest_bundleD_withCR.response */; };
+		F84E95BE1A8BF01800FF8C8C /* SDPromiseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F84E95BD1A8BF01800FF8C8C /* SDPromiseTests.m */; };
 		F8AF66891A8547D600399389 /* Global-iOS.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F8AF658D1A8547D600399389 /* Global-iOS.xcconfig */; };
 		F8AF668A1A8547D600399389 /* Project-iOS-Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F8AF658E1A8547D600399389 /* Project-iOS-Debug.xcconfig */; };
 		F8AF668B1A8547D600399389 /* Project-iOS-Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = F8AF658F1A8547D600399389 /* Project-iOS-Release.xcconfig */; };
@@ -355,6 +356,7 @@
 		F812F95B1A1146CB00312E52 /* SDWebServiceMockTests.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = SDWebServiceMockTests.plist; sourceTree = "<group>"; };
 		F849C2AA1A438C0900DECB22 /* SDWebServiceMockTest_bundleC_v123_sc999.response */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SDWebServiceMockTest_bundleC_v123_sc999.response; sourceTree = "<group>"; };
 		F849C2AC1A43C64A00DECB22 /* SDWebServiceMockTest_bundleD_withCR.response */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SDWebServiceMockTest_bundleD_withCR.response; sourceTree = "<group>"; };
+		F84E95BD1A8BF01800FF8C8C /* SDPromiseTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDPromiseTests.m; sourceTree = "<group>"; };
 		F8AF658D1A8547D600399389 /* Global-iOS.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Global-iOS.xcconfig"; sourceTree = "<group>"; };
 		F8AF658E1A8547D600399389 /* Project-iOS-Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Project-iOS-Debug.xcconfig"; sourceTree = "<group>"; };
 		F8AF658F1A8547D600399389 /* Project-iOS-Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Project-iOS-Release.xcconfig"; sourceTree = "<group>"; };
@@ -649,24 +651,25 @@
 		CA01F1B317D7A6F000E7C553 /* ios-shared Tests */ = {
 			isa = PBXGroup;
 			children = (
-				48EB6B2C19DCBFD80054662E /* Mock Data */,
 				CA01F1B917D7A6F000E7C553 /* ios_shared_Tests.m */,
+				48EB6B2C19DCBFD80054662E /* Mock Data */,
 				E205784D1889DDDD00A1BA81 /* NSArray+SDExtensionsTests.m */,
-				CA888874196F08930022DA14 /* NSObject+SDExtensionsTests.m */,
 				08EFCA2118FDCB70006547E0 /* NSDate+SDExtensionsTests.m */,
 				08EFCA2718FEFAC6006547E0 /* NSDictionary+SDExtensionsTests.m */,
+				CA888874196F08930022DA14 /* NSObject+SDExtensionsTests.m */,
 				E22B37351843F61E00C7CBEE /* NSString+SDExtensionsTests.m */,
 				CA01F1C117D7A72D00E7C553 /* SDABTestingTests.m */,
 				CABD744F18AAB4180083A097 /* SDBase64Tests.m */,
 				CAAB5A2518564B0E006737D4 /* SDDataMapTests.m */,
-				CAAB5A2718564CEE006737D4 /* SDDataMapTestSupportFiles */,
-				CA01F1B417D7A6F000E7C553 /* Supporting Files */,
+				48EB6B2A19DCBCED0054662E /* SDSpanParserTests.m */,
 				E22B373C1844037600C7CBEE /* UIColor+SDExtensionsTests.m */,
 				CA01F1C217D7A72D00E7C553 /* UIDeviceTests.m */,
 				CA01F1C317D7A72D00E7C553 /* UIImageViewTests.m */,
+				CAAB5A2718564CEE006737D4 /* SDDataMapTestSupportFiles */,
 				F8AF67731A854DBF00399389 /* SDLocationMocks */,
+				F84E95BC1A8BEFDA00FF8C8C /* SDPromise */,
 				F812F9561A11452600312E52 /* SDWebServicesMocks */,
-				48EB6B2A19DCBCED0054662E /* SDSpanParserTests.m */,
+				CA01F1B417D7A6F000E7C553 /* Supporting Files */,
 			);
 			path = "ios-shared Tests";
 			sourceTree = "<group>";
@@ -745,6 +748,14 @@
 				F8BD64E51A3F81540090D65E /* SDWebServiceMockResponseMapProviderTests.m */,
 			);
 			path = SDWebServicesMocks;
+			sourceTree = "<group>";
+		};
+		F84E95BC1A8BEFDA00FF8C8C /* SDPromise */ = {
+			isa = PBXGroup;
+			children = (
+				F84E95BD1A8BF01800FF8C8C /* SDPromiseTests.m */,
+			);
+			path = SDPromise;
 			sourceTree = "<group>";
 		};
 		F8AF658B1A8547D600399389 /* Source */ = {
@@ -1306,6 +1317,7 @@
 				CAAB5A3718564CEE006737D4 /* RxPatientModel.m in Sources */,
 				F8AF669B1A8547D600399389 /* NSMutableAttributedString+SDExtensions.m in Sources */,
 				F8AF67271A8547D600399389 /* SDSearchBar.m in Sources */,
+				F84E95BE1A8BF01800FF8C8C /* SDPromiseTests.m in Sources */,
 				F8AF67251A8547D600399389 /* UIView+PaintCode.m in Sources */,
 				F8AF66F51A8547D600399389 /* SDFormFieldContainer.m in Sources */,
 				F8AF66991A8547D600399389 /* NSLayoutConstraint+SDExtensions.m in Sources */,
