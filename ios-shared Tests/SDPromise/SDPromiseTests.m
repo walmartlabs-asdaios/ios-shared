@@ -174,4 +174,41 @@
 }
 
 
+- (void)testChainedPromiseReject {
+    NSError *rejectionError = [NSError errorWithDomain:@"test" code:-1 userInfo:nil];
+
+    SDPromise *promise1 = [[SDPromise alloc] init];
+    XCTAssertFalse(promise1.isFulfilled);
+    [promise1 then:^id(id dataObject) {
+        XCTFail(@"promise1 should have failed");
+        return nil;
+    }];
+    [promise1 failed:^(NSError *error) {
+        return error;
+    }];
+
+    SDPromise *promise2 = [promise1 then:^id(id dataObject) {
+        XCTAssertEqualObjects(resolution, dataObject);
+        return dataObject;
+    }];
+    [promise2 failed:^(NSError *error) {
+        XCTFail(@"promise2 should not have failed");
+    }];
+
+    XCTestExpectation *expectation = [self expectationWithDescription:@"last promise(3) resolved"];
+    SDPromise *promise3 = [promise2 then:^id(id dataObject) {
+        XCTAssertEqualObjects(resolution, dataObject);
+        [expectation fulfill];
+        return dataObject;
+    }];
+
+    [promise1 resolve:resolution];
+    [self waitForExpectationsWithTimeout:1.0 handler:nil];
+
+    XCTAssertTrue(promise1.isFulfilled);
+    XCTAssertTrue(promise2.isFulfilled);
+    XCTAssertTrue(promise3.isFulfilled);
+}
+
+
 @end

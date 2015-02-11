@@ -117,7 +117,7 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
     return resultPromise;
 }
 
-- (void) failed:(SDPromiseFailBlock)block
+- (SDPromise *) failed:(SDPromiseFailBlock)block
 {
     @synchronized(self)
     {
