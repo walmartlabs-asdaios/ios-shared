@@ -11,7 +11,7 @@
 typedef NS_ENUM(NSUInteger, SDPromiseState)
 {
     SDPromiseStatePending,
-    SDPromiseStateFulfilled,
+    SDPromiseStateResolved,
     SDPromiseStateRejected
 };
 
@@ -84,6 +84,26 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
     return self;
 }
 
+- (BOOL) isResolved
+{
+    BOOL isResolved = NO;
+    @synchronized(self)
+    {
+        isResolved = self.state == SDPromiseStateResolved;
+    }
+    return isResolved;
+}
+
+- (BOOL) isRejected
+{
+    BOOL isRejected = NO;
+    @synchronized(self)
+    {
+        isRejected = self.state == SDPromiseStateRejected;
+    }
+    return isRejected;
+}
+
 - (BOOL) isFulfilled
 {
     BOOL isFulfilled = NO;
@@ -109,7 +129,7 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
 
     @synchronized(self)
     {
-        if ( self.state == SDPromiseStateFulfilled )
+        if ( self.state == SDPromiseStateResolved )
         {
             // Already done, but don't call back right now
             dispatch_async(dispatch_get_main_queue(), ^
@@ -155,7 +175,7 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
     {
         if ( self.state == SDPromiseStatePending )
         {
-            self.state = SDPromiseStateFulfilled;
+            self.state = SDPromiseStateResolved;
             self.result = dataObject;
             thens = [self.thenBlocks copy];
             [self.thenBlocks removeAllObjects];
@@ -264,7 +284,15 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
 
 - (void) reject:(NSError *)error;
 {
-    id resultOfBlock = _block(error);
+    id resultOfBlock = nil;
+    if (_block)
+    {
+        resultOfBlock = _block(error);
+    }
+    else
+    {
+        resultOfBlock = error;
+    }
     if ( resultOfBlock != nil && [resultOfBlock isKindOfClass:[NSError class]] )
     {
         NSError *error = resultOfBlock;

@@ -20,6 +20,8 @@ typedef id (^SDPromiseFailBlock)(NSError *error);
 //  promises fails, then the created promise is rejected once, with that error.
 + (instancetype) promiseWithAnd:(NSArray *)promises;
 
+@property (nonatomic, readonly) BOOL isResolved;
+@property (nonatomic, readonly) BOOL isRejected;
 @property (nonatomic, readonly) BOOL isFulfilled;
 
 // Consumer interface. The returned SDPromise is the promise for the result of
