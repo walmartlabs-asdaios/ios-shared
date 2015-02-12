@@ -45,6 +45,7 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
 
     NSMutableArray *allResults = [NSMutableArray array];
     NSUInteger totalCount = [promises count];
+    __block NSUInteger fulfilledCount = 0;
     
     for (SDPromise *promise in promises)
     {
@@ -52,8 +53,11 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
             BOOL isComplete = NO;
             @synchronized(allResults)
             {
-                [allResults addObject:dataObject];
-                isComplete = totalCount == [allResults count];
+                if (dataObject) {
+                    [allResults addObject:dataObject];
+                }
+                fulfilledCount += 1;
+                isComplete = (totalCount == fulfilledCount);
             }
             if ( isComplete )
                 [andPromise resolve:allResults];
