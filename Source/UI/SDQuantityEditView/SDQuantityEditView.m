@@ -134,7 +134,7 @@
 
 - (void)updateConstraints
 {
-    if (!self.createdConstraints)
+    if (!self.createdConstraints && self.dropShadowImageView != nil)
     {
         self.createdConstraints = YES;
         
