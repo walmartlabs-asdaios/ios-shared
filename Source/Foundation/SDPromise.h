@@ -11,7 +11,7 @@
 // The block can return NSError to have failBlocks propogated. Any other returned
 //  value, including nil, will fire any dependant promise thenBlocks.
 typedef id (^SDPromiseThenBlock)(id dataObject);
-typedef void (^SDPromiseFailBlock)(NSError *error);
+typedef id (^SDPromiseFailBlock)(NSError *error);
 
 @interface SDPromise : NSObject
 
@@ -24,8 +24,8 @@ typedef void (^SDPromiseFailBlock)(NSError *error);
 
 // Consumer interface. The returned SDPromise is the promise for the result of
 //  the thenBlock. This allows you to easily chain promise results.
-- (SDPromise *) then:(SDPromiseThenBlock)block;
-- (void) failed:(SDPromiseFailBlock)block;
+- (SDPromise *) then:(SDPromiseThenBlock)thenBlock fail:(SDPromiseFailBlock) failBlock;
+- (SDPromise *) then:(SDPromiseThenBlock)thenBlock;
 
 // Producer interface
 - (void) resolve:(id)dataObject;

@@ -23,6 +23,14 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
 
 @end
 
+@interface SDPromiseFail : NSObject
+
+- (instancetype) initWithBlock:(SDPromiseFailBlock)block resultPromise:(SDPromise *)promise;
+
+- (void) reject:(NSError *)error;
+
+@end
+
 #pragma mark -
 
 @interface SDPromise ()
@@ -56,9 +64,9 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
             if ( isComplete )
                 [andPromise resolve:allResults];
             return nil;
-        }];
-        [promise failed:^(NSError *error) {
+        } fail:^id(NSError *error) {
             [andPromise reject:error];
+            return nil;
         }];
     }
     
@@ -87,11 +95,18 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
 }
 
 // Consumer interface
-- (SDPromise *) then:(SDPromiseThenBlock)block
+- (SDPromise *) then:(SDPromiseThenBlock)thenBlock
+{
+    return [self then:thenBlock fail:nil];
+}
+
+// Consumer interface
+- (SDPromise *) then:(SDPromiseThenBlock)thenBlock fail:(SDPromiseFailBlock) failBlock
 {
     SDPromise *resultPromise = [[SDPromise alloc] init];
-    SDPromiseThen *then = [[SDPromiseThen alloc] initWithBlock:block resultPromise:resultPromise];
-    
+    SDPromiseThen *then = [[SDPromiseThen alloc] initWithBlock:thenBlock resultPromise:resultPromise];
+    SDPromiseFail *failed = [[SDPromiseFail alloc] initWithBlock:failBlock resultPromise:resultPromise];
+
     @synchronized(self)
     {
         if ( self.state == SDPromiseStateFulfilled )
@@ -104,41 +119,21 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
         }
         else if ( self.state == SDPromiseStateRejected )
         {
-            // Already done, and will never be called, so don't even bother
-            //  This space intentionally left blank.
-        }
-        else
-        {
-            // Nothing's happened yet, so wait
-            [self.thenBlocks addObject:then];
-        }
-    }
-    
-    return resultPromise;
-}
-
-- (SDPromise *) failed:(SDPromiseFailBlock)block
-{
-    @synchronized(self)
-    {
-        if ( self.state == SDPromiseStateFulfilled )
-        {
-            // Already done, and failed will never be called, so don't even
-            //  add the block.
-        }
-        else if ( self.state == SDPromiseStateRejected )
-        {
-            // Already done, but don't call back immediately
-            dispatch_async(dispatch_get_main_queue(), ^{
-                block(self.error);
+            // Already done, but don't call back right now
+            dispatch_async(dispatch_get_main_queue(), ^
+            {
+                [failed reject:self.error];
             });
         }
         else
         {
             // Nothing's happened yet, so wait
-            [self.failedBlocks addObject:[block copy]];
+            [self.thenBlocks addObject:then];
+            [self.failedBlocks addObject:failed];
         }
     }
+    
+    return resultPromise;
 }
 
 // Producer interface
@@ -176,8 +171,8 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
     NSArray *failedBlocks = [self markRejectedWithError:error];
     if ( failedBlocks != nil )
     {
-        for (SDPromiseFailBlock failBlock in failedBlocks)
-            failBlock(error);
+        for (SDPromiseFail *fail in failedBlocks)
+            [fail reject:self.error];
     }
 }
 
@@ -236,9 +231,56 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
         [promiseOfBlock then:^id(id dataObject) {
             [_resultPromise resolve:dataObject];
             return nil;
-        }];
-        [promiseOfBlock failed:^(NSError *error) {
+        } fail:^id(NSError *error) {
             [_resultPromise reject:error];
+            return nil;
+        }];
+    }
+    else
+    {
+        [_resultPromise resolve:resultOfBlock];
+    }
+}
+
+@end
+
+#pragma mark -
+
+@implementation SDPromiseFail {
+    SDPromiseFailBlock _block;
+    SDPromise *_resultPromise;
+}
+
+- (instancetype) initWithBlock:(SDPromiseFailBlock)block resultPromise:(SDPromise *)promise
+{
+    self = [super init];
+    if ( self != nil )
+    {
+        _block = [block copy];
+        _resultPromise = promise;
+    }
+    return self;
+}
+
+- (void) reject:(NSError *)error;
+{
+    id resultOfBlock = _block(error);
+    if ( resultOfBlock != nil && [resultOfBlock isKindOfClass:[NSError class]] )
+    {
+        NSError *error = resultOfBlock;
+        [_resultPromise reject:error];
+    }
+    else if ( resultOfBlock != nil && [resultOfBlock isKindOfClass:[SDPromise class]] )
+    {
+        // Chain the promise we returned to the client, to the one the fail block
+        //  just returned.
+        SDPromise *promiseOfBlock = resultOfBlock;
+        [promiseOfBlock then:^id(id dataObject) {
+            [_resultPromise resolve:dataObject];
+            return nil;
+        } fail:^id(NSError *error) {
+            [_resultPromise reject:error];
+            return nil;
         }];
     }
     else
