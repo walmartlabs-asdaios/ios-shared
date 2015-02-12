@@ -268,8 +268,7 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
     }
     if ( resultOfBlock != nil && [resultOfBlock isKindOfClass:[NSError class]] )
     {
-        NSError *error = resultOfBlock;
-        [_resultPromise reject:error];
+        [_resultPromise reject:resultOfBlock];
     }
     else if ( resultOfBlock != nil && [resultOfBlock isKindOfClass:[SDPromise class]] )
     {
@@ -279,8 +278,8 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
         [promiseOfBlock then:^id(id dataObject) {
             [_resultPromise resolve:dataObject];
             return nil;
-        } reject:^id(NSError *error) {
-            [_resultPromise reject:error];
+        } reject:^id(NSError *rejectError) {
+            [_resultPromise reject:rejectError];
             return nil;
         }];
     }
