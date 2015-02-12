@@ -15,18 +15,13 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
     SDPromiseStateRejected
 };
 
-@interface SDPromiseThen : NSObject
+@interface SDPromiseResult : NSObject
 
-- (instancetype) initWithBlock:(SDPromiseThenBlock)block resultPromise:(SDPromise *)promise;
+- (instancetype) initWithThenBlock:(SDPromiseThenBlock)thenBlock
+                       rejectBlock:(SDPromiseRejectBlock)rejectBlock
+                     resultPromise:(SDPromise *)promise;
 
 - (void) resolve:(id)result;
-
-@end
-
-@interface SDPromiseReject : NSObject
-
-- (instancetype) initWithBlock:(SDPromiseRejectBlock)block resultPromise:(SDPromise *)promise;
-
 - (void) reject:(NSError *)error;
 
 @end
@@ -35,8 +30,7 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
 
 @interface SDPromise ()
 
-@property (nonatomic, strong) NSMutableArray *thenBlocks;
-@property (nonatomic, strong) NSMutableArray *rejectedBlocks;
+@property (nonatomic, strong) NSMutableArray *promiseResults;
 @property (nonatomic, assign) SDPromiseState state;
 @property (nonatomic, strong) id result;
 @property (nonatomic, strong) NSError *error;
@@ -78,8 +72,7 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
     self = [super init];
     if ( self != nil )
     {
-        _thenBlocks = [NSMutableArray array];
-        _rejectedBlocks = [NSMutableArray array];
+        _promiseResults = [NSMutableArray array];
     }
     return self;
 }
@@ -123,9 +116,8 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
 // Consumer interface
 - (SDPromise *) then:(SDPromiseThenBlock)thenBlock reject:(SDPromiseRejectBlock) rejectBlock
 {
-    SDPromise *resultPromise = [[SDPromise alloc] init];
-    SDPromiseThen *then = [[SDPromiseThen alloc] initWithBlock:thenBlock resultPromise:resultPromise];
-    SDPromiseReject *rejected = [[SDPromiseReject alloc] initWithBlock:rejectBlock resultPromise:resultPromise];
+    SDPromise *promise = [[SDPromise alloc] init];
+    SDPromiseResult *promiseResult = [[SDPromiseResult alloc] initWithThenBlock:thenBlock rejectBlock:rejectBlock resultPromise:promise];
 
     @synchronized(self)
     {
@@ -134,7 +126,7 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
             // Already done, but don't call back right now
             dispatch_async(dispatch_get_main_queue(), ^
             {
-                [then resolve:self.result];
+                [promiseResult resolve:self.result];
             });
         }
         else if ( self.state == SDPromiseStateRejected )
@@ -142,34 +134,33 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
             // Already done, but don't call back right now
             dispatch_async(dispatch_get_main_queue(), ^
             {
-                [rejected reject:self.error];
+                [promiseResult reject:self.error];
             });
         }
         else
         {
             // Nothing's happened yet, so wait
-            [self.thenBlocks addObject:then];
-            [self.rejectedBlocks addObject:rejected];
+            [self.promiseResults addObject:promiseResult];
         }
     }
     
-    return resultPromise;
+    return promise;
 }
 
 // Producer interface
 - (void) resolve:(id)dataObject
 {
-    NSArray *thenBlocks = [self markResolvedWithResult:dataObject];
-    if ( thenBlocks != nil )
+    NSArray *promiseResults = [self markResolvedWithResult:dataObject];
+    if ( promiseResults != nil )
     {
-        for (SDPromiseThen *then in thenBlocks)
-            [then resolve:dataObject];
+        for (SDPromiseResult *promiseResult in promiseResults)
+            [promiseResult resolve:dataObject];
     }
 }
 
 - (NSArray *) markResolvedWithResult:(id)dataObject
 {
-    NSArray *thens = nil;
+    NSArray *promiseResults = nil;
     
     @synchronized(self)
     {
@@ -177,28 +168,27 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
         {
             self.state = SDPromiseStateResolved;
             self.result = dataObject;
-            thens = [self.thenBlocks copy];
-            [self.thenBlocks removeAllObjects];
-            [self.rejectedBlocks removeAllObjects];
+            promiseResults = [self.promiseResults copy];
+            [self.promiseResults removeAllObjects];
         }
     }
 
-    return thens;
+    return promiseResults;
 }
 
 - (void) reject:(NSError *)error
 {
-    NSArray *rejectedBlocks = [self markRejectedWithError:error];
-    if ( rejectedBlocks != nil )
+    NSArray *promiseResults = [self markRejectedWithError:error];
+    if ( promiseResults != nil )
     {
-        for (SDPromiseReject *reject in rejectedBlocks)
-            [reject reject:self.error];
+        for (SDPromiseResult *promiseResult in promiseResults)
+            [promiseResult reject:self.error];
     }
 }
 
 - (NSArray *) markRejectedWithError:(NSError *)error
 {
-    NSArray *rejectedBlocks = nil;
+    NSArray *promiseResults = nil;
     
     @synchronized(self)
     {
@@ -206,30 +196,33 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
         {
             self.state = SDPromiseStateRejected;
             self.error = error;
-            rejectedBlocks = [self.rejectedBlocks copy];
-            [self.thenBlocks removeAllObjects];
-            [self.rejectedBlocks removeAllObjects];
+            promiseResults = [self.promiseResults copy];
+            [self.promiseResults removeAllObjects];
         }
     }
     
-    return rejectedBlocks;
+    return promiseResults;
 }
 
 @end
 
 #pragma mark -
 
-@implementation SDPromiseThen {
-    SDPromiseThenBlock _block;
+@implementation SDPromiseResult {
+    SDPromiseThenBlock _thenBlock;
+    SDPromiseRejectBlock _rejectBlock;
     SDPromise *_resultPromise;
 }
 
-- (instancetype) initWithBlock:(SDPromiseThenBlock)block resultPromise:(SDPromise *)promise
+- (instancetype) initWithThenBlock:(SDPromiseThenBlock)thenBlock
+                       rejectBlock:(SDPromiseRejectBlock)rejectBlock
+                     resultPromise:(SDPromise *)promise;
 {
     self = [super init];
     if ( self != nil )
     {
-        _block = [block copy];
+        _thenBlock = [thenBlock copy];
+        _rejectBlock = [rejectBlock copy];
         _resultPromise = promise;
     }
     return self;
@@ -237,7 +230,7 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
 
 - (void) resolve:(id)result
 {
-    id resultOfBlock = _block(result);
+    id resultOfBlock = _thenBlock(result);
     if ( resultOfBlock != nil && [resultOfBlock isKindOfClass:[NSError class]] )
     {
         NSError *error = resultOfBlock;
@@ -262,32 +255,12 @@ typedef NS_ENUM(NSUInteger, SDPromiseState)
     }
 }
 
-@end
-
-#pragma mark -
-
-@implementation SDPromiseReject {
-    SDPromiseRejectBlock _block;
-    SDPromise *_resultPromise;
-}
-
-- (instancetype) initWithBlock:(SDPromiseRejectBlock)block resultPromise:(SDPromise *)promise
-{
-    self = [super init];
-    if ( self != nil )
-    {
-        _block = [block copy];
-        _resultPromise = promise;
-    }
-    return self;
-}
-
 - (void) reject:(NSError *)error;
 {
     id resultOfBlock = nil;
-    if (_block)
+    if (_rejectBlock)
     {
-        resultOfBlock = _block(error);
+        resultOfBlock = _rejectBlock(error);
     }
     else
     {
