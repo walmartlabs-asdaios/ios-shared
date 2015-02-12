@@ -24,22 +24,22 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"single promise resolved"];
 
     SDPromise *promise = [[SDPromise alloc] init];
-    XCTAssertFalse(promise.isFulfilled);
+    XCTAssertFalse(promise.isCompleted);
     [promise then:^id(id dataObject) {
         XCTAssertEqualObjects(resolution, dataObject);
         [expectation fulfill];
         return nil;
-    } fail:^id(NSError *error) {
+    } reject:^id(NSError *error) {
         [expectation fulfill];
-        XCTFail(@"promise should not have failed");
+        XCTFail(@"promise should not have been rejected");
         return nil;
     }];
 
     [promise resolve:resolution];
     [self waitForExpectationsWithTimeout:1.0 handler:nil];
 
+    XCTAssertTrue(promise.isCompleted);
     XCTAssertTrue(promise.isFulfilled);
-    XCTAssertTrue(promise.isResolved);
 }
 
 - (void)testSinglePromiseReject {
@@ -47,11 +47,11 @@
     XCTestExpectation *expectation = [self expectationWithDescription:@"single promise rejected"];
 
     SDPromise *promise = [[SDPromise alloc] init];
-    XCTAssertFalse(promise.isFulfilled);
+    XCTAssertFalse(promise.isCompleted);
     [promise then:^id(id dataObject) {
-        XCTFail(@"promise should have failed");
+        XCTFail(@"promise should have been rejected");
         return nil;
-    } fail:^id(NSError *error) {
+    } reject:^id(NSError *error) {
         XCTAssertEqualObjects(rejectionError, error);
         [expectation fulfill];
         return nil;
@@ -60,26 +60,26 @@
     [promise reject:rejectionError];
     [self waitForExpectationsWithTimeout:1.0 handler:nil];
 
-    XCTAssertTrue(promise.isFulfilled);
+    XCTAssertTrue(promise.isCompleted);
     XCTAssertTrue(promise.isRejected);
 }
 
-- (void)testPromisePropagateRejectThroughFailBlocks {
+- (void)testPromisePropagateRejectThroughRejectedBlocks {
     NSError *rejectionError = [NSError errorWithDomain:@"test" code:-1 userInfo:nil];
     XCTestExpectation *expectation = [self expectationWithDescription:@"single promise rejected"];
 
     SDPromise *promise1 = [[SDPromise alloc] init];
-    XCTAssertFalse(promise1.isFulfilled);
+    XCTAssertFalse(promise1.isCompleted);
     SDPromise *promise2 = [promise1 then:^id(id dataObject) {
-        XCTFail(@"promise1 should have failed");
+        XCTFail(@"promise1 should have been rejected");
         return nil;
-    } fail:^id(NSError *error) {
+    } reject:^id(NSError *error) {
         return error;
     }];
     [promise2 then:^id(id dataObject) {
-        XCTFail(@"promise2 should have failed");
+        XCTFail(@"promise2 should have been rejected");
         return nil;
-    } fail:^id(NSError *error) {
+    } reject:^id(NSError *error) {
         [expectation fulfill];
         return nil;
     }];
@@ -87,26 +87,26 @@
     [promise1 reject:rejectionError];
     [self waitForExpectationsWithTimeout:1.0 handler:nil];
 
-    XCTAssertTrue(promise1.isFulfilled);
-    XCTAssertTrue(promise2.isFulfilled);
+    XCTAssertTrue(promise1.isCompleted);
+    XCTAssertTrue(promise2.isCompleted);
     XCTAssertTrue(promise1.isRejected);
     XCTAssertTrue(promise2.isRejected);
 }
 
-- (void)testPromisePropagateRejectWithMissingFailBlock {
+- (void)testPromisePropagateRejectWithMissingRejectedBlock {
     NSError *rejectionError = [NSError errorWithDomain:@"test" code:-1 userInfo:nil];
     XCTestExpectation *expectation = [self expectationWithDescription:@"single promise rejected"];
 
     SDPromise *promise1 = [[SDPromise alloc] init];
-    XCTAssertFalse(promise1.isFulfilled);
+    XCTAssertFalse(promise1.isCompleted);
     SDPromise *promise2 = [promise1 then:^id(id dataObject) {
-        XCTFail(@"promise1 should have failed");
+        XCTFail(@"promise1 should have been rejected");
         return nil;
     }];
     [promise2 then:^id(id dataObject) {
-        XCTFail(@"promise2 should have failed");
+        XCTFail(@"promise2 should have been rejected");
         return nil;
-    } fail:^id(NSError *error) {
+    } reject:^id(NSError *error) {
         [expectation fulfill];
         return nil;
     }];
@@ -114,8 +114,8 @@
     [promise1 reject:rejectionError];
     [self waitForExpectationsWithTimeout:1.0 handler:nil];
 
-    XCTAssertTrue(promise1.isFulfilled);
-    XCTAssertTrue(promise2.isFulfilled);
+    XCTAssertTrue(promise1.isCompleted);
+    XCTAssertTrue(promise2.isCompleted);
     XCTAssertTrue(promise1.isRejected);
     XCTAssertTrue(promise2.isRejected);
 }
@@ -124,13 +124,13 @@
     id resolution = @"Test resolution";
 
     SDPromise *promise1 = [[SDPromise alloc] init];
-    XCTAssertFalse(promise1.isFulfilled);
+    XCTAssertFalse(promise1.isCompleted);
 
     SDPromise *promise2 = [promise1 then:^id(id dataObject) {
         XCTAssertEqualObjects(resolution, dataObject);
         return dataObject;
-    } fail:^id(NSError *error) {
-        XCTFail(@"promise1 should not have failed");
+    } reject:^id(NSError *error) {
+        XCTFail(@"promise1 should not have been rejected");
         return error;
     }];
 
@@ -139,20 +139,20 @@
         XCTAssertEqualObjects(resolution, dataObject);
         [expectation fulfill];
         return dataObject;
-    } fail:^id(NSError *error) {
-        XCTFail(@"promise2 should not have failed");
+    } reject:^id(NSError *error) {
+        XCTFail(@"promise2 should not have been rejected");
         return nil;
     }];
 
     [promise1 resolve:resolution];
     [self waitForExpectationsWithTimeout:1.0 handler:nil];
 
+    XCTAssertTrue(promise1.isCompleted);
+    XCTAssertTrue(promise2.isCompleted);
+    XCTAssertTrue(promise3.isCompleted);
     XCTAssertTrue(promise1.isFulfilled);
     XCTAssertTrue(promise2.isFulfilled);
     XCTAssertTrue(promise3.isFulfilled);
-    XCTAssertTrue(promise1.isResolved);
-    XCTAssertTrue(promise2.isResolved);
-    XCTAssertTrue(promise3.isResolved);
 }
 
 
@@ -160,21 +160,21 @@
     id resolution = @"Test resolution";
 
     SDPromise *promise1 = [[SDPromise alloc] init];
-    XCTAssertFalse(promise1.isFulfilled);
+    XCTAssertFalse(promise1.isCompleted);
 
     SDPromise *promise2a = [promise1 then:^id(id dataObject) {
         XCTAssertEqualObjects(resolution, dataObject);
         return dataObject;
-    } fail:^id(NSError *error) {
-        XCTFail(@"promise1 (from 2a) should not have failed");
+    } reject:^id(NSError *error) {
+        XCTFail(@"promise1 (from 2a) should not have been rejected");
         return nil;
     }];
 
     SDPromise *promise2b = [promise1 then:^id(id dataObject) {
         XCTAssertEqualObjects(resolution, dataObject);
         return dataObject;
-    } fail:^id(NSError *error) {
-        XCTFail(@"promise1 (from 2b) should not have failed");
+    } reject:^id(NSError *error) {
+        XCTFail(@"promise1 (from 2b) should not have been rejected");
         return nil;
     }];
 
@@ -183,8 +183,8 @@
         XCTAssertEqualObjects(resolution, dataObject);
         [expectation2a1 fulfill];
         return dataObject;
-    } fail:^id(NSError *error) {
-        XCTFail(@"promise2a (from 2a1) should not have failed");
+    } reject:^id(NSError *error) {
+        XCTFail(@"promise2a (from 2a1) should not have been rejected");
         return nil;
     }];
 
@@ -193,8 +193,8 @@
         XCTAssertEqualObjects(resolution, dataObject);
         [expectation2a2 fulfill];
         return dataObject;
-    } fail:^id(NSError *error) {
-        XCTFail(@"promise2a (from 2a2) should not have failed");
+    } reject:^id(NSError *error) {
+        XCTFail(@"promise2a (from 2a2) should not have been rejected");
         return nil;
     }];
 
@@ -203,8 +203,8 @@
         XCTAssertEqualObjects(resolution, dataObject);
         [expectation2b1 fulfill];
         return dataObject;
-    } fail:^id(NSError *error) {
-        XCTFail(@"promise2b (from 2b1) should not have failed");
+    } reject:^id(NSError *error) {
+        XCTFail(@"promise2b (from 2b1) should not have been rejected");
         return nil;
     }];
 
@@ -213,14 +213,21 @@
         XCTAssertEqualObjects(resolution, dataObject);
         [expectation2b2 fulfill];
         return dataObject;
-    } fail:^id(NSError *error) {
-        XCTFail(@"promise2b (from 2b2) should not have failed");
+    } reject:^id(NSError *error) {
+        XCTFail(@"promise2b (from 2b2) should not have been rejected");
         return nil;
     }];
 
     [promise1 resolve:resolution];
 
     [self waitForExpectationsWithTimeout:1.0 handler:nil];
+    XCTAssertTrue(promise1.isCompleted);
+    XCTAssertTrue(promise2a.isCompleted);
+    XCTAssertTrue(promise2a1.isCompleted);
+    XCTAssertTrue(promise2a2.isCompleted);
+    XCTAssertTrue(promise2b.isCompleted);
+    XCTAssertTrue(promise2b1.isCompleted);
+    XCTAssertTrue(promise2b2.isCompleted);
     XCTAssertTrue(promise1.isFulfilled);
     XCTAssertTrue(promise2a.isFulfilled);
     XCTAssertTrue(promise2a1.isFulfilled);
@@ -228,13 +235,6 @@
     XCTAssertTrue(promise2b.isFulfilled);
     XCTAssertTrue(promise2b1.isFulfilled);
     XCTAssertTrue(promise2b2.isFulfilled);
-    XCTAssertTrue(promise1.isResolved);
-    XCTAssertTrue(promise2a.isResolved);
-    XCTAssertTrue(promise2a1.isResolved);
-    XCTAssertTrue(promise2a2.isResolved);
-    XCTAssertTrue(promise2b.isResolved);
-    XCTAssertTrue(promise2b1.isResolved);
-    XCTAssertTrue(promise2b2.isResolved);
 }
 
 @end
