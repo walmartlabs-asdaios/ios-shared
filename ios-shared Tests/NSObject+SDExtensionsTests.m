@@ -25,38 +25,30 @@
     [super tearDown];
 }
 
-- (void)testAsyncWaitMainThread {
+- (void)testAsyncWait {
     
     __block BOOL slept = NO;
     __block BOOL completed = NO;
+    __block NSNumber *performThreadWasMain = nil;
+    __block NSNumber *completionThreadWasMain = nil;
+    XCTestExpectation *performExpectation = [self expectationWithDescription:@"perform"];
+    XCTestExpectation *completeExpectation = [self expectationWithDescription:@"complete"];
     [self performBlockInBackground:^{
         sleep(5);
         slept = YES;
+        performThreadWasMain = @([NSThread isMainThread]);
+        [performExpectation fulfill];
     } completion:^{
-        [self completeAsynchronousTask];
         completed = YES;
+        completionThreadWasMain = @([NSThread isMainThread]);
+        [completeExpectation fulfill];
     }];
     
-    [self waitForAsynchronousTask];
+    [self waitForExpectationsWithTimeout:10 handler:nil];
     XCTAssertTrue(slept, "The async task was supposed to sleep for 5 seconds, and it didn't!");
     XCTAssertTrue(completed, "The async task was supposed to complete, and it didn't!");
-}
-
-- (void)testAsyncWaitBackgroundThread {
-    
-    __block BOOL slept = NO;
-    __block BOOL completed = NO;
-    [self performBlockInBackground:^{
-        sleep(5);
-        slept = YES;
-        [self completeAsynchronousTask];
-    } completion:^{
-        completed = YES;
-    }];
-    
-    [self waitForAsynchronousTask];
-    XCTAssertTrue(slept, "The async task was supposed to sleep for 5 seconds, and it didn't!");
-    XCTAssertTrue(!completed, "The async task wasn't supposed to reach the completion block, and it did!");
+    XCTAssertTrue((performThreadWasMain != nil) && ![performThreadWasMain boolValue], @"perform thread should not be main thread, but it was");
+    XCTAssertTrue((completionThreadWasMain != nil) && [completionThreadWasMain boolValue], @"completion thread should be main thread, but it wasn't");
 }
 
 @end
