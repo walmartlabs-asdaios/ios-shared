@@ -25,6 +25,8 @@
 
 @implementation SDTouchCaptureView
 
+SUPPORT_LUMBERJACK_LOGGING
+
 - (void) beginModalWithView:(UIView *)modalView clippingView:(UIView *)clippingView touchOutsideBlock:(SDTouchCaptureViewTouchBlock)block
 {
     if (self.touchCaptureView == nil)
@@ -32,6 +34,10 @@
         [self saveParentViewState:modalView];
         
         UIView *rootView = [[[modalView window] subviews] lastObject];
+        
+        // AIOS-1985 Putting in some teporary logging in the hopes of catching something helpful
+        DDLogCWarn(@"Modal touch view clipping view: %@", clippingView);
+        DDLogCWarn(@"Modal touch view root view: %@", rootView);
         
         UIView *touchCaptureView = [[UIView alloc] initWithFrame:[rootView bounds]];
         [touchCaptureView setBackgroundColor:[UIColor clearColor]];
