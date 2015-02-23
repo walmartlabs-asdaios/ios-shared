@@ -42,6 +42,7 @@ SUPPORT_LUMBERJACK_LOGGING
         UIView *touchCaptureView = [[UIView alloc] initWithFrame:[rootView bounds]];
         [touchCaptureView setBackgroundColor:[UIColor clearColor]];
         [touchCaptureView addGestureRecognizer:[self dismissRecognizer]];
+        [touchCaptureView addGestureRecognizer:[self swipeRecognizer]];
         [rootView addSubview:touchCaptureView];
         
         CGRect visualClippingFrame = [clippingView convertRect:[clippingView bounds] toView:touchCaptureView];
@@ -49,6 +50,7 @@ SUPPORT_LUMBERJACK_LOGGING
         [visualClippingView setBackgroundColor:[UIColor clearColor]];
         [visualClippingView setClipsToBounds:YES];
         [visualClippingView addGestureRecognizer:[self dismissRecognizer]];
+        [visualClippingView addGestureRecognizer:[self swipeRecognizer]];
         [touchCaptureView addSubview:visualClippingView];
         
         CGRect rootFrame = [modalView convertRect:[modalView bounds] toView:rootView];
@@ -92,12 +94,19 @@ SUPPORT_LUMBERJACK_LOGGING
     }
 }
 
+- (UIGestureRecognizer*)swipeRecognizer
+{
+    UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(dismissGesture:)];
+    swipeGesture.direction = UISwipeGestureRecognizerDirectionUp|UISwipeGestureRecognizerDirectionDown;
+    return swipeGesture;
+}
+
 - (UIGestureRecognizer*)dismissRecognizer
 {
     return [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissGesture:)];
 }
 
-- (void) dismissGesture:(UITapGestureRecognizer *)gestureRecognizer
+- (void) dismissGesture:(UIGestureRecognizer *)gestureRecognizer
 {
     @strongify(self.modalView, modalView);
     
