@@ -268,6 +268,20 @@
     [self.requestMappings addObject:entry];
 }
 
+- (NSUInteger)countForRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping;
+{
+    NSUInteger result = 0;
+    NSArray *requestMappings = [self.requestMappings copy];
+    for (SDWebServiceMockResponseRequestMappingEntry *entry in requestMappings)
+    {
+        if ([entry.requestMapping isEqual:requestMapping])
+        {
+            result += entry.matchCount;
+        }
+    }
+    return result;
+}
+
 - (void)removeRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping
 {
     NSArray *requestMappings = [self.requestMappings copy];

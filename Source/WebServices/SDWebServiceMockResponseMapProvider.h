@@ -82,6 +82,14 @@
 - (void)addMockHTTPURLResponseFile:(NSString *)filename bundle:(NSBundle *)bundle forRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping maximumResponses:(NSUInteger) maximumResponses responseDelay:(NSTimeInterval) responseDelay;
 
 /**
+ Count of how many times requestMapping matched (was used)
+
+ @param requestMapping the requestMapping to match
+ @return count of times requestMapping was used
+ */
+- (NSUInteger)countForRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping;
+
+/**
  Remove all responses for requestMapping
 
  @param requestMapping the requestMapping to match
