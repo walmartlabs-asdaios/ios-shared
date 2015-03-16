@@ -23,9 +23,10 @@ static const CGFloat kDrawerBounceHeight = 85.0f;
 static const CGFloat kDrawerTopExtension = 50.0f; // keeps the menu from disconnecting from the nav bar
 static const CGFloat kDrawerExpandAnimationDuration = 0.55f;
 static const CGFloat kDrawerCollapseAnimationDuration = 0.4f;
-static const CGFloat kDrawerAnimationDampening = 0.75f;
+static const CGFloat kDrawerExpandAnimationDamping = 0.75f;
+static const CGFloat kDrawerCollapseAnimationDamping = 1.0f;
 static const CGFloat kDrawerExpandAnimationVelocity = 1;
-static const CGFloat kDrawerCollapseAnimationVelocity = 5;
+static const CGFloat kDrawerCollapseAnimationVelocity = 0;
 
 static NSCache* sMenuAdornmentImageCache = nil;
 
@@ -411,7 +412,7 @@ typedef struct
 
             [UIView animateWithDuration:(self.menuOpen ? kDrawerCollapseAnimationDuration : kDrawerExpandAnimationDuration)
                                   delay:0
-                 usingSpringWithDamping:kDrawerAnimationDampening
+                 usingSpringWithDamping:(self.menuOpen ? kDrawerCollapseAnimationDamping : kDrawerExpandAnimationDamping)
                   initialSpringVelocity:(self.menuOpen ? kDrawerCollapseAnimationVelocity : kDrawerExpandAnimationVelocity)
                                 options:UIViewAnimationOptionBeginFromCurrentState
                              animations:^
@@ -505,7 +506,7 @@ typedef struct
 
             [UIView animateWithDuration:(self.menuOpen ? kDrawerCollapseAnimationDuration : kDrawerExpandAnimationDuration)
                                   delay:0
-                 usingSpringWithDamping:kDrawerAnimationDampening
+                 usingSpringWithDamping:(self.menuOpen ? kDrawerCollapseAnimationDamping : kDrawerExpandAnimationDamping)
                   initialSpringVelocity:(self.menuOpen ? kDrawerCollapseAnimationVelocity : kDrawerExpandAnimationVelocity)
                                 options:UIViewAnimationOptionBeginFromCurrentState
                              animations:^
@@ -576,7 +577,7 @@ typedef struct
 
         [UIView animateWithDuration:(self.menuOpen ? kDrawerCollapseAnimationDuration : kDrawerExpandAnimationDuration)
                               delay:0
-             usingSpringWithDamping:kDrawerAnimationDampening
+             usingSpringWithDamping:(self.menuOpen ? kDrawerCollapseAnimationDamping : kDrawerExpandAnimationDamping)
               initialSpringVelocity:(self.menuOpen ? kDrawerCollapseAnimationVelocity : kDrawerExpandAnimationVelocity)
                             options:0
                          animations:^{
@@ -732,7 +733,7 @@ typedef struct
     {
         [UIView animateWithDuration:(self.menuOpen ? kDrawerCollapseAnimationDuration : kDrawerExpandAnimationDuration)
                               delay:0
-             usingSpringWithDamping:kDrawerAnimationDampening
+             usingSpringWithDamping:(self.menuOpen ? kDrawerCollapseAnimationDamping : kDrawerExpandAnimationDamping)
               initialSpringVelocity:kDrawerExpandAnimationVelocity
                             options:0
                          animations:^
@@ -779,7 +780,7 @@ typedef struct
     {
         [UIView animateWithDuration:(self.menuOpen ? kDrawerCollapseAnimationDuration : kDrawerExpandAnimationDuration)
                               delay:0
-             usingSpringWithDamping:kDrawerAnimationDampening
+             usingSpringWithDamping:(self.menuOpen ? kDrawerCollapseAnimationDamping : kDrawerExpandAnimationDamping)
               initialSpringVelocity:kDrawerCollapseAnimationVelocity
                             options:0
                          animations:^
