@@ -190,7 +190,8 @@
 {
     NSHTTPURLResponse *result = nil;
     NSTimeInterval responseDelay = 0.0;
-    for (SDWebServiceMockResponseRequestMappingEntry *entry in self.requestMappings)
+    NSArray *requestMappings = [NSArray arrayWithArray:self.requestMappings];
+    for (SDWebServiceMockResponseRequestMappingEntry *entry in requestMappings)
     {
         if ([entry matchesRequest:request])
         {
@@ -215,7 +216,8 @@
 {
     NSData *result = nil;
     NSTimeInterval responseDelay = 0.0;
-    for (SDWebServiceMockResponseRequestMappingEntry *entry in self.requestMappings)
+    NSArray *requestMappings = [NSArray arrayWithArray:self.requestMappings];
+    for (SDWebServiceMockResponseRequestMappingEntry *entry in requestMappings)
     {
         if ([entry matchesRequest:request])
         {
