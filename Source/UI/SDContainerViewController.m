@@ -175,7 +175,7 @@
 
             UINavigationController *nc = [selectedViewController isKindOfClass:[UINavigationController class]] ? (id) selectedViewController : nil;
             if (nc) {
-                [nc.delegate navigationController:nc willShowViewController:[nc topViewController] animated:YES];
+                [nc.delegate navigationController:nc willShowViewController:selectedViewController animated:YES];
             }
 
             SDContainerViewControllerTransitioningContext *transitionContext = [SDContainerViewControllerTransitioningContext new];
@@ -205,7 +205,7 @@
 
             UINavigationController *nc = [_selectedViewController isKindOfClass:[UINavigationController class]] ? (id) _selectedViewController : nil;
             if (nc) {
-                [nc.delegate navigationController:nc willShowViewController:[nc topViewController] animated:YES];
+                [nc.delegate navigationController:nc willShowViewController:_selectedViewController animated:YES];
             }
             [self.containerView addSubview:_selectedViewController.view];
             [_selectedViewController didMoveToParentViewController:self];
