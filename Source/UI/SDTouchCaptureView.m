@@ -27,6 +27,11 @@
 
 SUPPORT_LUMBERJACK_LOGGING
 
+- (void) dealloc
+{
+    [self endModal];
+}
+
 - (void) beginModalWithView:(UIView *)modalView clippingView:(UIView *)clippingView touchOutsideBlock:(SDTouchCaptureViewTouchBlock)block
 {
     if (self.touchCaptureView == nil)
