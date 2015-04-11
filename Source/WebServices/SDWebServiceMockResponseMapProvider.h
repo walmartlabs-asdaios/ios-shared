@@ -82,6 +82,16 @@
 - (void)addMockHTTPURLResponseFile:(NSString *)filename bundle:(NSBundle *)bundle forRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping maximumResponses:(NSUInteger) maximumResponses responseDelay:(NSTimeInterval) responseDelay;
 
 /**
+ Adds single mapping for request -> HTTPURLResponse
+
+ @param responseString the HTTPURLResponse text
+ @param requestMapping the mapping to use to determine when this HTTPURLResponse should be used
+ @param maximumResponses the maximum number of times this HTTPURLResponse will be returned for any matching requestMappings
+ @param responseDelay how long to delay before responding with mock data
+ */
+- (void)addMockHTTPURLResponseString:(NSString *)responseString forRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping maximumResponses:(NSUInteger) maximumResponses responseDelay:(NSTimeInterval) responseDelay;
+
+/**
  Count of how many times requestMapping matched (was used)
 
  @param requestMapping the requestMapping to match
