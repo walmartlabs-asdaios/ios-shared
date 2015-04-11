@@ -284,6 +284,35 @@
     return result;
 }
 
+- (NSArray *)requestMappingEntriesForPathPattern:(NSString *) pathPattern;
+{
+    NSMutableArray *result = [NSMutableArray array];
+    for (SDWebServiceMockResponseRequestMappingEntry *entry in self.requestMappings)
+    {
+        if ([entry.requestMapping.pathPattern isEqualToString:pathPattern])
+        {
+            [result addObject:entry];
+        }
+    }
+    return [result copy];
+}
+
+- (NSArray *)requestMappingsForPathPattern:(NSString *) pathPattern;
+{
+    NSArray *entries = [self requestMappingEntriesForPathPattern:pathPattern];
+    return [entries valueForKey:@"requestMapping"];
+}
+
+- (void)removeRequestMappingsForPathPattern:(NSString *) pathPattern;
+{
+    NSArray *entries = [self requestMappingEntriesForPathPattern:pathPattern];
+    for (SDWebServiceMockResponseRequestMappingEntry *entry in entries) {
+        {
+            [self.requestMappings removeObject:entry];
+        }
+    }
+}
+
 - (void)removeRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping
 {
     NSArray *requestMappings = [self.requestMappings copy];

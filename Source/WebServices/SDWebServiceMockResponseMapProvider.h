@@ -97,6 +97,20 @@
 - (void)removeRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping;
 
 /**
+ Find all requestMapping whose pathPatterms matches the given pathPattern exactly
+
+ @param pathPattern to match
+ */
+- (NSArray *)requestMappingsForPathPattern:(NSString *) pathPattern;
+
+/**
+ Remove all responses for any requestMapping whose pathPatterms matches the given pathPattern exactly
+
+ @param path to match
+ */
+- (void)removeRequestMappingsForPathPattern:(NSString *) pathPattern;
+
+/**
  Remove all request mappings to reset everything for subsequent tests
  */
 - (void)removeAllRequestMappings;
