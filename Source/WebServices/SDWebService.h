@@ -101,6 +101,11 @@ typedef enum
 - (instancetype)initWithSpecification:(NSString *)specificationName;
 
 /**
+ Initializes the instance with a specification dictionary loaded externally to the service.
+ */
+- (instancetype)initWithServiceSpecification:(NSDictionary *) serviceSpecification;
+
+/**
  Initializes the instance with a plist specification included in the bundle and named using the string in `specificationName` and of type .plist.
  Overrides the `baseHost` and `basePath` with the parameters `defaultHost` and `defaultPath`.
  */

@@ -64,19 +64,14 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 	return sharedInstance;
 }
 
-- (instancetype)initWithSpecification:(NSString *)specificationName
+- (instancetype)init
 {
-	self = [super init];
+    self = [super init];
 
     _singleRequests = [[NSMutableDictionary alloc] init];
     _normalRequests = [[NSMutableDictionary alloc] init];
-    
+
     self.timeout = 60; // 1-minute default.
-	
-    NSString *specFile = [[NSBundle bundleForClass:[self class]] pathForResource:specificationName ofType:@"plist"];
-	_serviceSpecification = [NSDictionary dictionaryWithContentsOfFile:specFile];
-	if (!_serviceSpecification)
-		[NSException raise:@"SDException" format:@"Unable to load the specifications file %@.plist", specificationName];
 
     _dataProcessingQueue = [[NSOperationQueue alloc] init];
     // let the system determine how many threads are best, dynamically.
@@ -88,8 +83,29 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 #ifdef DEBUG
     _disableCaching = [[NSUserDefaults standardUserDefaults] boolForKey:@"kWMDisableCaching"];
 #endif
+    
+    return self;
+}
 
-	return self;
+- (instancetype)initWithSpecification:(NSString *)specificationName
+{
+    self = [self init];
+
+    NSString *specFile = [[NSBundle bundleForClass:[self class]] pathForResource:specificationName ofType:@"plist"];
+    _serviceSpecification = [NSDictionary dictionaryWithContentsOfFile:specFile];
+    if (!_serviceSpecification)
+        [NSException raise:@"SDException" format:@"Unable to load the specifications file %@.plist", specificationName];
+
+    return self;
+}
+
+- (instancetype)initWithServiceSpecification:(NSDictionary *) serviceSpecification
+{
+    self = [self init];
+
+    _serviceSpecification = [NSDictionary dictionaryWithDictionary:serviceSpecification];
+
+    return self;
 }
 
 - (instancetype)initWithSpecification:(NSString *)specificationName host:(NSString *)defaultHost path:(NSString *)defaultPath
