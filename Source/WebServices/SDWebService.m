@@ -68,42 +68,38 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 {
     self = [super init];
 
-    _singleRequests = [[NSMutableDictionary alloc] init];
-    _normalRequests = [[NSMutableDictionary alloc] init];
-
-    self.timeout = 60; // 1-minute default.
-
-    _dataProcessingQueue = [[NSOperationQueue alloc] init];
-    // let the system determine how many threads are best, dynamically.
-    _dataProcessingQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
-    _dataProcessingQueue.name = @"com.setdirection.dataprocessingqueue";
-
-    _cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-
-#ifdef DEBUG
-    _disableCaching = [[NSUserDefaults standardUserDefaults] boolForKey:@"kWMDisableCaching"];
-#endif
+    if (self) {
+        [self commonInit];
+    }
     
     return self;
 }
 
 - (instancetype)initWithSpecification:(NSString *)specificationName
 {
-    self = [self init];
-
-    NSString *specFile = [[NSBundle bundleForClass:[self class]] pathForResource:specificationName ofType:@"plist"];
-    _serviceSpecification = [NSDictionary dictionaryWithContentsOfFile:specFile];
-    if (!_serviceSpecification)
-        [NSException raise:@"SDException" format:@"Unable to load the specifications file %@.plist", specificationName];
+    self = [super init];
+    
+    if (self) {
+        [self commonInit];
+        
+        NSString *specFile = [[NSBundle bundleForClass:[self class]] pathForResource:specificationName ofType:@"plist"];
+        _serviceSpecification = [NSDictionary dictionaryWithContentsOfFile:specFile];
+        if (!_serviceSpecification)
+            [NSException raise:@"SDException" format:@"Unable to load the specifications file %@.plist", specificationName];
+    }
 
     return self;
 }
 
 - (instancetype)initWithServiceSpecification:(NSDictionary *) serviceSpecification
 {
-    self = [self init];
-
-    _serviceSpecification = [NSDictionary dictionaryWithDictionary:serviceSpecification];
+    self = [super init];
+    
+    if (self) {
+        [self commonInit];
+        
+        _serviceSpecification = [NSDictionary dictionaryWithDictionary:serviceSpecification];
+    }
 
     return self;
 }
@@ -118,6 +114,25 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     _serviceSpecification = altServiceSpecification;
 
 	return self;
+}
+
+- (void)commonInit
+{
+    _singleRequests = [[NSMutableDictionary alloc] init];
+    _normalRequests = [[NSMutableDictionary alloc] init];
+    
+    self.timeout = 60; // 1-minute default.
+    
+    _dataProcessingQueue = [[NSOperationQueue alloc] init];
+    // let the system determine how many threads are best, dynamically.
+    _dataProcessingQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
+    _dataProcessingQueue.name = @"com.setdirection.dataprocessingqueue";
+    
+    _cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    
+#ifdef DEBUG
+    _disableCaching = [[NSUserDefaults standardUserDefaults] boolForKey:@"kWMDisableCaching"];
+#endif
 }
 
 - (instancetype)copy
