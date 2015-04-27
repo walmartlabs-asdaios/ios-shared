@@ -537,6 +537,12 @@ SDTextFieldValidationBlock SDTextFieldOptionalFieldValidationBlock = ^(SDTextFie
     return isValid;
 }
 
+- (BOOL) validateRegardless
+{
+    self.textManuallySet = NO;
+    return [self validate];
+}
+
 - (void)resetTextWithoutValidate
 {
     self.textManuallySet = YES;

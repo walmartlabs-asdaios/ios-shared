@@ -92,6 +92,7 @@ typedef BOOL (^SDTextFieldValidationBlock)(SDTextField *textField);
  */
 - (BOOL)validateFields;
 - (BOOL)validate; // validates just this field, and optionally shows the error label
+- (BOOL)validateRegardless; // even if the user didn't set the value, validate it
 
 /**
  * Useful for subclasses that wish to do view configuration after instantiating the view.
