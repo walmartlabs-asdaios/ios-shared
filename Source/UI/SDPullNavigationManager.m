@@ -61,8 +61,8 @@
 {
     if(delegate)
     {
-        _globalPullNavController = [delegate setupGlobalContainerViewController];
         _delegate = delegate;
+        _globalPullNavController = [delegate setupGlobalContainerViewController];
     }
     else
     {
