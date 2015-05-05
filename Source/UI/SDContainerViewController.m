@@ -20,6 +20,8 @@
 @property (nonatomic, strong) UIViewController *fromController;
 @property (nonatomic, strong) UIViewController *toController;
 
+@property (nonatomic, copy) void(^completionBlock)();
+
 @end
 
 @implementation SDContainerViewControllerTransitioningContext
@@ -39,6 +41,10 @@
     [_toController didMoveToParentViewController:_parentController];
     _fromController.view.transform = CGAffineTransformIdentity;
     _containerView.userInteractionEnabled = YES;
+
+    if (_completionBlock) {
+        _completionBlock();
+    }
 }
 
 - (UIViewController *)viewControllerForKey:(NSString *)key {
@@ -65,6 +71,11 @@
 
 #pragma mark -
 
+
+@interface SDContainerViewController ()
+@property (nonatomic, strong) NSMutableArray *queuedTransitionOperations;
+@property (nonatomic, strong) NSBlockOperation *currentTransitionOperation;
+@end
 
 @implementation SDContainerViewController
 
@@ -171,22 +182,43 @@
     {
         id<UIViewControllerAnimatedTransitioning> animator = [self.delegate containerController:self animationControllerForTransitionFromController:_selectedViewController toController:selectedViewController];
         if (_selectedViewController && animator) {
-            [_selectedViewController willMoveToParentViewController:nil];
 
+<<<<<<< Updated upstream
             UINavigationController *nc = [selectedViewController isKindOfClass:[UINavigationController class]] ? (id) selectedViewController : nil;
             if (nc) {
                 [nc.delegate navigationController:nc willShowViewController:selectedViewController animated:YES];
             }
-
-            SDContainerViewControllerTransitioningContext *transitionContext = [SDContainerViewControllerTransitioningContext new];
-            transitionContext.parentController = self;
-            transitionContext.containerView = self.view;
-            transitionContext.fromController = _selectedViewController;
-            transitionContext.toController = selectedViewController;
-            
-            [animator animateTransition:transitionContext];
-
+=======
+            UIViewController *fromController = _selectedViewController;
+            UIViewController *toController = selectedViewController;
             _selectedViewController = selectedViewController;
+>>>>>>> Stashed changes
+
+            __block NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
+                [fromController willMoveToParentViewController:nil];
+
+                UINavigationController *nc = [toController isKindOfClass:[UINavigationController class]] ? (id) toController : nil;
+                if (nc) {
+                    [nc.delegate navigationController:nc willShowViewController:[nc topViewController] animated:YES];
+                }
+
+                SDContainerViewControllerTransitioningContext *transitionContext = [SDContainerViewControllerTransitioningContext new];
+                transitionContext.parentController = self;
+                transitionContext.containerView = self.view;
+                transitionContext.fromController = fromController;
+                transitionContext.toController = toController;
+
+                transitionContext.completionBlock = ^{
+                    [self _completeAnimatedTransitionOperation:op];
+                };
+
+                [animator animateTransition:transitionContext];
+                
+            }];
+
+
+            [self _queueAnimatedTransitionOperation:op];
+
         }
         else {
             // remove the existing one from the parent controller
@@ -211,6 +243,33 @@
             [_selectedViewController didMoveToParentViewController:self];
         }
 
+    }
+}
+
+- (void) _queueAnimatedTransitionOperation:(NSBlockOperation *)op {
+    if (nil == _queuedTransitionOperations) {
+        _queuedTransitionOperations = [NSMutableArray new];
+    }
+    if (nil == _currentTransitionOperation) {
+        [self _runAnimatedTransitionOperation:op];
+    }
+    else {
+        [_queuedTransitionOperations addObject:op];
+    }
+}
+
+- (void) _runAnimatedTransitionOperation:(NSBlockOperation *)op {
+    _currentTransitionOperation = op;
+    [op start];
+}
+
+- (void) _completeAnimatedTransitionOperation:(NSBlockOperation *)op {
+    NSBlockOperation *nextOp = [_queuedTransitionOperations shift];
+    if (nextOp) {
+        [self _runAnimatedTransitionOperation:nextOp];
+    }
+    else {
+        _currentTransitionOperation = nil;
     }
 }
 
