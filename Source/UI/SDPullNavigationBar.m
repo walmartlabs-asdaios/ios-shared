@@ -239,6 +239,7 @@ typedef struct
             CGRect frame = (CGRect){ { newSuperview.frame.size.width * 0.5f - self.menuWidthForCurrentOrientation * 0.5f, -(menuHeight - self.navigationBarHeight + kDrawerTopExtension + self.menuAdornmentImageOverlapHeight) },
                                      { self.menuWidthForCurrentOrientation, menuHeight + kDrawerTopExtension } };
             self.menuBottomAdornmentView = [[SDPullNavigationBarAdornmentView alloc] initWithFrame:frame];
+            self.menuBottomAdornmentView.accessibilityLabel = @"Pull Navigation Bar Bottom Adornment";
             if(self.showAdornment)
                 self.menuBottomAdornmentView.adornmentImage = self.adornmentImageForCurrentOrientation;
             if(self.implementsBackgroundViewClass)
