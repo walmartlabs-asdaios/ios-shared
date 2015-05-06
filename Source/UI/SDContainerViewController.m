@@ -183,18 +183,13 @@
         id<UIViewControllerAnimatedTransitioning> animator = [self.delegate containerController:self animationControllerForTransitionFromController:_selectedViewController toController:selectedViewController];
         if (_selectedViewController && animator) {
 
-<<<<<<< Updated upstream
-            UINavigationController *nc = [selectedViewController isKindOfClass:[UINavigationController class]] ? (id) selectedViewController : nil;
-            if (nc) {
-                [nc.delegate navigationController:nc willShowViewController:selectedViewController animated:YES];
-            }
-=======
             UIViewController *fromController = _selectedViewController;
             UIViewController *toController = selectedViewController;
             _selectedViewController = selectedViewController;
->>>>>>> Stashed changes
 
-            __block NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
+            NSBlockOperation *op = [[NSBlockOperation alloc] init];
+            @weakify(op,weakOp);
+            [op addExecutionBlock:^{
                 [fromController willMoveToParentViewController:nil];
 
                 UINavigationController *nc = [toController isKindOfClass:[UINavigationController class]] ? (id) toController : nil;
@@ -209,7 +204,8 @@
                 transitionContext.toController = toController;
 
                 transitionContext.completionBlock = ^{
-                    [self _completeAnimatedTransitionOperation:op];
+                    @strongify(weakOp,strongOp);
+                    [self _completeAnimatedTransitionOperation:strongOp];
                 };
 
                 [animator animateTransition:transitionContext];
