@@ -302,7 +302,8 @@ typedef struct
     [self.tabButton addGestureRecognizer:self.revealPanGestureRecognizer];
 
     self.dismissPanGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(didRecognizeDismissPanGesture:)];
-    self.revealPanGestureRecognizer.maximumNumberOfTouches = 1;
+    self.dismissPanGestureRecognizer.maximumNumberOfTouches = 1;
+    self.dismissPanGestureRecognizer.delegate = self;
     [self.menuBottomAdornmentView addGestureRecognizer:self.dismissPanGestureRecognizer];
 
     UITapGestureRecognizer* dismissTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissTapAction:)];
@@ -358,6 +359,24 @@ typedef struct
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer shouldReceiveTouch:(UITouch*)touch
 {
+    if ( gestureRecognizer == self.dismissPanGestureRecognizer )
+    {
+        BOOL inScrollView = NO;
+        
+        UIView *currentView = touch.view;
+        while ( currentView != nil && currentView != self.menuController.view )
+        {
+            if ( [currentView isKindOfClass:[UIScrollView class]] )
+            {
+                inScrollView = YES;
+                break;
+            }
+            currentView = [currentView superview];
+        }
+        
+        return !inScrollView;
+    }
+    
     return ![touch.view isDescendantOfView:self.menuController.view];
 }
 
