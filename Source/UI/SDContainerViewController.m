@@ -187,6 +187,9 @@
             UIViewController *toController = selectedViewController;
             _selectedViewController = selectedViewController;
 
+            _selectedViewController.view.frame = self.containerView.bounds;
+            [_selectedViewController.view setNeedsUpdateConstraints];
+
             NSBlockOperation *op = [[NSBlockOperation alloc] init];
             @weakify(op,weakOp);
             [op addExecutionBlock:^{
