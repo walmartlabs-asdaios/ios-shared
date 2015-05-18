@@ -129,8 +129,8 @@ typedef struct
                                                  selector:@selector(statusBarDidChangeRotationNotification:)
                                                      name:UIApplicationDidChangeStatusBarOrientationNotification
                                                    object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActiveNotification:) name:UIApplicationWillResignActiveNotification object:nil];
     }
-
     return self;
 }
 
@@ -987,6 +987,15 @@ typedef struct
 
     return cachedImage;
 }
+
+- (void) applicationWillResignActiveNotification:(NSNotification *)note {
+    if (_menuInteraction.isInteracting) {
+        [UIView animateWithDuration:kDrawerCollapseAnimationDuration animations:^{
+            [self collapseMenu];
+        }];
+    }
+}
+
 
 #pragma mark - Hit testing
 
