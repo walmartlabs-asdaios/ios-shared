@@ -9,10 +9,9 @@
 //
 
 #import "SDCreditCardField.h"
-
 #import "SDCCTextField.h"
-
 #import <QuartzCore/QuartzCore.h>
+#import "SDMacros.h"
 
 @interface NSString(SDCreditCardField_Security)
 - (NSString*)stringByHidingAllButLastFourDigits;

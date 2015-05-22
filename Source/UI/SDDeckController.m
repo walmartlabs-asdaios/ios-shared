@@ -750,7 +750,7 @@ static char wmdeck_kvoContext;
 
 - (CGFloat)_calculatedDuration
 {
-    CGFloat remaining = fabsf(self.centerDeckContainer.frame.origin.x - _centerDeckRestingFrame.origin.x);
+    CGFloat remaining = fabs(self.centerDeckContainer.frame.origin.x - _centerDeckRestingFrame.origin.x);
     CGFloat max = _locationBeforePan.x == _centerDeckRestingFrame.origin.x ? remaining : fabs(_locationBeforePan.x - _centerDeckRestingFrame.origin.x);
     
     return max > 0.0f ? self.maximumAnimationDuration * (remaining / max) : self.maximumAnimationDuration;

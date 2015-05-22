@@ -9,6 +9,8 @@
 #import "SDNavigationBarSearchField.h"
 #import "SDSearchSuggestionsViewController.h"
 #import "SDTouchCaptureView.h"
+#import "UIColor+SDExtensions.h"
+#import "SDMacros.h"
 
 @interface SDNavigationBarSearchField () <UITextFieldDelegate, SDSearchSuggestionsViewControllerDelegate, UIPopoverControllerDelegate>
 

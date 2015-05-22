@@ -13,6 +13,7 @@
 #import "NSData+SDExtensions.h"
 #import "NSURLRequest+SDExtensions.h"
 #import "SDWebServiceMockResponseQueueProvider.h"
+#import "SDLog.h"
 
 NSString *const SDWebServiceError = @"SDWebServiceError";
 
@@ -63,32 +64,44 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 	return sharedInstance;
 }
 
+- (instancetype)init
+{
+    self = [super init];
+
+    if (self) {
+        [self commonInit];
+    }
+    
+    return self;
+}
+
 - (instancetype)initWithSpecification:(NSString *)specificationName
 {
-	self = [super init];
-
-    _singleRequests = [[NSMutableDictionary alloc] init];
-    _normalRequests = [[NSMutableDictionary alloc] init];
+    self = [super init];
     
-    self.timeout = 60; // 1-minute default.
-	
-    NSString *specFile = [[NSBundle bundleForClass:[self class]] pathForResource:specificationName ofType:@"plist"];
-	_serviceSpecification = [NSDictionary dictionaryWithContentsOfFile:specFile];
-	if (!_serviceSpecification)
-		[NSException raise:@"SDException" format:@"Unable to load the specifications file %@.plist", specificationName];
+    if (self) {
+        [self commonInit];
+        
+        NSString *specFile = [[NSBundle bundleForClass:[self class]] pathForResource:specificationName ofType:@"plist"];
+        _serviceSpecification = [NSDictionary dictionaryWithContentsOfFile:specFile];
+        if (!_serviceSpecification)
+            [NSException raise:@"SDException" format:@"Unable to load the specifications file %@.plist", specificationName];
+    }
 
-    _dataProcessingQueue = [[NSOperationQueue alloc] init];
-    // let the system determine how many threads are best, dynamically.
-    _dataProcessingQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
-    _dataProcessingQueue.name = @"com.setdirection.dataprocessingqueue";
+    return self;
+}
 
-    _cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+- (instancetype)initWithServiceSpecification:(NSDictionary *) serviceSpecification
+{
+    self = [super init];
+    
+    if (self) {
+        [self commonInit];
+        
+        _serviceSpecification = [NSDictionary dictionaryWithDictionary:serviceSpecification];
+    }
 
-#ifdef DEBUG
-    _disableCaching = [[NSUserDefaults standardUserDefaults] boolForKey:@"kWMDisableCaching"];
-#endif
-
-	return self;
+    return self;
 }
 
 - (instancetype)initWithSpecification:(NSString *)specificationName host:(NSString *)defaultHost path:(NSString *)defaultPath
@@ -101,6 +114,25 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     _serviceSpecification = altServiceSpecification;
 
 	return self;
+}
+
+- (void)commonInit
+{
+    _singleRequests = [[NSMutableDictionary alloc] init];
+    _normalRequests = [[NSMutableDictionary alloc] init];
+    
+    self.timeout = 60; // 1-minute default.
+    
+    _dataProcessingQueue = [[NSOperationQueue alloc] init];
+    // let the system determine how many threads are best, dynamically.
+    _dataProcessingQueue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
+    _dataProcessingQueue.name = @"com.setdirection.dataprocessingqueue";
+    
+    _cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    
+#ifdef DEBUG
+    _disableCaching = [[NSUserDefaults standardUserDefaults] boolForKey:@"kWMDisableCaching"];
+#endif
 }
 
 - (instancetype)copy
@@ -593,7 +625,6 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     // attempt to find any mock response or data if available, we need it going forward.
     NSHTTPURLResponse *mockHTTPURLResponse = nil;
     NSData *mockData = nil;
-    BOOL usingMock = NO;
 #ifdef DEBUG
     mockHTTPURLResponse = [self.mockResponseProvider getMockHTTPURLResponseForRequest:request];
     if (mockHTTPURLResponse) {
@@ -601,7 +632,11 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     } else {
         mockData = [self.mockResponseProvider getMockDataForRequest:request];
     }
-    usingMock = (mockData != nil) || (mockHTTPURLResponse != nil);
+    if ((mockHTTPURLResponse == nil) && (mockData == nil)) {
+        if (self.mockResponseProvider.defaultMockDataBlock) {
+            mockData = self.mockResponseProvider.defaultMockDataBlock(request);
+        }
+    }
 
     if (self.disableCaching)
     {

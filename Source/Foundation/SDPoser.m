@@ -6,6 +6,7 @@
 //
 
 #import "SDPoser.h"
+#import "SDLog.h"
 
 #pragma mark - SDPoser item storage
 

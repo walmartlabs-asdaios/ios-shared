@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol SDContainerViewControllerDelegate;
+
 /**
  SDContainerViewController is effectively a UITabBarController without a tab bar.
  */
@@ -51,5 +53,19 @@
  view controller is on top.
  */
 @property (nonatomic, readonly) UIViewController *currentVisibleViewController;
+
+
+@property (nonatomic, weak) id<SDContainerViewControllerDelegate>delegate;
+
+
+@end
+
+
+/** A delegate protocol that provides for custom animators for transitions between controller. */
+@protocol SDContainerViewControllerDelegate <NSObject>
+
+@optional
+
+- (id<UIViewControllerAnimatedTransitioning>) containerController:(SDContainerViewController *)containerController animationControllerForTransitionFromController:(UIViewController *)fromController toController:(UIViewController *)viewController;
 
 @end

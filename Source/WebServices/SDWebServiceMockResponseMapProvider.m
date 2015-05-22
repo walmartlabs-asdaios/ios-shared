@@ -14,6 +14,7 @@
 @property (nonatomic,strong) NSBundle *bundle;
 @property (nonatomic,assign) NSUInteger maximumResponses;
 @property (nonatomic,assign) NSUInteger matchCount;
+@property (nonatomic,assign) NSTimeInterval responseDelay;
 
 @property (nonatomic,strong) NSString *httpVersion;
 @property (nonatomic,assign) NSInteger statusCode;
@@ -24,32 +25,45 @@
 
 @implementation SDWebServiceMockResponseRequestMappingEntry
 
-+ (SDWebServiceMockResponseRequestMappingEntry *) dataEntryWithMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping withFilename:(NSString *)filename bundle:(NSBundle *) bundle maximumResponses:(NSUInteger) maximumResponses;
++ (SDWebServiceMockResponseRequestMappingEntry *) dataEntryWithMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping withFilename:(NSString *)filename bundle:(NSBundle *) bundle maximumResponses:(NSUInteger) maximumResponses responseDelay:(NSTimeInterval) responseDelay;
 {
     SDWebServiceMockResponseRequestMappingEntry *result = [[SDWebServiceMockResponseRequestMappingEntry alloc] init];
     result.requestMapping = requestMapping;
     result.bundle = bundle;
     result.maximumResponses = maximumResponses;
+    result.responseDelay = responseDelay;
     [result loadResponseDataFromFilename:filename];
     return result;
 }
 
-+ (SDWebServiceMockResponseRequestMappingEntry *) dataEntryWithMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping withData:(NSData *) data maximumResponses:(NSUInteger) maximumResponses;
++ (SDWebServiceMockResponseRequestMappingEntry *) dataEntryWithMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping withData:(NSData *) data maximumResponses:(NSUInteger) maximumResponses responseDelay:(NSTimeInterval) responseDelay;
 {
     SDWebServiceMockResponseRequestMappingEntry *result = [[SDWebServiceMockResponseRequestMappingEntry alloc] init];
     result.requestMapping = requestMapping;
     result.maximumResponses = maximumResponses;
     result.responseData = data;
+    result.responseDelay = responseDelay;
     return result;
 }
 
-+ (SDWebServiceMockResponseRequestMappingEntry *) responseEntryWithMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping withFilename:(NSString *)filename bundle:(NSBundle *) bundle maximumResponses:(NSUInteger) maximumResponses;
++ (SDWebServiceMockResponseRequestMappingEntry *) responseEntryWithMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping withFilename:(NSString *)filename bundle:(NSBundle *) bundle maximumResponses:(NSUInteger) maximumResponses responseDelay:(NSTimeInterval) responseDelay;
 {
     SDWebServiceMockResponseRequestMappingEntry *result = [[SDWebServiceMockResponseRequestMappingEntry alloc] init];
     result.requestMapping = requestMapping;
     result.bundle = bundle;
     result.maximumResponses = maximumResponses;
+    result.responseDelay = responseDelay;
     [result loadHTTPURLResponseFromFilename:filename];
+    return result;
+}
+
++ (SDWebServiceMockResponseRequestMappingEntry *) responseEntryWithMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping withResponseString:(NSString *)responseString maximumResponses:(NSUInteger) maximumResponses responseDelay:(NSTimeInterval) responseDelay;
+{
+    SDWebServiceMockResponseRequestMappingEntry *result = [[SDWebServiceMockResponseRequestMappingEntry alloc] init];
+    result.requestMapping = requestMapping;
+    result.maximumResponses = maximumResponses;
+    result.responseDelay = responseDelay;
+    [result loadHTTPURLResponseFromString:responseString];
     return result;
 }
 
@@ -93,7 +107,11 @@
     NSString *path = [self.bundle pathForResource:filename ofType:nil];
     NSData *data = [NSData dataWithContentsOfFile:path];
     NSString *responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    [self loadHTTPURLResponseFromString:responseString];
+}
 
+- (void) loadHTTPURLResponseFromString:(NSString *) responseString;
+{
     self.httpVersion = nil;
     self.statusCode = -1;
     NSMutableDictionary *headers = [NSMutableDictionary dictionary];
@@ -159,6 +177,8 @@
 
 @implementation SDWebServiceMockResponseMapProvider
 
+@synthesize defaultMockDataBlock = _defaultMockDataBlock;
+
 + (SDWebServiceMockResponseMapProvider *) sharedMockResponseMapProvider;
 {
     static dispatch_once_t onceToken;
@@ -183,7 +203,9 @@
 - (NSHTTPURLResponse *) getMockHTTPURLResponseForRequest:(NSURLRequest *)request
 {
     NSHTTPURLResponse *result = nil;
-    for (SDWebServiceMockResponseRequestMappingEntry *entry in self.requestMappings)
+    NSTimeInterval responseDelay = 0.0;
+    NSArray *requestMappings = [NSArray arrayWithArray:self.requestMappings];
+    for (SDWebServiceMockResponseRequestMappingEntry *entry in requestMappings)
     {
         if ([entry matchesRequest:request])
         {
@@ -193,9 +215,13 @@
                 entry.matchCount += 1;
                 self.lastMatchingHTTPURLResponse = result;
                 self.lastMatchingResponseData = entry.responseData;
+                responseDelay = entry.responseDelay;
                 break;
             }
         }
+    }
+    if (responseDelay > 0) {
+        [NSThread sleepForTimeInterval:responseDelay];
     }
     return result;
 }
@@ -203,7 +229,9 @@
 - (NSData *) getMockDataForRequest:(NSURLRequest *)request
 {
     NSData *result = nil;
-    for (SDWebServiceMockResponseRequestMappingEntry *entry in self.requestMappings)
+    NSTimeInterval responseDelay = 0.0;
+    NSArray *requestMappings = [NSArray arrayWithArray:self.requestMappings];
+    for (SDWebServiceMockResponseRequestMappingEntry *entry in requestMappings)
     {
         if ([entry matchesRequest:request])
         {
@@ -213,16 +241,20 @@
                 entry.matchCount += 1;
                 self.lastMatchingHTTPURLResponse = nil;
                 self.lastMatchingResponseData = entry.responseData;
+                responseDelay = entry.responseDelay;
                 break;
             }
         }
     }
+    if (responseDelay > 0) {
+        [NSThread sleepForTimeInterval:responseDelay];
+    }
     return result;
 }
 
-- (void)addMockData:(NSData *) data forRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping maximumResponses:(NSUInteger) maximumResponses
+- (void)addMockData:(NSData *) data forRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping maximumResponses:(NSUInteger) maximumResponses responseDelay:(NSTimeInterval) responseDelay;
 {
-    SDWebServiceMockResponseRequestMappingEntry *entry = [SDWebServiceMockResponseRequestMappingEntry dataEntryWithMapping:requestMapping withData:data maximumResponses:maximumResponses];
+    SDWebServiceMockResponseRequestMappingEntry *entry = [SDWebServiceMockResponseRequestMappingEntry dataEntryWithMapping:requestMapping withData:data maximumResponses:maximumResponses responseDelay:responseDelay];
     [self.requestMappings addObject:entry];
 }
 
@@ -230,12 +262,12 @@
 {
     SDWebServiceMockResponseRequestMapping *requestMapping =
     [[SDWebServiceMockResponseRequestMapping alloc] initWithPath:path queryParameters:nil];
-    [self addMockData:data forRequestMapping:requestMapping maximumResponses:NSIntegerMax];
+    [self addMockData:data forRequestMapping:requestMapping maximumResponses:NSIntegerMax responseDelay:0.0];
 }
 
-- (void)addMockDataFile:(NSString *)filename bundle:(NSBundle *)bundle forRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping maximumResponses:(NSUInteger) maximumResponses
+- (void)addMockDataFile:(NSString *)filename bundle:(NSBundle *)bundle forRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping maximumResponses:(NSUInteger) maximumResponses responseDelay:(NSTimeInterval) responseDelay;
 {
-    SDWebServiceMockResponseRequestMappingEntry *entry = [SDWebServiceMockResponseRequestMappingEntry dataEntryWithMapping:requestMapping withFilename:filename bundle:bundle maximumResponses:maximumResponses];
+    SDWebServiceMockResponseRequestMappingEntry *entry = [SDWebServiceMockResponseRequestMappingEntry dataEntryWithMapping:requestMapping withFilename:filename bundle:bundle maximumResponses:maximumResponses responseDelay:responseDelay];
     [self.requestMappings addObject:entry];
 }
 
@@ -243,13 +275,62 @@
 {
     SDWebServiceMockResponseRequestMapping *requestMapping =
     [[SDWebServiceMockResponseRequestMapping alloc] initWithPath:path queryParameters:nil];
-    [self addMockDataFile:filename bundle:bundle forRequestMapping:requestMapping maximumResponses:NSIntegerMax];
+    [self addMockDataFile:filename bundle:bundle forRequestMapping:requestMapping maximumResponses:NSIntegerMax responseDelay:0.0];
 }
 
-- (void)addMockHTTPURLResponseFile:(NSString *)filename bundle:(NSBundle *)bundle forRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping maximumResponses:(NSUInteger) maximumResponses
+- (void)addMockHTTPURLResponseFile:(NSString *)filename bundle:(NSBundle *)bundle forRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping maximumResponses:(NSUInteger) maximumResponses responseDelay:(NSTimeInterval) responseDelay;
 {
-    SDWebServiceMockResponseRequestMappingEntry *entry = [SDWebServiceMockResponseRequestMappingEntry responseEntryWithMapping:requestMapping withFilename:filename bundle:bundle maximumResponses:maximumResponses];
+    SDWebServiceMockResponseRequestMappingEntry *entry = [SDWebServiceMockResponseRequestMappingEntry responseEntryWithMapping:requestMapping withFilename:filename bundle:bundle maximumResponses:maximumResponses responseDelay:responseDelay];
     [self.requestMappings addObject:entry];
+}
+
+- (void)addMockHTTPURLResponseString:(NSString *)responseString forRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping maximumResponses:(NSUInteger) maximumResponses responseDelay:(NSTimeInterval) responseDelay;
+{
+    SDWebServiceMockResponseRequestMappingEntry *entry = [SDWebServiceMockResponseRequestMappingEntry responseEntryWithMapping:requestMapping withResponseString:responseString maximumResponses:maximumResponses responseDelay:responseDelay];
+    [self.requestMappings addObject:entry];
+}
+
+- (NSUInteger)countForRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping;
+{
+    NSUInteger result = 0;
+    NSArray *requestMappings = [self.requestMappings copy];
+    for (SDWebServiceMockResponseRequestMappingEntry *entry in requestMappings)
+    {
+        if ([entry.requestMapping isEqual:requestMapping])
+        {
+            result += entry.matchCount;
+        }
+    }
+    return result;
+}
+
+- (NSArray *)requestMappingEntriesForPathPattern:(NSString *) pathPattern;
+{
+    NSMutableArray *result = [NSMutableArray array];
+    for (SDWebServiceMockResponseRequestMappingEntry *entry in self.requestMappings)
+    {
+        if ([entry.requestMapping.pathPattern isEqualToString:pathPattern])
+        {
+            [result addObject:entry];
+        }
+    }
+    return [result copy];
+}
+
+- (NSArray *)requestMappingsForPathPattern:(NSString *) pathPattern;
+{
+    NSArray *entries = [self requestMappingEntriesForPathPattern:pathPattern];
+    return [entries valueForKey:@"requestMapping"];
+}
+
+- (void)removeRequestMappingsForPathPattern:(NSString *) pathPattern;
+{
+    NSArray *entries = [self requestMappingEntriesForPathPattern:pathPattern];
+    for (SDWebServiceMockResponseRequestMappingEntry *entry in entries) {
+        {
+            [self.requestMappings removeObject:entry];
+        }
+    }
 }
 
 - (void)removeRequestMapping:(SDWebServiceMockResponseRequestMapping *) requestMapping

@@ -9,6 +9,8 @@
 
 #import "SDLocationManager.h"
 #import "NSArray+SDExtensions.h"
+#import "UIDevice+machine.h"
+#import "SDLog.h"
 
 #import <objc/message.h>
 
@@ -135,7 +137,7 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
 
 @dynamic authorizationStatus;
 - (CLAuthorizationStatus)authorizationStatus {
-    return [CLLocationManager authorizationStatus];
+    return [[self.locationManager class] authorizationStatus];
 }
 
 - (CLLocation *)currentLocation {
@@ -532,7 +534,7 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
             }
         }
 
-        dispatch_async(dispatch_get_main_queue(), ^{
+//        dispatch_async(dispatch_get_main_queue(), ^{
             if (NO == passesDelegateRequirements) {
                 if ([delegate respondsToSelector:@selector(locationManager:didUpdateToInaccurateLocation:fromLocation:)]) {
                     [delegate locationManager:self.locationManager didUpdateToInaccurateLocation:newLocation fromLocation:oldLocation];
@@ -551,7 +553,7 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
                 }
 #pragma clang diagnostic pop
             }
-        });
+//        });
     }
 
     _previousLocation = newLocation;

@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NSData *(^SDWebServiceDefaultMockDataBlock)(NSURLRequest *request);
+
 /**
  SDWebService uses implementations of SDWebServiceMockResponseQueueProvider to
  handle any mock responses.  
@@ -43,5 +45,6 @@
 @property (nonatomic,strong,readonly) NSHTTPURLResponse *lastMatchingHTTPURLResponse;
 @property (nonatomic,strong,readonly) NSData *lastMatchingResponseData;
 
+@property (nonatomic,copy) SDWebServiceDefaultMockDataBlock defaultMockDataBlock;
 
 @end

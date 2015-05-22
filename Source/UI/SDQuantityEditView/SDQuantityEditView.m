@@ -7,6 +7,7 @@
 
 #import "SDQuantityEditView.h"
 #import "SDQuantityView.h"
+#import "SDMacros.h"
 
 @interface SDQuantityEditView()
 @property (nonatomic, strong) NSLayoutConstraint *editTotalSpaceToTopContraint;
@@ -133,7 +134,7 @@
 
 - (void)updateConstraints
 {
-    if (!self.createdConstraints)
+    if (!self.createdConstraints && self.dropShadowImageView != nil)
     {
         self.createdConstraints = YES;
         

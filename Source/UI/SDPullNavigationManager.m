@@ -12,6 +12,8 @@
 #import "NSObject+SDExtensions.h"
 #import "SDPullNavigationBarControlsView.h"
 #import "SDPullNavigationAutomation.h"
+#import "UIViewController+SDExtensions.h"
+#import "UIDevice+machine.h"
 
 @interface SDPullNavigationManager()
 
@@ -83,12 +85,28 @@
     // We do this because resetting the navigation items on a "pop" messes with the animation, and unnecessary
     if(self.showGlobalNavControls && !viewController.hasGlobalNavigation)
     {
-        viewController.hasGlobalNavigation = YES;
-        // grab a strong reference to the weak delegate
-        id <SDPullNavigationSetupProtocol> theDelegate = self.delegate;
-        if ([theDelegate respondsToSelector:@selector(globalNavigationBarItemsForSide:withViewController:)]) {
-            viewController.navigationItem.leftBarButtonItems = [theDelegate globalNavigationBarItemsForSide:SDPullNavigationBarSideLeft withViewController:viewController];
-            viewController.navigationItem.rightBarButtonItems = [theDelegate globalNavigationBarItemsForSide:SDPullNavigationBarSideRight withViewController:viewController];
+        if (!self.delegate) {
+            // AIOS-2739 On distribution builds the home screen search & trolley button isn't there.
+            // This fix is based on guess that the delegate isn't set yet.
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                viewController.hasGlobalNavigation = YES;
+                // grab a strong reference to the weak delegate
+                id <SDPullNavigationSetupProtocol> theDelegate = self.delegate;
+                if ([theDelegate respondsToSelector:@selector(globalNavigationBarItemsForSide:withViewController:)]) {
+                    viewController.navigationItem.leftBarButtonItems = [theDelegate globalNavigationBarItemsForSide:SDPullNavigationBarSideLeft withViewController:viewController];
+                    viewController.navigationItem.rightBarButtonItems = [theDelegate globalNavigationBarItemsForSide:SDPullNavigationBarSideRight withViewController:viewController];
+                }
+            });
+        }
+        else {
+            // This is the way it was before, so this wack change shouldn't break anything new, right?
+            viewController.hasGlobalNavigation = YES;
+            // grab a strong reference to the weak delegate
+            id <SDPullNavigationSetupProtocol> theDelegate = self.delegate;
+            if ([theDelegate respondsToSelector:@selector(globalNavigationBarItemsForSide:withViewController:)]) {
+                viewController.navigationItem.leftBarButtonItems = [theDelegate globalNavigationBarItemsForSide:SDPullNavigationBarSideLeft withViewController:viewController];
+                viewController.navigationItem.rightBarButtonItems = [theDelegate globalNavigationBarItemsForSide:SDPullNavigationBarSideRight withViewController:viewController];
+            }
         }
     }
 }
@@ -133,6 +151,28 @@
     if([self navigateToTopLevelController:topLevelViewControllerClass])
         [(UINavigationController*)self.globalPullNavController.selectedViewController popToRootViewControllerAnimated:animate];
 }
+
+/*
+- (void)navigateToTopLevelController:(Class)topLevelViewControllerClass andPopToRootWithAnimation:(BOOL)animate
+{
+    // Dismiss any modals that might be currently visible.
+    UINavigationController* selectedNavController = (UINavigationController*)self.globalPullNavController.selectedViewController;
+    if(selectedNavController.visibleViewController.presentingViewController) {
+        [selectedNavController.visibleViewController.presentingViewController dismissViewControllerAnimated:NO completion:^{
+            // Now navigate.
+            if([self navigateToTopLevelController:topLevelViewControllerClass])
+                [(UINavigationController*)self.globalPullNavController.selectedViewController popToRootViewControllerAnimated:animate];
+
+        }];
+    }
+    else {
+        // Now navigate.
+        if([self navigateToTopLevelController:topLevelViewControllerClass])
+            [(UINavigationController*)self.globalPullNavController.selectedViewController popToRootViewControllerAnimated:animate];
+    }
+    
+}
+*/
 
 #pragma mark - Navigation Automation
 

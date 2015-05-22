@@ -8,6 +8,7 @@
 //
 
 #import "SDHitButton.h"
+#import "UIView+SDExtensions.h"
 
 @implementation SDHitButton
 

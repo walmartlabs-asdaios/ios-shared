@@ -7,6 +7,7 @@
 //
 
 #import "SDTextField.h"
+#import "NSString+SDExtensions.h"
 
 @interface SDTextFieldPicker : SDTextField
 

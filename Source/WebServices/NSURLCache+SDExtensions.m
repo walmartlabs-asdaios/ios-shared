@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 SetDirection. All rights reserved.
 //
 
+#import <CoreGraphics/CoreGraphics.h>
+
 #import "NSURLCache+SDExtensions.h"
 #import "NSCachedURLResponse+LeakFix.h"
 #import "NSURLRequest+SDExtensions.h"

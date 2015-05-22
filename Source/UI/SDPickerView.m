@@ -9,6 +9,7 @@
 
 #import "SDPickerView.h"
 #import "UIColor+SDExtensions.h"
+#import "SDMacros.h"
 
 typedef NS_ENUM(NSUInteger, SDPickerViewMode)
 {

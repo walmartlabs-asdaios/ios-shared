@@ -7,16 +7,20 @@
 //
 
 #import "SDWebServiceMockResponseQueueProvider.h"
+#import "SDLog.h"
 
 @interface SDWebServiceMockResponseQueueProvider()
 @property (nonatomic,strong,readwrite) NSHTTPURLResponse *lastMatchingHTTPURLResponse;
 @property (nonatomic,strong,readwrite) NSData *lastMatchingResponseData;
 @end
 
+
 @implementation SDWebServiceMockResponseQueueProvider {
     // always access the mutable array inside of @synchronized(self)
     NSMutableArray *_mockStack;
 }
+
+@synthesize defaultMockDataBlock = _defaultMockDataBlock;
 
 - (instancetype) init
 {

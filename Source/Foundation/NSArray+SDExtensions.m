@@ -7,6 +7,7 @@
 //
 
 #import "NSArray+SDExtensions.h"
+#import "SDLog.h"
 
 @implementation NSMutableArray (SDExtensions)
 

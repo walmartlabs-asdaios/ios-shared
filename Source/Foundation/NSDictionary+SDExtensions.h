@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h>
 
 typedef id (^SDSectionKeyBlock)(id blockObject);
 

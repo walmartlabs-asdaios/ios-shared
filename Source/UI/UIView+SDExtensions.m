@@ -8,6 +8,7 @@
 
 #import "UIView+SDExtensions.h"
 #import "UIDevice+machine.h"
+#import "SDLog.h"
 
 @implementation UIView (SDExtensions)
 
@@ -217,6 +218,34 @@
         SDLog(@"Attempting to capture a screenshot of view without a graphics context!");
 
     return result;
+}
+
+- (UIView *) findFirstResponder;
+{
+    if ([self isFirstResponder]) {
+        return self;
+    }
+    for (UIView *subview in self.subviews) {
+        UIView *result = [subview findFirstResponder];
+        if (result) {
+            return result;
+        }
+    }
+    return nil;
+}
+
++ (UIView *) findFirstResponderInView:(UIView*) view;
+{
+    if ([view isFirstResponder]) {
+        return view;
+    }
+    for (UIView *subview in view.subviews) {
+        UIView *result = [UIView findFirstResponderInView:subview];
+        if (result) {
+            return result;
+        }
+    }
+    return nil;
 }
 
 @end

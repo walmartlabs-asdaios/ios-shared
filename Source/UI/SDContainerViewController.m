@@ -7,6 +7,76 @@
 
 #import "SDContainerViewController.h"
 
+
+@interface SDContainerViewControllerTransitioningContext : NSObject <UIViewControllerContextTransitioning>
+
+@property (nonatomic, strong) UIViewController *parentController;
+@property (nonatomic, strong) UIView *containerView;
+@property (nonatomic) BOOL isAnimated;
+@property (nonatomic) BOOL isInteractive;
+@property (nonatomic) BOOL transitionWasCancelled;
+@property (nonatomic) UIModalPresentationStyle presentationStyle;
+
+@property (nonatomic, strong) UIViewController *fromController;
+@property (nonatomic, strong) UIViewController *toController;
+
+@property (nonatomic, copy) void(^completionBlock)();
+
+@end
+
+@implementation SDContainerViewControllerTransitioningContext
+
+- (void)updateInteractiveTransition:(CGFloat)percentComplete {
+}
+- (void)finishInteractiveTransition {
+}
+- (void)cancelInteractiveTransition {
+}
+
+- (void)completeTransition:(BOOL)didComplete {
+    [_parentController addChildViewController:_toController];
+
+    [_fromController.view removeFromSuperview];
+    [_fromController removeFromParentViewController];
+    [_toController didMoveToParentViewController:_parentController];
+    _fromController.view.transform = CGAffineTransformIdentity;
+    _containerView.userInteractionEnabled = YES;
+
+    if (_completionBlock) {
+        _completionBlock();
+    }
+}
+
+- (UIViewController *)viewControllerForKey:(NSString *)key {
+    if ([key isEqualToString:UITransitionContextToViewControllerKey]) {
+        return _toController;
+    }
+    else if ([key isEqualToString:UITransitionContextFromViewControllerKey]) {
+        return _fromController;
+    }
+    return nil;
+}
+
+- (CGRect)initialFrameForViewController:(UIViewController *)vc {
+    return _containerView.bounds;
+}
+
+- (CGRect)finalFrameForViewController:(UIViewController *)vc {
+    return _containerView.bounds;
+}
+
+
+@end
+
+
+#pragma mark -
+
+
+@interface SDContainerViewController ()
+@property (nonatomic, strong) NSMutableArray *queuedTransitionOperations;
+@property (nonatomic, strong) NSBlockOperation *currentTransitionOperation;
+@end
+
 @implementation SDContainerViewController
 
 /**
@@ -101,8 +171,7 @@
     return [_viewControllers indexOfObject:self.selectedViewController];
 }
 
-- (void)setSelectedViewController:(UIViewController *)selectedViewController
-{
+- (void)setSelectedViewController:(UIViewController *)selectedViewController {
     NSAssert(_viewControllers.count > 0, @"SDContainerViewController must have view controllers set.");
 
     NSUInteger index = [_viewControllers indexOfObject:selectedViewController];
@@ -111,26 +180,95 @@
 
     if (_selectedViewController != selectedViewController)
     {
-        // remove the existing one from the parent controller
-        UIViewController *currentController = _selectedViewController;
-        [currentController willMoveToParentViewController:nil];
-        [currentController.view removeFromSuperview];
-        [currentController removeFromParentViewController];
+        id<UIViewControllerAnimatedTransitioning> animator = [self.delegate containerController:self animationControllerForTransitionFromController:_selectedViewController toController:selectedViewController];
+        if (_selectedViewController && animator) {
 
-        _selectedViewController = selectedViewController;
+            UIViewController *fromController = _selectedViewController;
+            UIViewController *toController = selectedViewController;
+            _selectedViewController = selectedViewController;
 
-        // add the new one to the parent controller (only set frame when not using autolayout)
-        [self addChildViewController:_selectedViewController];
+            _selectedViewController.view.frame = self.containerView.bounds;
+            [_selectedViewController.view setNeedsUpdateConstraints];
 
-        _selectedViewController.view.frame = self.containerView.bounds;
-        [_selectedViewController.view setNeedsUpdateConstraints];
+            NSBlockOperation *op = [[NSBlockOperation alloc] init];
+            @weakify(op,weakOp);
+            [op addExecutionBlock:^{
+                [fromController willMoveToParentViewController:nil];
 
-        UINavigationController *nc = [_selectedViewController isKindOfClass:[UINavigationController class]] ? (id) _selectedViewController : nil;
-        if (nc) {
-            [nc.delegate navigationController:nc willShowViewController:_selectedViewController animated:YES];
+                UINavigationController *nc = [toController isKindOfClass:[UINavigationController class]] ? (id) toController : nil;
+                if (nc) {
+                    [nc.delegate navigationController:nc willShowViewController:[nc topViewController] animated:YES];
+                }
+
+                SDContainerViewControllerTransitioningContext *transitionContext = [SDContainerViewControllerTransitioningContext new];
+                transitionContext.parentController = self;
+                transitionContext.containerView = self.view;
+                transitionContext.fromController = fromController;
+                transitionContext.toController = toController;
+
+                transitionContext.completionBlock = ^{
+                    @strongify(weakOp,strongOp);
+                    [self _completeAnimatedTransitionOperation:strongOp];
+                };
+
+                [animator animateTransition:transitionContext];
+                
+            }];
+
+
+            [self _queueAnimatedTransitionOperation:op];
+
         }
-        [self.containerView addSubview:_selectedViewController.view];
-        [_selectedViewController didMoveToParentViewController:self];
+        else {
+            // remove the existing one from the parent controller
+            UIViewController *currentController = _selectedViewController;
+            [currentController willMoveToParentViewController:nil];
+            [currentController.view removeFromSuperview];
+            [currentController removeFromParentViewController];
+
+            _selectedViewController = selectedViewController;
+
+            // add the new one to the parent controller (only set frame when not using autolayout)
+            [self addChildViewController:_selectedViewController];
+
+            _selectedViewController.view.frame = self.containerView.bounds;
+            [_selectedViewController.view setNeedsUpdateConstraints];
+
+            UINavigationController *nc = [_selectedViewController isKindOfClass:[UINavigationController class]] ? (id) _selectedViewController : nil;
+            if (nc) {
+                [nc.delegate navigationController:nc willShowViewController:_selectedViewController animated:YES];
+            }
+            [self.containerView addSubview:_selectedViewController.view];
+            [_selectedViewController didMoveToParentViewController:self];
+        }
+
+    }
+}
+
+- (void) _queueAnimatedTransitionOperation:(NSBlockOperation *)op {
+    if (nil == _queuedTransitionOperations) {
+        _queuedTransitionOperations = [NSMutableArray new];
+    }
+    if (nil == _currentTransitionOperation) {
+        [self _runAnimatedTransitionOperation:op];
+    }
+    else {
+        [_queuedTransitionOperations addObject:op];
+    }
+}
+
+- (void) _runAnimatedTransitionOperation:(NSBlockOperation *)op {
+    _currentTransitionOperation = op;
+    [op start];
+}
+
+- (void) _completeAnimatedTransitionOperation:(NSBlockOperation *)op {
+    NSBlockOperation *nextOp = [_queuedTransitionOperations shift];
+    if (nextOp) {
+        [self _runAnimatedTransitionOperation:nextOp];
+    }
+    else {
+        _currentTransitionOperation = nil;
     }
 }
 
@@ -192,3 +330,5 @@
 }
 
 @end
+
+

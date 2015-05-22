@@ -8,6 +8,7 @@
 //
 
 #import "SDFormFieldContainer.h"
+#import "UIColor+SDExtensions.h"
 
 @implementation SDFormFieldContainer
 

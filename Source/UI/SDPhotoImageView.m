@@ -8,6 +8,7 @@
 
 #import "SDPhotoImageView.h"
 #import <QuartzCore/QuartzCore.h>
+#import "SDMacros.h"
 
 @implementation SDPhotoImageView
 {

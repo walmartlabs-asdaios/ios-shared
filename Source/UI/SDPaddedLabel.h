@@ -3,7 +3,7 @@
 // Copyright (c) 2014 Walmart. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 
 @interface SDPaddedLabel : UIView

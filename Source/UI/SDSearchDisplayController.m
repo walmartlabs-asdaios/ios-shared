@@ -7,6 +7,7 @@
 //
 
 #import "SDSearchDisplayController.h"
+#import "SDLog.h"
 
 @interface SDSearchDisplayController(Private)
 - (void)setup;
@@ -14,6 +15,10 @@
 
 @interface SDSearchDisplayController()
 @property (nonatomic, assign) BOOL addingSearchTableView;
+
+/// This overrides the internal addingSearchTableView lock in setActive:animated:. Only use this override if you are certain you need to.
+@property (nonatomic, assign) BOOL shouldOverrideBlock;
+
 @end
 
 @implementation SDSearchDisplayController
@@ -151,7 +156,7 @@ static NSString *kSDSearchUserDefaultsKey = @"kSDSearchUserDefaultsKey";
 
 - (void)setActive:(BOOL)visible animated:(BOOL)animated
 {
-    if (self.addingSearchTableView) {
+    if (self.addingSearchTableView && !self.shouldOverrideBlock) {
         return;
     }
     
@@ -231,6 +236,14 @@ static NSString *kSDSearchUserDefaultsKey = @"kSDSearchUserDefaultsKey";
 			searchHistory = nil;
 		}
     }
+}
+
+- (void)forceInactive
+{
+    // To make sure this works, we turn the override on, change the state (which calls setActive:), and then turn the override back off
+    self.shouldOverrideBlock = YES;
+    self.active = NO;
+    self.shouldOverrideBlock = NO;
 }
 
 - (NSUInteger)recentSearchesSectionNumber
@@ -375,6 +388,16 @@ static NSString *kSDSearchUserDefaultsKey = @"kSDSearchUserDefaultsKey";
 - (void)updateSearchHistory
 {
     searchHistory = [[[NSUserDefaults standardUserDefaults] arrayForKey:self.userDefaultsKey] mutableCopy];
+}
+
+#pragma mark - UIScrollView delegate
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    self.isTableViewScrolling = YES;
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    self.isTableViewScrolling = NO;
 }
 
 @end

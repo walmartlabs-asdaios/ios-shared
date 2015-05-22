@@ -7,6 +7,7 @@
 //
 
 #import "SDTouchCaptureView.h"
+#import "SDMacros.h"
 
 @interface SDTouchCaptureView ()
 
@@ -24,6 +25,13 @@
 
 @implementation SDTouchCaptureView
 
+SUPPORT_LUMBERJACK_LOGGING
+
+- (void) dealloc
+{
+    [self endModal];
+}
+
 - (void) beginModalWithView:(UIView *)modalView clippingView:(UIView *)clippingView touchOutsideBlock:(SDTouchCaptureViewTouchBlock)block
 {
     if (self.touchCaptureView == nil)
@@ -32,9 +40,14 @@
         
         UIView *rootView = [[[modalView window] subviews] lastObject];
         
+        // AIOS-1985 Putting in some teporary logging in the hopes of catching something helpful
+        DDLogCWarn(@"Modal touch view clipping view: %@", clippingView);
+        DDLogCWarn(@"Modal touch view root view: %@", rootView);
+        
         UIView *touchCaptureView = [[UIView alloc] initWithFrame:[rootView bounds]];
         [touchCaptureView setBackgroundColor:[UIColor clearColor]];
         [touchCaptureView addGestureRecognizer:[self dismissRecognizer]];
+        [touchCaptureView addGestureRecognizer:[self swipeRecognizer]];
         [rootView addSubview:touchCaptureView];
         
         CGRect visualClippingFrame = [clippingView convertRect:[clippingView bounds] toView:touchCaptureView];
@@ -42,6 +55,7 @@
         [visualClippingView setBackgroundColor:[UIColor clearColor]];
         [visualClippingView setClipsToBounds:YES];
         [visualClippingView addGestureRecognizer:[self dismissRecognizer]];
+        [visualClippingView addGestureRecognizer:[self swipeRecognizer]];
         [touchCaptureView addSubview:visualClippingView];
         
         CGRect rootFrame = [modalView convertRect:[modalView bounds] toView:rootView];
@@ -85,12 +99,19 @@
     }
 }
 
+- (UIGestureRecognizer*)swipeRecognizer
+{
+    UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(dismissGesture:)];
+    swipeGesture.direction = UISwipeGestureRecognizerDirectionUp|UISwipeGestureRecognizerDirectionDown;
+    return swipeGesture;
+}
+
 - (UIGestureRecognizer*)dismissRecognizer
 {
     return [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissGesture:)];
 }
 
-- (void) dismissGesture:(UITapGestureRecognizer *)gestureRecognizer
+- (void) dismissGesture:(UIGestureRecognizer *)gestureRecognizer
 {
     @strongify(self.modalView, modalView);
     

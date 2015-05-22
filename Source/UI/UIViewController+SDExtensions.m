@@ -101,8 +101,9 @@ static char const *const kSDViewControllerHasGlobalNavigation = "kSDViewControll
 
     if ([result isKindOfClass:[self class]])
     {
-        if(loadView)
-            [result view];
+		if(loadView) {
+			UIView *view __attribute__((unused)) = [result view];
+		}
     }
     else
     {
@@ -174,8 +175,9 @@ static char const *const kSDViewControllerHasGlobalNavigation = "kSDViewControll
     
     if ([result isKindOfClass:[self class]])
     {
-        if(loadView)
-            [result view];
+		if(loadView) {
+			UIView *view __attribute__((unused)) = [result view];
+		}
     }
     else
     {

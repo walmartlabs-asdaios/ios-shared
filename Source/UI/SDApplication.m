@@ -7,6 +7,7 @@
 
 #import "SDApplication.h"
 #import "SDTimer.h"
+#import "NSObject+SDExtensions.h"
 
 #pragma mark - SDWindowAction
 

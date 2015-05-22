@@ -15,6 +15,7 @@
 #import "UIDevice+machine.h"
 #import "UIColor+SDExtensions.h"
 #import "UIImage+SDExtensions.h"
+#import "NSString+SDExtensions.h"
 
 static const CGFloat kDefaultMenuWidth = 320.0f;
 static const CGFloat kDefaultMenuHeightBuffer = 44.0f;  // Keeps the bottom of the menu from getting too close to the bottom of the screen
@@ -22,9 +23,10 @@ static const CGFloat kDrawerBounceHeight = 85.0f;
 static const CGFloat kDrawerTopExtension = 50.0f; // keeps the menu from disconnecting from the nav bar
 static const CGFloat kDrawerExpandAnimationDuration = 0.55f;
 static const CGFloat kDrawerCollapseAnimationDuration = 0.4f;
-static const CGFloat kDrawerAnimationDampening = 0.75f;
+static const CGFloat kDrawerExpandAnimationDamping = 0.75f;
+static const CGFloat kDrawerCollapseAnimationDamping = 1.0f;
 static const CGFloat kDrawerExpandAnimationVelocity = 1;
-static const CGFloat kDrawerCollapseAnimationVelocity = 5;
+static const CGFloat kDrawerCollapseAnimationVelocity = 0;
 
 static NSCache* sMenuAdornmentImageCache = nil;
 
@@ -127,8 +129,8 @@ typedef struct
                                                  selector:@selector(statusBarDidChangeRotationNotification:)
                                                      name:UIApplicationDidChangeStatusBarOrientationNotification
                                                    object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActiveNotification:) name:UIApplicationWillResignActiveNotification object:nil];
     }
-
     return self;
 }
 
@@ -237,6 +239,7 @@ typedef struct
             CGRect frame = (CGRect){ { newSuperview.frame.size.width * 0.5f - self.menuWidthForCurrentOrientation * 0.5f, -(menuHeight - self.navigationBarHeight + kDrawerTopExtension + self.menuAdornmentImageOverlapHeight) },
                                      { self.menuWidthForCurrentOrientation, menuHeight + kDrawerTopExtension } };
             self.menuBottomAdornmentView = [[SDPullNavigationBarAdornmentView alloc] initWithFrame:frame];
+            self.menuBottomAdornmentView.accessibilityLabel = @"Pull Navigation Bar Bottom Adornment";
             if(self.showAdornment)
                 self.menuBottomAdornmentView.adornmentImage = self.adornmentImageForCurrentOrientation;
             if(self.implementsBackgroundViewClass)
@@ -299,7 +302,8 @@ typedef struct
     [self.tabButton addGestureRecognizer:self.revealPanGestureRecognizer];
 
     self.dismissPanGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(didRecognizeDismissPanGesture:)];
-    self.revealPanGestureRecognizer.maximumNumberOfTouches = 1;
+    self.dismissPanGestureRecognizer.maximumNumberOfTouches = 1;
+    self.dismissPanGestureRecognizer.delegate = self;
     [self.menuBottomAdornmentView addGestureRecognizer:self.dismissPanGestureRecognizer];
 
     UITapGestureRecognizer* dismissTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissTapAction:)];
@@ -355,6 +359,24 @@ typedef struct
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer shouldReceiveTouch:(UITouch*)touch
 {
+    if ( gestureRecognizer == self.dismissPanGestureRecognizer )
+    {
+        BOOL inScrollView = NO;
+        
+        UIView *currentView = touch.view;
+        while ( currentView != nil && currentView != self.menuController.view )
+        {
+            if ( [currentView isKindOfClass:[UIScrollView class]] )
+            {
+                inScrollView = YES;
+                break;
+            }
+            currentView = [currentView superview];
+        }
+        
+        return !inScrollView;
+    }
+    
     return ![touch.view isDescendantOfView:self.menuController.view];
 }
 
@@ -410,7 +432,7 @@ typedef struct
 
             [UIView animateWithDuration:(self.menuOpen ? kDrawerCollapseAnimationDuration : kDrawerExpandAnimationDuration)
                                   delay:0
-                 usingSpringWithDamping:kDrawerAnimationDampening
+                 usingSpringWithDamping:(self.menuOpen ? kDrawerCollapseAnimationDamping : kDrawerExpandAnimationDamping)
                   initialSpringVelocity:(self.menuOpen ? kDrawerCollapseAnimationVelocity : kDrawerExpandAnimationVelocity)
                                 options:UIViewAnimationOptionBeginFromCurrentState
                              animations:^
@@ -504,7 +526,7 @@ typedef struct
 
             [UIView animateWithDuration:(self.menuOpen ? kDrawerCollapseAnimationDuration : kDrawerExpandAnimationDuration)
                                   delay:0
-                 usingSpringWithDamping:kDrawerAnimationDampening
+                 usingSpringWithDamping:(self.menuOpen ? kDrawerCollapseAnimationDamping : kDrawerExpandAnimationDamping)
                   initialSpringVelocity:(self.menuOpen ? kDrawerCollapseAnimationVelocity : kDrawerExpandAnimationVelocity)
                                 options:UIViewAnimationOptionBeginFromCurrentState
                              animations:^
@@ -575,7 +597,7 @@ typedef struct
 
         [UIView animateWithDuration:(self.menuOpen ? kDrawerCollapseAnimationDuration : kDrawerExpandAnimationDuration)
                               delay:0
-             usingSpringWithDamping:kDrawerAnimationDampening
+             usingSpringWithDamping:(self.menuOpen ? kDrawerCollapseAnimationDamping : kDrawerExpandAnimationDamping)
               initialSpringVelocity:(self.menuOpen ? kDrawerCollapseAnimationVelocity : kDrawerExpandAnimationVelocity)
                             options:0
                          animations:^{
@@ -731,7 +753,7 @@ typedef struct
     {
         [UIView animateWithDuration:(self.menuOpen ? kDrawerCollapseAnimationDuration : kDrawerExpandAnimationDuration)
                               delay:0
-             usingSpringWithDamping:kDrawerAnimationDampening
+             usingSpringWithDamping:(self.menuOpen ? kDrawerCollapseAnimationDamping : kDrawerExpandAnimationDamping)
               initialSpringVelocity:kDrawerExpandAnimationVelocity
                             options:0
                          animations:^
@@ -778,7 +800,7 @@ typedef struct
     {
         [UIView animateWithDuration:(self.menuOpen ? kDrawerCollapseAnimationDuration : kDrawerExpandAnimationDuration)
                               delay:0
-             usingSpringWithDamping:kDrawerAnimationDampening
+             usingSpringWithDamping:(self.menuOpen ? kDrawerCollapseAnimationDamping : kDrawerExpandAnimationDamping)
               initialSpringVelocity:kDrawerCollapseAnimationVelocity
                             options:0
                          animations:^
@@ -965,6 +987,15 @@ typedef struct
 
     return cachedImage;
 }
+
+- (void) applicationWillResignActiveNotification:(NSNotification *)note {
+    if (_menuInteraction.isInteracting) {
+        [UIView animateWithDuration:kDrawerCollapseAnimationDuration animations:^{
+            [self collapseMenu];
+        }];
+    }
+}
+
 
 #pragma mark - Hit testing
 

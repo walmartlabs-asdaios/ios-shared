@@ -11,6 +11,7 @@
 #import "NSURLCache+SDExtensions.h"
 #import "NSCachedURLResponse+LeakFix.h"
 #import "NSURLRequest+SDExtensions.h"
+#import "SDLog.h"
 
 #import <objc/runtime.h>
 
@@ -161,18 +162,11 @@
         return;
     }
 
-    [_decodeQueue addOperationWithBlock:^
+    BOOL foundInCache = [self fetchImageFromCacheAtURL:url completionBlock:completionBlock];
+    if (!foundInCache)
     {
-        BOOL foundInCache = [self fetchImageFromCacheAtURL:url completionBlock:completionBlock];
-        if (!foundInCache)
-        {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^
-            {
-                [self fetchImageFromNetworkAtURL:url completionBlock:completionBlock];
-            }];
-        }
-    }];
-
+        [self fetchImageFromNetworkAtURL:url completionBlock:completionBlock];
+    }
 }
 
 - (BOOL)fetchImageFromCacheAtURL:(NSURL *)url completionBlock:(UIImageViewURLCompletionBlock)completionBlock
@@ -187,11 +181,7 @@
         UIImage *diskCachedImage = [UIImage imageWithData:cachedResponse.responseData];
         if (diskCachedImage)
         {
-            UIImage *decodedImage = nil;
-            if (diskCachedImage)
-                decodedImage = [SDImageCache decodedImageWithImage:diskCachedImage];
-
-            [self didFetchImage:decodedImage atURL:url error:nil withCompletionBlock:completionBlock];
+            [self didFetchImage:diskCachedImage atURL:url error:nil withCompletionBlock:completionBlock];
             success = YES;
         }
     }

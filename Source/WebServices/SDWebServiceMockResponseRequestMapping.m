@@ -7,6 +7,7 @@
 //
 
 #import "SDWebServiceMockResponseRequestMapping.h"
+#import "NSString+SDExtensions.h"
 
 @interface SDWebServiceMockResponseRequestMapping()
 @property (nonatomic,copy,readwrite) NSString *pathPattern;
@@ -77,7 +78,14 @@
     if (result && ([self.queryParameterPatterns count] > 0))
     {
         NSMutableDictionary *unmatchedQueryParameterPatterns = [self.queryParameterPatterns mutableCopy];
-        NSArray *queryItems = [request.URL.query componentsSeparatedByString:@"&"];
+        NSString *queryString = nil;
+        if ([[request HTTPMethod] isEqualToString:@"GET"]) {
+            queryString = request.URL.query;
+        } else {
+            NSString *encoded = [[NSString alloc] initWithData:request.HTTPBody encoding:NSUTF8StringEncoding];
+            queryString = [encoded stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        }
+        NSArray *queryItems = [queryString componentsSeparatedByString:@"&"];
         // all queryParameterPatterns must match something unique for mapping to match
         for (NSString *queryItem in queryItems)
         {

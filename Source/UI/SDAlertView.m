@@ -7,6 +7,7 @@
 //
 
 #import "SDAlertView.h"
+#import "UIDevice+machine.h"
 
 @interface SDAlertView () <UIAlertViewDelegate>
 @property (nonatomic, copy) SDAlertViewCompletionBlock completionBlock;
