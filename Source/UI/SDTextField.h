@@ -87,6 +87,11 @@ typedef BOOL (^SDTextFieldValidationBlock)(SDTextField *textField);
 @property (nonatomic, assign) BOOL validateWhileTyping;
 
 /**
+ * Check for taps outside field and resign first responder on them
+ */
+@property (nonatomic, assign) BOOL resignFirstResponderOnTapOutside;
+
+/**
  * Performs validation using the validation block on this field and any associated fields (see nextTextField).  If
  * any return FALSE, validateFields will return FALSE as well.  Otherwise, this returns TRUE.
  */
