@@ -581,27 +581,6 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
     }
 }
 
-- (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
-    LocTrace(@"%@",NSStringFromSelector(_cmd));
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegates makeObjectsPerformSelector:_cmd argumentAddresses:(void *)&(self->_locationManager), &region];
-    });
-}
-
-- (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
-    LocTrace(@"%@",NSStringFromSelector(_cmd));
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegates makeObjectsPerformSelector:_cmd argumentAddresses:(void *)&(self->_locationManager), &region];
-    });
-}
-
-- (void)locationManager:(CLLocationManager *)manager monitoringDidFailForRegion:(CLRegion *)region withError:(NSError *)error {
-    LocTrace(@"%@",NSStringFromSelector(_cmd));
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegates makeObjectsPerformSelector:_cmd argumentAddresses:(void *)&(self->_locationManager), &region, &error];
-    });
-}
-
 //- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager {
 //    LocTrace(@"%@",NSStringFromSelector(_cmd));
 //    [self unsupported:_cmd];
