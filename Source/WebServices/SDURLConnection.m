@@ -116,40 +116,165 @@
 
 @end
 
+@interface SDNetworkOperationQueue : NSOperationQueue
+@property (nonatomic,assign,readonly) kSDNetworkQueuePriority priority;
+@end
+
+@implementation SDNetworkOperationQueue
+
+@synthesize priority = _priority;
+
+- (instancetype) init;
+{
+    if ((self = [super init])) {
+        _priority = kSDNetworkQueuePriority_default;
+    }
+    return self;
+}
+
+- (instancetype) initWithPriority:(kSDNetworkQueuePriority) priority;
+{
+    if ((self = [super init])) {
+        _priority = priority;
+    }
+    return self;
+}
+
+@end
+
+@interface SDNetworkOperationQueueControl : NSObject
+@property (nonatomic,strong) NSArray *queues;
+@end
+
+@implementation SDNetworkOperationQueueControl
+
+static NSString const * SDNetworkOperationQueueControlContext = @"SDNetworkOperationQueueControlContext";
+
+- (instancetype) init;
+{
+    if ((self = [super init])) {
+        _queues = [self buildQueues];
+    }
+    return self;
+}
+
+- (NSArray *) buildQueues;
+{
+    NSMutableArray *result = [NSMutableArray array];
+    for (kSDNetworkQueuePriority priority=kSDNetworkQueuePriority_first; priority<=kSDNetworkQueuePriority_last; priority++) {
+        SDNetworkOperationQueue *networkOperationQueue = [[SDNetworkOperationQueue alloc] initWithPriority:priority];
+        networkOperationQueue.maxConcurrentOperationCount = SDURLCONNECTION_MAX_CONCURRENT_CONNECTIONS;
+        networkOperationQueue.name = [NSString stringWithFormat:@"com.setdirection.sdurlconnectionqueue_%zd", priority];
+        networkOperationQueue.suspended = YES;
+
+        [networkOperationQueue addObserver:self forKeyPath:@"operationCount" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:&SDNetworkOperationQueueControlContext];
+
+        [result addObject:networkOperationQueue];
+    }
+    return [result copy];
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
+{
+    if (context == &SDNetworkOperationQueueControlContext) {
+        NSInteger oldCount = [change[NSKeyValueChangeOldKey] integerValue];
+        NSInteger newCount = [change[NSKeyValueChangeNewKey] integerValue];
+        // we only care about the transition between empty & non-empty
+        if ((oldCount == 0) && (newCount > 0)) {
+            [self refreshQueues];
+        } else if ((oldCount > 0) && (newCount == 0)) {
+            [self refreshQueues];
+        }
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+- (void) refreshQueues;
+{
+    BOOL haveActiveQueue = NO;
+    for (NSUInteger idx=0; idx<[self.queues count]; idx++) {
+        SDNetworkOperationQueue *queue = self.queues[idx];
+        if (haveActiveQueue) {
+            // suspend all lower priority queues
+            queue.suspended = YES;
+        } else if (queue.operationCount > 0) {
+            haveActiveQueue = YES;
+            queue.suspended = NO; // ensure the highest priority queue is running
+        }
+    }
+}
+
+- (SDNetworkOperationQueue *) networkOperationQueueForPriority:(kSDNetworkQueuePriority) priority;
+{
+    return (priority < [self.queues count]) ? [self.queues objectAtIndex:priority] : nil;
+}
+
+- (NSInteger)maxConcurrentAsyncConnectionsForPriority:(kSDNetworkQueuePriority) priority;
+{
+    return [[self networkOperationQueueForPriority:priority] maxConcurrentOperationCount];
+}
+
+- (void)setMaxConcurrentAsyncConnections:(NSInteger)maxCount forPriority:(kSDNetworkQueuePriority) priority;
+{
+    [[self networkOperationQueueForPriority:priority] setMaxConcurrentOperationCount:maxCount];
+}
+
+@end
+
 #pragma mark - SDURLConnection
 
 @interface SDURLConnection()
 
+@property (nonatomic,assign,readwrite) kSDNetworkQueuePriority priority;
 @property (nonatomic, strong) SDURLConnectionAsyncDelegate *asyncDelegate;
 
 @end
 
 @implementation SDURLConnection
 
-static NSOperationQueue *networkOperationQueue = nil;
-
-+ (void)initialize
++ (SDNetworkOperationQueueControl *) networkOperationQueueControl;
 {
-    networkOperationQueue = [[NSOperationQueue alloc] init];
-    networkOperationQueue.maxConcurrentOperationCount = SDURLCONNECTION_MAX_CONCURRENT_CONNECTIONS;
-    networkOperationQueue.name = @"com.setdirection.sdurlconnectionqueue";
+    static dispatch_once_t onceToken;
+    static SDNetworkOperationQueueControl *instance = nil;
+    dispatch_once(&onceToken, ^{
+        instance = [[SDNetworkOperationQueueControl alloc] init];
+    });
+    return instance;
 }
 
-+ (NSInteger)maxConcurrentAsyncConnections
++ (SDNetworkOperationQueue *) networkOperationQueueForPriority:(kSDNetworkQueuePriority) priority;
 {
-    return networkOperationQueue.maxConcurrentOperationCount;
+    return [[self networkOperationQueueControl] networkOperationQueueForPriority:priority];
 }
 
-+ (void)setMaxConcurrentAsyncConnections:(NSInteger)maxCount
++ (NSInteger)maxConcurrentAsyncConnectionsForPriority:(kSDNetworkQueuePriority) priority;
 {
-    networkOperationQueue.maxConcurrentOperationCount = maxCount;
+    return [[self networkOperationQueueControl] maxConcurrentAsyncConnectionsForPriority:priority];
+}
+
++ (void)setMaxConcurrentAsyncConnections:(NSInteger)maxCount forPriority:(kSDNetworkQueuePriority) priority;
+{
+    [[self networkOperationQueueControl] setMaxConcurrentAsyncConnections:maxCount forPriority:priority];
 }
 
 - (id)initWithRequest:(NSURLRequest *)request delegate:(id)delegate startImmediately:(BOOL)startImmediately
 {
     self = [super initWithRequest:request delegate:delegate startImmediately:startImmediately];
-    if ([delegate isKindOfClass:[SDURLConnectionAsyncDelegate class]])
+    self.priority = kSDNetworkQueuePriority_default;
+    if ([delegate isKindOfClass:[SDURLConnectionAsyncDelegate class]]) {
         self.asyncDelegate = delegate;
+    }
+    return self;
+}
+
+- (id)initWithRequest:(NSURLRequest *)request priority:(kSDNetworkQueuePriority) priority delegate:(id)delegate startImmediately:(BOOL)startImmediately
+{
+    self = [super initWithRequest:request delegate:delegate startImmediately:startImmediately];
+    self.priority = priority;
+    if ([delegate isKindOfClass:[SDURLConnectionAsyncDelegate class]]) {
+        self.asyncDelegate = delegate;
+    }
     return self;
 }
 
@@ -166,7 +291,12 @@ static NSOperationQueue *networkOperationQueue = nil;
     }
 }
 
-+ (SDURLConnection *)sendAsynchronousRequest:(NSURLRequest *)request withResponseHandler:(SDURLConnectionResponseBlock)handler
++ (SDURLConnection *)sendAsynchronousRequest:(NSURLRequest *)request withResponseHandler:(SDURLConnectionResponseBlock)handler;
+{
+    return [self sendAsynchronousRequest:request withPriority:kSDNetworkQueuePriority_default responseHandler:handler];
+}
+
++ (SDURLConnection *)sendAsynchronousRequest:(NSURLRequest *)request withPriority:(kSDNetworkQueuePriority) priority responseHandler:(SDURLConnectionResponseBlock)handler
 {
     if (!handler)
         @throw @"sendAsynchronousRequest must be given a handler!";
@@ -194,7 +324,7 @@ static NSOperationQueue *networkOperationQueue = nil;
     }
     else
     {
-        SDURLConnection *connection = [[SDURLConnection alloc] initWithRequest:request delegate:delegate startImmediately:NO];
+        SDURLConnection *connection = [[SDURLConnection alloc] initWithRequest:request priority:priority delegate:delegate startImmediately:NO];
 
         if (!connection)
             SDLog(@"Unable to create a connection!");
@@ -203,6 +333,8 @@ static NSOperationQueue *networkOperationQueue = nil;
 
         // the sole purpose of this is to enforce a maximum active connection count.
         // eventually, these max connection numbers will change based on reachability data.
+
+        SDNetworkOperationQueue *networkOperationQueue = [[self class] networkOperationQueueForPriority:priority];
         [networkOperationQueue addOperationWithBlock:^{
             [connection performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:YES];
             while (delegate.isRunning)

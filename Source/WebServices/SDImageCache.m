@@ -199,7 +199,7 @@
 - (void)fetchImageFromNetworkAtURL:(NSURL *)url completionBlock:(UIImageViewURLCompletionBlock)completionBlock
 {
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
-    SDURLConnection *urlConnection = [SDURLConnection sendAsynchronousRequest:request withResponseHandler:^(SDURLConnection *connection, NSURLResponse *response, NSData *responseData, NSError *error) {
+    SDURLConnection *urlConnection = [SDURLConnection sendAsynchronousRequest:request withPriority:kSDNetworkQueuePriority_background responseHandler:^(SDURLConnection *connection, NSURLResponse *response, NSData *responseData, NSError *error) {
         UIImage *image = nil;
         if (responseData && responseData.length > 0)
             image = [UIImage imageWithData:responseData];
