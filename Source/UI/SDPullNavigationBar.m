@@ -999,12 +999,27 @@ typedef struct
 
 #pragma mark - Hit testing
 
+- (BOOL) pointInside:(CGPoint)point withEvent:(UIEvent *)event;
+{
+    if ([super pointInside:point withEvent:event]) {
+        return YES;
+    }
+
+    if (CGRectContainsPoint(self.tabButton.frame,point)) {
+        return YES;
+    }
+
+    return NO;
+}
+
+
+
 // If user taps in any of my subviews, dismiss the menu. Let the normal events go on as they are wont to do.
 
 - (UIView*)hitTest:(CGPoint)point withEvent:(UIEvent*)event
 {
     UIView* hitView = [super hitTest:point withEvent:event];
-    
+
     if([hitView isDescendantOfView:self])
         [self dismissPullMenuWithCompletionBlock:nil];
     
