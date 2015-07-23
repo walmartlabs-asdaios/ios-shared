@@ -10,9 +10,12 @@
 
 @class SDAlertView;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 typedef void(^SDAlertViewCompletionBlock)(UIAlertView *alertView, NSInteger tappedButtonIndex);
 
 @interface SDAlertView : UIAlertView
+#pragma clang diagnostic pop
 
 
 /**
