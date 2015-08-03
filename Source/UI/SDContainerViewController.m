@@ -157,7 +157,12 @@
         self.selectedViewController = nil;
     
     _viewControllers = viewControllers;
-    self.selectedViewController = [viewControllers objectAtIndex:0];
+    // dwsjoquist, 14-Jul-2015
+    // ensure view is loaded
+    // Xcode 7 beta 3 will cause a crash if we don't do it here, not sure why
+    UIViewController *firstViewController = [viewControllers objectAtIndex:0];
+    [firstViewController view];
+    self.selectedViewController = firstViewController;
 }
 
 - (void)setSelectedIndex:(NSUInteger)index

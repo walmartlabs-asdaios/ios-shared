@@ -32,10 +32,11 @@
 
 SDTextFieldValidationBlock SDTextFieldOptionalFieldValidationBlock = ^(SDTextField *textField){ return YES; };
 
-@interface SDTextField ()
+@interface SDTextField () <UIGestureRecognizerDelegate>
 @property (nonatomic, strong, readonly) UILabel *floatingLabel;
 @property (nonatomic, strong, readonly) UIToolbar *accessoryToolbar;
 @property (nonatomic, getter = isTextManuallySet) BOOL textManuallySet;
+@property (nonatomic, strong) UITapGestureRecognizer *tapOutsideRecognizer;
 @end
 
 @implementation SDTextField
@@ -186,6 +187,10 @@ SDTextFieldValidationBlock SDTextFieldOptionalFieldValidationBlock = ^(SDTextFie
     if (!valid)
         [self showFloatingLabel];
     
+    if ( result && self.resignFirstResponderOnTapOutside ) {
+        [self uninstallTapOutsideGesture];
+    }
+    
     return result;
 }
 
@@ -205,10 +210,52 @@ SDTextFieldValidationBlock SDTextFieldOptionalFieldValidationBlock = ^(SDTextFie
     if (!valid)
         [self showFloatingLabel];*/
     
+    if ( result && self.resignFirstResponderOnTapOutside ) {
+        [self installTapOutsideGesture];
+    }
+    
     return result;
 }
 
 #pragma mark - Utilities
+
+- (void)installTapOutsideGesture
+{
+    if ( self.tapOutsideRecognizer == nil )
+    {
+        self.tapOutsideRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOutsideAction:)];
+        self.tapOutsideRecognizer.delegate = self;
+        [self.window addGestureRecognizer:self.tapOutsideRecognizer];
+    }
+}
+
+- (void)uninstallTapOutsideGesture
+{
+    if ( self.tapOutsideRecognizer != nil )
+    {
+        self.tapOutsideRecognizer.delegate = nil;
+        [self.window removeGestureRecognizer:self.tapOutsideRecognizer];
+        self.tapOutsideRecognizer = nil;
+    }
+}
+
+- (void) tapOutsideAction:(UITapGestureRecognizer *)recognizer
+{
+    if ( self.isFirstResponder && self.resignFirstResponderOnTapOutside && ![self isThisTapInsideBounds:recognizer] ) {
+        [self resignFirstResponder];
+    }
+}
+
+- (BOOL) isThisTapInsideBounds:(UITapGestureRecognizer *)recognizer
+{
+    CGPoint point = [recognizer locationInView:self];
+    return CGRectContainsPoint(self.bounds, point);
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
+}
 
 - (CGRect)clearButtonRectForBounds:(CGRect)bounds
 {

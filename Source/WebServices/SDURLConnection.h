@@ -22,17 +22,29 @@
 
 typedef void (^SDURLConnectionResponseBlock)(SDURLConnection *connection, NSURLResponse *response, NSData *responseData, NSError *error);
 
+typedef NS_ENUM(NSUInteger, kSDNetworkQueuePriority) {
+    kSDNetworkQueuePriority_first = 0,
+    kSDNetworkQueuePriority_high = kSDNetworkQueuePriority_first,
+    kSDNetworkQueuePriority_default,
+    kSDNetworkQueuePriority_background,
+    kSDNetworkQueuePriority_last = kSDNetworkQueuePriority_background
+};
+
 @interface SDURLConnection : NSURLConnection
+
+@property (nonatomic,assign,readonly) kSDNetworkQueuePriority priority;
+
+- (id)initWithRequest:(NSURLRequest *)request priority:(kSDNetworkQueuePriority) priority delegate:(id)delegate startImmediately:(BOOL)startImmediately;
 
 /**
  Returns the maximum number of concurrent connections allowed.
  */
-+ (NSInteger)maxConcurrentAsyncConnections;
++ (NSInteger)maxConcurrentAsyncConnectionsForPriority:(kSDNetworkQueuePriority) priority;
 
 /**
  Set the maximum number of concurrent connections allowed to `maxCount`. The default is `20`.
  */
-+ (void)setMaxConcurrentAsyncConnections:(NSInteger)maxCount;
++ (void)setMaxConcurrentAsyncConnections:(NSInteger)maxCount forPriority:(kSDNetworkQueuePriority) priority;
 
 /**
  Create a connection for the given request parameters.
@@ -40,6 +52,8 @@ typedef void (^SDURLConnectionResponseBlock)(SDURLConnection *connection, NSURLR
  @param handler The block to execute when the response has been received completely.
  */
 + (SDURLConnection *)sendAsynchronousRequest:(NSURLRequest *)request withResponseHandler:(SDURLConnectionResponseBlock)handler;
+
++ (SDURLConnection *)sendAsynchronousRequest:(NSURLRequest *)request withPriority:(kSDNetworkQueuePriority) priority responseHandler:(SDURLConnectionResponseBlock)handler;
 
 #pragma mark - Unit Testing
 

@@ -44,4 +44,8 @@
  */
 - (BOOL)viewControllerClassPresentOnStack:(Class)controllerClass;
 
+- (void) pushViewController:(UIViewController *)viewController
+                   animated:(BOOL)animated
+                 completion:(void (^)(void))completion;
+
 @end
