@@ -177,6 +177,10 @@
 }
 
 - (void)setSelectedViewController:(UIViewController *)selectedViewController {
+    [self setSelectedViewController:selectedViewController completion:nil];
+}
+
+- (void)setSelectedViewController:(UIViewController *)selectedViewController completion:(void(^)()) completionBlock {
     NSAssert(_viewControllers.count > 0, @"SDContainerViewController must have view controllers set.");
 
     NSUInteger index = [_viewControllers indexOfObject:selectedViewController];
@@ -214,6 +218,9 @@
                 transitionContext.completionBlock = ^{
                     @strongify(weakOp,strongOp);
                     [self _completeAnimatedTransitionOperation:strongOp];
+                    if (completionBlock) {
+                        completionBlock();
+                    }
                 };
 
                 [animator animateTransition:transitionContext];
