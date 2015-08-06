@@ -15,7 +15,7 @@
 
 #import <objc/runtime.h>
 
-#if defined(DEBUG)
+#if (defined(DEBUG) && defined(DEBUG_SD)) || defined(TESTFLIGHT)
 #define ImageCacheLog(frmt,...) { if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SDImageCache_Log"]) SDLog(@"SDImageCache: %@",[NSString stringWithFormat:frmt, ##__VA_ARGS__]); }
 #else
 #define ImageCacheLog(x...)
