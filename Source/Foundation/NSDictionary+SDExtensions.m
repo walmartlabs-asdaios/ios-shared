@@ -393,4 +393,25 @@
     return [NSDictionary dictionaryWithDictionary:tempDictionary];
 }
 
+- (NSArray *) valuesSortedByKeysUsingSortDescriptors:(NSArray *)sortDescriptors {
+    NSArray *sortedKeys = [[self allKeys] sortedArrayUsingDescriptors:sortDescriptors];
+    return [self objectsForKeys:sortedKeys notFoundMarker:[NSNull null]];
+}
+
+- (NSArray *) valuesSortedByKeysUsingSelector:(SEL)comparator {
+    NSArray *sortedKeys = [[self allKeys] sortedArrayUsingSelector:comparator];
+    return [self objectsForKeys:sortedKeys notFoundMarker:[NSNull null]];
+}
+
+- (NSArray *) valuesSortedByKeyWithOptions:(NSSortOptions)opts usingComparator:(NSComparator)cmptr {
+    NSArray *sortedKeys = [[self allKeys] sortedArrayWithOptions:opts usingComparator:cmptr];
+    return [self objectsForKeys:sortedKeys notFoundMarker:[NSNull null]];
+}
+
+- (NSArray *) valuesSortedByKeyUsingComparator:(NSComparator)cmptr {
+    NSArray *sortedKeys = [[self allKeys] sortedArrayUsingComparator:cmptr];
+    return [self objectsForKeys:sortedKeys notFoundMarker:[NSNull null]];
+}
+
+
 @end
