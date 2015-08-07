@@ -7,7 +7,7 @@
 
 #import "SDLog.h"
 
-#ifdef DEBUG
+#if (defined(DEBUG) && defined(DEBUG_SD)) || defined(TESTFLIGHT)
 
 void SDLogRT( NSString* format, ... )
 {

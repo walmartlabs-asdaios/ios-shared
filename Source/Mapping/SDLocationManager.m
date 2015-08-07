@@ -17,13 +17,13 @@
 
 
 
-#if defined(DEBUG)
+#if (defined(DEBUG) && defined(DEBUG_SD)) || defined(TESTFLIGHT)
 #define LocLog(frmt,...) { if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SDLocationManager_Log"]) SDLog(@"SDLocationManager: %@",[NSString stringWithFormat:frmt, ##__VA_ARGS__]); }
 #else
 #define LocLog(x...)
 #endif
 
-#if defined(DEBUG)
+#if (defined(DEBUG) && defined(DEBUG_SD)) || defined(TESTFLIGHT)
     #define LocTrace(frmt,...) { if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SDLocationManager_Trace"]) LocLog(frmt, ##__VA_ARGS__) ; }
 #else
     #define LocTrace(frmt,...)
