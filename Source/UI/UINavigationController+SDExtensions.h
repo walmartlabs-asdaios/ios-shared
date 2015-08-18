@@ -48,4 +48,7 @@
                    animated:(BOOL)animated
                  completion:(void (^)(void))completion;
 
+- (void) setTopViewController:(UIViewController *)viewController animated:(BOOL)animated;
+- (void) setTopViewController:(UIViewController *)viewController animated:(BOOL)animated completion:(void (^)(void))completion;
+
 @end
