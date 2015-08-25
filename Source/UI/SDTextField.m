@@ -94,11 +94,12 @@ SDTextFieldValidationBlock SDTextFieldOptionalFieldValidationBlock = ^(SDTextFie
     [self addSubview:_floatingLabel];
 
     // some basic default fonts/colors
-    _floatingLabel.font = [UIFont boldSystemFontOfSize:12.0f];
-    _floatingLabelInactiveTextColor = [UIColor grayColor];
-    _floatingLabelActiveTextColor = [UIColor blueColor];
-    if ([self respondsToSelector:@selector(tintColor)])
+    _floatingLabel.font = [UIFont fontWithName:@"Helvetica Neue" size:15.0f];
+    _floatingLabelInactiveTextColor = [UIColor colorWithHexValue:@"1919197F"];
+    _floatingLabelActiveTextColor = [UIColor colorWithHexValue:@"0079FF"];
+    if ([self respondsToSelector:@selector(tintColor)]) {
         _floatingLabelActiveTextColor = self.tintColor;
+    }
     
     _hitInsets = UIEdgeInsetsMake(0, 0, 0, 0);
     _minimumHitSize = CGSizeMake(0, 0);
