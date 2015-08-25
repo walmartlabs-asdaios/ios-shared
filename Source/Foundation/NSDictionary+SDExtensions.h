@@ -191,5 +191,9 @@ typedef id (^SDSectionKeyBlock)(id blockObject);
  */
 + (NSDictionary *)mergeDictionaries:(NSArray *)dictionaries;
 
+- (NSArray *) valuesSortedByKeysUsingSortDescriptors:(NSArray *)sortDescriptors;
+- (NSArray *) valuesSortedByKeysUsingSelector:(SEL)comparator;
+- (NSArray *) valuesSortedByKeyWithOptions:(NSSortOptions)opts usingComparator:(NSComparator)cmptr;
+- (NSArray *) valuesSortedByKeyUsingComparator:(NSComparator)cmptr;
 
 @end

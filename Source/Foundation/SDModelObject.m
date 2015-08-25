@@ -66,10 +66,16 @@
     id modelObject = [[self alloc] init];
     [[SDDataMap map] mapObject:sourceObject toObject:modelObject];
 
-    if ([modelObject validModel])
+    if ([modelObject validModel]) {
+        [modelObject awakeFromMapping];
         return modelObject;
+    }
 
     return nil;
+}
+
+- (void) awakeFromMapping {
+
 }
 
 - (NSString *)modelDescription

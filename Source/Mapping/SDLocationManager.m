@@ -17,13 +17,13 @@
 
 
 
-#if defined(DEBUG)
+#if (defined(DEBUG) && defined(DEBUG_SD)) || defined(TESTFLIGHT)
 #define LocLog(frmt,...) { if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SDLocationManager_Log"]) SDLog(@"SDLocationManager: %@",[NSString stringWithFormat:frmt, ##__VA_ARGS__]); }
 #else
 #define LocLog(x...)
 #endif
 
-#if defined(DEBUG)
+#if (defined(DEBUG) && defined(DEBUG_SD)) || defined(TESTFLIGHT)
     #define LocTrace(frmt,...) { if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SDLocationManager_Trace"]) LocLog(frmt, ##__VA_ARGS__) ; }
 #else
     #define LocTrace(frmt,...)
@@ -579,27 +579,6 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
             [blockDelegates makeObjectsPerformSelector:_cmd argumentAddresses:(void *)&(self->_locationManager), &error];
         });
     }
-}
-
-- (void)locationManager:(CLLocationManager *)manager didEnterRegion:(CLRegion *)region {
-    LocTrace(@"%@",NSStringFromSelector(_cmd));
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegates makeObjectsPerformSelector:_cmd argumentAddresses:(void *)&(self->_locationManager), &region];
-    });
-}
-
-- (void)locationManager:(CLLocationManager *)manager didExitRegion:(CLRegion *)region {
-    LocTrace(@"%@",NSStringFromSelector(_cmd));
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegates makeObjectsPerformSelector:_cmd argumentAddresses:(void *)&(self->_locationManager), &region];
-    });
-}
-
-- (void)locationManager:(CLLocationManager *)manager monitoringDidFailForRegion:(CLRegion *)region withError:(NSError *)error {
-    LocTrace(@"%@",NSStringFromSelector(_cmd));
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegates makeObjectsPerformSelector:_cmd argumentAddresses:(void *)&(self->_locationManager), &region, &error];
-    });
 }
 
 //- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager {

@@ -89,6 +89,11 @@
  */
 + (instancetype)mapFromObject:(id)sourceObject;
 
+/**
+ * Called on the receiver after mapFromObject: has completed and the receiver is considered valid. Subclasses can overide to initialize state based on primitive values. The base implementation does nothing.
+ */
+- (void) awakeFromMapping;
+
 - (NSString *)modelDescription;
 
 @end

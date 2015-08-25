@@ -74,6 +74,16 @@
  */
 - (NSArray *)arrayByRemovingObject:(id)anObject;
 
+/**
+ Returns a copy of the array but with the last object replaced with the new object.
+ */
+- (NSArray *) arrayByReplacingLastObjectWithObject:(id)newObject;
+
+/**
+ Returns a copy of the array but with the supplied object replaced with the new object.
+ */
+- (NSArray *) arrayByReplacingObject:(id)object withObject:(id)newObject;
+
 /** Returns the object stored in the receiver and its child arrays represented by the supplied index path.
  *  @returns nil if any part of the index path returns an object that is not an array or if the index path is longer than the dimensions of the receiver.
  */

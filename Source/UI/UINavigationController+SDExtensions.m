@@ -7,6 +7,7 @@
 //
 
 #import "UINavigationController+SDExtensions.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation UINavigationController (SDExtensions)
 
@@ -75,5 +76,27 @@
     
     return result;
 }
+
+- (void) pushViewController:(UIViewController *)viewController
+                   animated:(BOOL)animated
+                 completion:(void (^)(void))completion
+{
+    [CATransaction begin];
+    [CATransaction setCompletionBlock:completion];
+    [self pushViewController:viewController animated:animated];
+    [CATransaction commit];
+}
+
+- (void) setTopViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    [self setViewControllers:[self.viewControllers arrayByReplacingLastObjectWithObject:viewController] animated:animated];
+}
+
+- (void) setTopViewController:(UIViewController *)viewController animated:(BOOL)animated completion:(void (^)(void))completion {
+    [CATransaction begin];
+    [CATransaction setCompletionBlock:completion];
+    [self setViewControllers:[self.viewControllers arrayByReplacingLastObjectWithObject:viewController] animated:animated];
+    [CATransaction commit];
+}
+
 
 @end

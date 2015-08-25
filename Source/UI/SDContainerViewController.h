@@ -57,6 +57,7 @@
 
 @property (nonatomic, weak) id<SDContainerViewControllerDelegate>delegate;
 
+- (void)setSelectedViewController:(UIViewController *)selectedViewController completion:(void(^)()) completionBlock;
 
 @end
 

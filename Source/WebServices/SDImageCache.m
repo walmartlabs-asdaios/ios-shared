@@ -15,6 +15,13 @@
 
 #import <objc/runtime.h>
 
+#if (defined(DEBUG) && defined(DEBUG_SD)) || defined(TESTFLIGHT)
+#define ImageCacheLog(frmt,...) { if ([[NSUserDefaults standardUserDefaults] boolForKey:@"SDImageCache_Log"]) SDLog(@"SDImageCache: %@",[NSString stringWithFormat:frmt, ##__VA_ARGS__]); }
+#else
+#define ImageCacheLog(x...)
+#endif
+
+
 @implementation SDImageCache
 
 + (SDImageCache *)sharedInstance
@@ -107,7 +114,7 @@
             NSString *key = [keys firstObject];
             [_memoryCache removeObjectForKey:key];
             [keys removeObject:key];
-            SDLog(@"dumped from cache: %@", key);
+            ImageCacheLog(@"dumped from cache: %@", key);
 
             // safety break.  i don't like while loops without a break.
             if ([_memoryCache count] == 0 || [keys count] == 0)
@@ -156,7 +163,7 @@
     UIImage *cachedImage = [_memoryCache objectForKey:[url absoluteString]];
     if (cachedImage)
     {
-        SDLog(@"image found in memory cache: %@", url);
+        ImageCacheLog(@"image found in memory cache: %@", url);
         if (completionBlock)
             completionBlock(cachedImage, nil);
         return;
@@ -192,7 +199,7 @@
 - (void)fetchImageFromNetworkAtURL:(NSURL *)url completionBlock:(UIImageViewURLCompletionBlock)completionBlock
 {
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
-    SDURLConnection *urlConnection = [SDURLConnection sendAsynchronousRequest:request withResponseHandler:^(SDURLConnection *connection, NSURLResponse *response, NSData *responseData, NSError *error) {
+    SDURLConnection *urlConnection = [SDURLConnection sendAsynchronousRequest:request withPriority:kSDNetworkQueuePriority_background responseHandler:^(SDURLConnection *connection, NSURLResponse *response, NSData *responseData, NSError *error) {
         UIImage *image = nil;
         if (responseData && responseData.length > 0)
             image = [UIImage imageWithData:responseData];

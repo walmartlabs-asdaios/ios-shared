@@ -197,6 +197,20 @@ Returns a deepCopy of an array. It will recursively deepCopy contained arrays to
     return editedArray;
 }
 
+- (NSArray *) arrayByReplacingLastObjectWithObject:(id)newObject {
+    return [self arrayByReplacingObject:[self lastObject] withObject:newObject];
+}
+
+- (NSArray *) arrayByReplacingObject:(id)object withObject:(id)newObject {
+    NSArray *newArray = nil;
+    NSUInteger indexOfObject = [self indexOfObject:object];
+    if (indexOfObject != NSNotFound) {
+        newArray = [self mutableCopy];
+        [(NSMutableArray *)newArray replaceObjectAtIndex:indexOfObject withObject:newObject];
+    }
+    return newArray;
+}
+
 - (id) objectAtIndexPath:(NSIndexPath *)indexPath {
 	id object = self;
 	NSUInteger length = [indexPath length];
@@ -241,6 +255,5 @@ Returns a deepCopy of an array. It will recursively deepCopy contained arrays to
 	}
 	return indexPathForObject;
 }
-
 
 @end

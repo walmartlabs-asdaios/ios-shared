@@ -157,7 +157,12 @@
         self.selectedViewController = nil;
     
     _viewControllers = viewControllers;
-    self.selectedViewController = [viewControllers objectAtIndex:0];
+    // dwsjoquist, 14-Jul-2015
+    // ensure view is loaded
+    // Xcode 7 beta 3 will cause a crash if we don't do it here, not sure why
+    UIViewController *firstViewController = [viewControllers objectAtIndex:0];
+    [firstViewController view];
+    self.selectedViewController = firstViewController;
 }
 
 - (void)setSelectedIndex:(NSUInteger)index
@@ -172,6 +177,10 @@
 }
 
 - (void)setSelectedViewController:(UIViewController *)selectedViewController {
+    [self setSelectedViewController:selectedViewController completion:nil];
+}
+
+- (void)setSelectedViewController:(UIViewController *)selectedViewController completion:(void(^)()) completionBlock {
     NSAssert(_viewControllers.count > 0, @"SDContainerViewController must have view controllers set.");
 
     NSUInteger index = [_viewControllers indexOfObject:selectedViewController];
@@ -209,6 +218,9 @@
                 transitionContext.completionBlock = ^{
                     @strongify(weakOp,strongOp);
                     [self _completeAnimatedTransitionOperation:strongOp];
+                    if (completionBlock) {
+                        completionBlock();
+                    }
                 };
 
                 [animator animateTransition:transitionContext];

@@ -118,24 +118,23 @@
     [self collapse];
 }
 
-- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+- (void)textFieldDidBeginEditing:(UITextField *)textField;
 {
     UIView *clippingView = self.superview.superview;
     [self.touchCapture beginModalWithView:textField clippingView:clippingView touchOutsideBlock:^{
         [textField resignFirstResponder];
     }];
-    
+
     [self configureForExpand];
-    
-    return YES;
 }
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField
 {
     [self.touchCapture endModal];
     
-    if ( self.canCollapse )
+    if ( self.canCollapse ) {
         [self configureForCollapse];
+    }
     
     return YES;
 }
