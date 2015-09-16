@@ -20,7 +20,8 @@
 -(void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
+    self.tableView.accessibilityIdentifier = @"Search Suggestions";
     self.tableView.backgroundColor = [UIColor whiteColor];
     
     @strongify(self.delegate, delegate);
