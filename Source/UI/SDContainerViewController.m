@@ -34,17 +34,20 @@
 }
 
 - (void)completeTransition:(BOOL)didComplete {
-    [_parentController addChildViewController:_toController];
-
-    [_fromController.view removeFromSuperview];
-    [_fromController removeFromParentViewController];
-    [_toController didMoveToParentViewController:_parentController];
-    _fromController.view.transform = CGAffineTransformIdentity;
-    _containerView.userInteractionEnabled = YES;
 
     if (_completionBlock) {
         _completionBlock();
     }
+
+    // We are going to dispatch this because on iOS 7 view hierarchies seem sensitive to being removed prior to any stuff like pop being called from inside the completionBlock
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_parentController addChildViewController:_toController];
+        [_fromController.view removeFromSuperview];
+        [_fromController removeFromParentViewController];
+        [_toController didMoveToParentViewController:_parentController];
+        _fromController.view.transform = CGAffineTransformIdentity;
+        _containerView.userInteractionEnabled = YES;
+    });
 }
 
 - (UIViewController *)viewControllerForKey:(NSString *)key {
