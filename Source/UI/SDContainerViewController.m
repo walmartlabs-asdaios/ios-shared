@@ -68,6 +68,23 @@
     return _containerView.bounds;
 }
 
+// Currently only two keys are defined by the system -
+// UITransitionContextFromViewKey, and UITransitionContextToViewKey
+// viewForKey: may return nil which would indicate that the animator should not
+// manipulate the associated view controller's view.
+- (nullable __kindof UIView *)viewForKey:(NSString *)key {
+    if ([key isEqualToString:UITransitionContextToViewControllerKey]) {
+        return _toController.view;
+    }
+    else if ([key isEqualToString:UITransitionContextFromViewControllerKey]) {
+        return _fromController.view;
+    }
+    return nil;
+}
+
+- (CGAffineTransform)targetTransform {
+    return CGAffineTransformIdentity;
+}
 
 @end
 

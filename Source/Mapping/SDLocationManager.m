@@ -103,11 +103,8 @@ NSString *kSDLocationManagerHasReceivedLocationUpdateDefaultsKey = @"SDLocationM
 // Previous logic would return true if the status was kCLAuthorizationStatusNotDetermined
 // Which the code in this class relied on.  Changing that code to isLocationRejected
 - (BOOL)isLocationAllowed {
-    BOOL isLocationAllowed = (self.authorizationStatus == kCLAuthorizationStatusAuthorized);
-#ifdef __IPHONE_8_0
-    isLocationAllowed = isLocationAllowed || (self.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways) ||
+    BOOL isLocationAllowed = (self.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways) ||
                                             (self.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse);
-#endif
     return isLocationAllowed;
 }
 
