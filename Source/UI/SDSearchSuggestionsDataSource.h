@@ -8,13 +8,17 @@
 
 #import <Foundation/Foundation.h>
 
-typedef void (^SDSearchSuggestionsCompletion)(NSArray *searchSuggestions);
+NS_ASSUME_NONNULL_BEGIN
+
+typedef void (^SDSearchSuggestionsCompletion)(NSArray<NSString *> * searchSuggestions);
 
 @protocol SDSearchSuggestionsDataSource <NSObject>
 
 - (void) searchSuggestionsForString:(NSString *)searchString completion:(SDSearchSuggestionsCompletion)block;
-- (NSArray *) recentSearchStrings;
+- (NSArray<NSString *> *) recentSearchStrings;
 - (void) clearRecentSearches;
 - (void) addRecentSearchString:(NSString *)string;
 
 @end
+
+NS_ASSUME_NONNULL_END
