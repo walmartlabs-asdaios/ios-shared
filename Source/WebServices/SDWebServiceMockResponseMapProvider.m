@@ -149,16 +149,24 @@
     self.responseData = [responseDataString dataUsingEncoding:NSUTF8StringEncoding];
 }
 
+- (void) handleCookiesWithResponse:(NSHTTPURLResponse *) httpResponse;
+{
+    NSArray *cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:[httpResponse allHeaderFields] forURL:httpResponse.URL];
+    [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookies:cookies forURL:httpResponse.URL mainDocumentURL:nil];
+}
+
 - (NSHTTPURLResponse *) httpURLResponseWithURL:(NSURL *)url;
 {
     if (self.httpVersion == nil) {
         return nil;
     } else {
-        return [[NSHTTPURLResponse alloc]
-                initWithURL:url
-                statusCode:self.statusCode
-                HTTPVersion:self.httpVersion
-                headerFields:self.headers];
+        NSHTTPURLResponse *result = [[NSHTTPURLResponse alloc]
+                                     initWithURL:url
+                                     statusCode:self.statusCode
+                                     HTTPVersion:self.httpVersion
+                                     headerFields:self.headers];
+        [self handleCookiesWithResponse:result];
+        return result;
     }
 }
 
