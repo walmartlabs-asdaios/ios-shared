@@ -8,10 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 // The block can return NSError to have failBlocks propogated. Any other returned
 //  value, including nil, will fire any dependant promise thenBlocks.
-typedef id (^SDPromiseThenBlock)(id dataObject);
-typedef id (^SDPromiseRejectBlock)(NSError *error);
+typedef _Nullable id (^SDPromiseThenBlock)(_Nullable id dataObject);
+typedef _Nullable id (^SDPromiseRejectBlock)(NSError *error);
 
 @interface SDPromise : NSObject
 
@@ -30,12 +32,13 @@ typedef id (^SDPromiseRejectBlock)(NSError *error);
 @property (nonatomic, readonly) BOOL isCompleted;
 
 // Consumer interface. The returned SDPromise allows you to easily chain promise results.
-- (SDPromise *) then:(SDPromiseThenBlock)thenBlock reject:(SDPromiseRejectBlock) rejectBlock;
+- (SDPromise *) then:(SDPromiseThenBlock)thenBlock reject:(_Nullable SDPromiseRejectBlock) rejectBlock;
 - (SDPromise *) then:(SDPromiseThenBlock)thenBlock;
 
 // Producer interface
-- (void) resolve:(id)dataObject;
+- (void) resolve:(_Nullable id)dataObject;
 - (void) reject:(NSError *)error;
 
 @end
 
+NS_ASSUME_NONNULL_END
