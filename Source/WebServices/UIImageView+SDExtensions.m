@@ -94,7 +94,9 @@ void const *SDImageViewURLAssociatedObjectKey = @"SDImageViewURLAssociatedObject
 {
     NSURL *originalURL = objc_getAssociatedObject(self, SDImageViewURLAssociatedObjectKey);
     objc_setAssociatedObject(self, SDImageViewURLAssociatedObjectKey, nil, OBJC_ASSOCIATION_RETAIN);
-    [[SDImageCache sharedInstance] cancelFetchForURL:originalURL];
+    if (originalURL) {
+        [[SDImageCache sharedInstance] cancelFetchForURL:originalURL];
+    }
 }
 
 + (void)removeImageURLFromCache:(NSURL *)url
