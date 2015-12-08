@@ -236,9 +236,11 @@
 
 - (void)cancelFetchForURL:(NSURL *)url
 {
-    SDURLConnection *connection = [_activeConnections objectForKey:[url absoluteString]];
-    [connection cancel];
-    [_activeConnections removeObjectForKey:[url absoluteString]];
+    if (url) {
+        SDURLConnection *connection = [_activeConnections objectForKey:[url absoluteString]];
+        [connection cancel];
+        [_activeConnections removeObjectForKey:[url absoluteString]];
+    }
 }
 
 - (void)removeImageURLFromCache:(NSURL *)url
