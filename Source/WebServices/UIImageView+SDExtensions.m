@@ -70,7 +70,7 @@ void const *SDImageViewURLAssociatedObjectKey = @"SDImageViewURLAssociatedObject
 
     @weakify(self);
 
-    [[SDImageCache sharedInstance] fetchImageAtURL:url completionBlock:^(UIImage *image, NSError *error) {
+    [[SDImageCache sharedInstance] fetchImageAtURL:url source:self completionBlock:^(UIImage *image, NSError *error) {
         @strongify(self);
         NSURL *originalURL = objc_getAssociatedObject(self, SDImageViewURLAssociatedObjectKey);
 
@@ -94,12 +94,12 @@ void const *SDImageViewURLAssociatedObjectKey = @"SDImageViewURLAssociatedObject
 {
     NSURL *originalURL = objc_getAssociatedObject(self, SDImageViewURLAssociatedObjectKey);
     objc_setAssociatedObject(self, SDImageViewURLAssociatedObjectKey, nil, OBJC_ASSOCIATION_RETAIN);
-    [[SDImageCache sharedInstance] cancelFetchForURL:originalURL];
+    [[SDImageCache sharedInstance] cancelFetchForURL:originalURL source:self];
 }
 
 + (void)removeImageURLFromCache:(NSURL *)url
 {
-    [[SDImageCache sharedInstance] removeImageURLFromCache:url];
+    [[SDImageCache sharedInstance] removeImageURLFromCache:url source:self];
 }
 
 + (void)setImageMemoryCacheSize:(NSUInteger)memoryCacheSize

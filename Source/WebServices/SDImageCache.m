@@ -123,9 +123,14 @@
     }
 }
 
-- (BOOL)isImageURLInProgress:(NSURL *)url
+- (NSString *) activeConnectionKeyForURL:(NSURL *) url source:(id) source;
 {
-    SDURLConnection *connection = [_activeConnections objectForKey:[url absoluteString]];
+    return source ? [NSString stringWithFormat:@"%@<%p>", [url absoluteString], source] : [url absoluteString];
+}
+
+- (BOOL)isImageURLInProgress:(NSURL *)url source:(id) source;
+{
+    SDURLConnection *connection = [_activeConnections objectForKey:[self activeConnectionKeyForURL:url source:source]];
     if (connection)
         return YES;
     return NO;
@@ -158,7 +163,7 @@
     return decompressedImage;
 }
 
-- (void)fetchImageAtURL:(NSURL *)url completionBlock:(UIImageViewURLCompletionBlock)completionBlock
+- (void)fetchImageAtURL:(NSURL *)url source:(id) source completionBlock:(UIImageViewURLCompletionBlock)completionBlock
 {
     UIImage *cachedImage = [_memoryCache objectForKey:[url absoluteString]];
     if (cachedImage)
@@ -169,14 +174,14 @@
         return;
     }
 
-    BOOL foundInCache = [self fetchImageFromCacheAtURL:url completionBlock:completionBlock];
+    BOOL foundInCache = [self fetchImageFromCacheAtURL:url source:source completionBlock:completionBlock];
     if (!foundInCache)
     {
-        [self fetchImageFromNetworkAtURL:url completionBlock:completionBlock];
+        [self fetchImageFromNetworkAtURL:url source:(id) source completionBlock:completionBlock];
     }
 }
 
-- (BOOL)fetchImageFromCacheAtURL:(NSURL *)url completionBlock:(UIImageViewURLCompletionBlock)completionBlock
+- (BOOL)fetchImageFromCacheAtURL:(NSURL *)url source:(id) source completionBlock:(UIImageViewURLCompletionBlock)completionBlock
 {
     BOOL success = NO;
     
@@ -188,7 +193,7 @@
         UIImage *diskCachedImage = [UIImage imageWithData:cachedResponse.responseData];
         if (diskCachedImage)
         {
-            [self didFetchImage:diskCachedImage atURL:url error:nil withCompletionBlock:completionBlock];
+            [self didFetchImage:diskCachedImage atURL:url source:source error:nil withCompletionBlock:completionBlock];
             success = YES;
         }
     }
@@ -196,7 +201,7 @@
     return success;
 }
 
-- (void)fetchImageFromNetworkAtURL:(NSURL *)url completionBlock:(UIImageViewURLCompletionBlock)completionBlock
+- (void)fetchImageFromNetworkAtURL:(NSURL *)url source:(id) source completionBlock:(UIImageViewURLCompletionBlock)completionBlock;
 {
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     SDURLConnection *urlConnection = [SDURLConnection sendAsynchronousRequest:request withPriority:kSDNetworkQueuePriority_background responseHandler:^(SDURLConnection *connection, NSURLResponse *response, NSData *responseData, NSError *error) {
@@ -215,37 +220,38 @@
             UIImage *decodedImage = nil;
             if (image)
                 decodedImage = [SDImageCache decodedImageWithImage:image];
-            [self didFetchImage:decodedImage atURL:url error:error withCompletionBlock:completionBlock];
+            [self didFetchImage:decodedImage atURL:url source:source error:error withCompletionBlock:completionBlock];
         }];
     }];
     
     if (urlConnection)
-        [_activeConnections setObject:urlConnection forKey:[url absoluteString]];
+        [_activeConnections setObject:urlConnection forKey:[self activeConnectionKeyForURL:url source:source]];
 }
 
-- (void)didFetchImage:(UIImage *)decodedImage atURL:(NSURL *)url error:(NSError *)error withCompletionBlock:(UIImageViewURLCompletionBlock)completionBlock
+- (void)didFetchImage:(UIImage *)decodedImage atURL:(NSURL *)url source:(id) source error:(NSError *)error withCompletionBlock:(UIImageViewURLCompletionBlock)completionBlock
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self addImageToMemoryCache:decodedImage withURL:url];
         if (completionBlock)
             completionBlock(decodedImage, error);
         if (decodedImage.size.width == 0 || decodedImage.size.height == 0)
-            [self removeImageURLFromCache:url];
+            [self removeImageURLFromCache:url source:source];
     }];
 }
 
-- (void)cancelFetchForURL:(NSURL *)url
+- (void)cancelFetchForURL:(NSURL *)url source:(id) source;
 {
     if (url) {
-        SDURLConnection *connection = [_activeConnections objectForKey:[url absoluteString]];
+        NSString *activeConnectionKey = [self activeConnectionKeyForURL:url source:source];
+        SDURLConnection *connection = [_activeConnections objectForKey:activeConnectionKey];
         [connection cancel];
-        [_activeConnections removeObjectForKey:[url absoluteString]];
+        [_activeConnections removeObjectForKey:activeConnectionKey];
     }
 }
 
-- (void)removeImageURLFromCache:(NSURL *)url
+- (void)removeImageURLFromCache:(NSURL *)url source:(id) source;
 {
-    [self cancelFetchForURL:url];
+    [self cancelFetchForURL:url source:source];
 
     NSURLCache *cache = [NSURLCache sharedURLCache];
 

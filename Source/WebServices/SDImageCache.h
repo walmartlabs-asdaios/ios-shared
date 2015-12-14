@@ -30,10 +30,10 @@ typedef void (^UIImageViewURLCompletionBlock)(UIImage *image, NSError *error);
 
 - (NSUInteger)actualMemoryCacheSize;
 
-- (BOOL)isImageURLInProgress:(NSURL *)url;
-- (void)fetchImageAtURL:(NSURL *)url completionBlock:(UIImageViewURLCompletionBlock)completionBlock;
-- (void)cancelFetchForURL:(NSURL *)url;
-- (void)removeImageURLFromCache:(NSURL *)url;
+- (BOOL)isImageURLInProgress:(NSURL *)url source:(id) source;
+- (void)fetchImageAtURL:(NSURL *)url source:(id) source completionBlock:(UIImageViewURLCompletionBlock)completionBlock;
+- (void)cancelFetchForURL:(NSURL *)url source:(id) source;
+- (void)removeImageURLFromCache:(NSURL *)url source:(id) source;
 - (void)addImageToMemoryCache:(UIImage *)image withURL:(NSURL *)url;
 
 @end
