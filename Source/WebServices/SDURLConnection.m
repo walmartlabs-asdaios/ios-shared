@@ -319,6 +319,7 @@ static NSString const * SDNetworkOperationQueueControlContext = @"SDNetworkOpera
 
     if (usingMock)
     {
+        [self.mockResponseProvider fireDidMockRequest:request withResponse:mockHTTPURLResponse data:mockData];
         handler(nil, mockHTTPURLResponse, mockData, nil);
         return nil;
     }

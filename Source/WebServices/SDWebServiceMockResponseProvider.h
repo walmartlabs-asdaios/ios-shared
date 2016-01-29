@@ -10,6 +10,12 @@
 
 typedef NSData *(^SDWebServiceDefaultMockDataBlock)(NSURLRequest *request);
 
+@protocol SDWebServiceMockResponseProvider;
+
+@protocol SDWebServiceMockResponseProviderObserver <NSObject>
+- (void) mockResponseProvider:(id<SDWebServiceMockResponseProvider>) provider didMockRequest:(NSURLRequest *) request withResponse:(NSURLResponse *) response data:(NSData *) responseData;
+@end
+
 /**
  SDWebService uses implementations of SDWebServiceMockResponseQueueProvider to
  handle any mock responses.  
@@ -17,6 +23,13 @@ typedef NSData *(^SDWebServiceDefaultMockDataBlock)(NSURLRequest *request);
  All details except the get data method are handled by implementations.
  */
 @protocol SDWebServiceMockResponseProvider <NSObject>
+
+/**
+ Observer for provider, some tests will want to see that the request parameters & headers were set correctly
+ */
+- (id) addMockResponseProviderObserver:(id<SDWebServiceMockResponseProviderObserver>) observer;
+- (void) removeMockResponseProviderObserver:(id) observerIdentifier;
+- (void) fireDidMockRequest:(NSURLRequest *) request withResponse:(NSURLResponse *) response data:(NSData *) responseData;
 
 /**
  Returns value for response to use in SDWebService performRequest methods, 

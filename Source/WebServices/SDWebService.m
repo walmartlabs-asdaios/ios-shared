@@ -652,6 +652,7 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
                      responseCode:mockHTTPURLResponse.statusCode
                      responseData:mockData
                             error:nil];
+        [self.mockResponseProvider fireDidMockRequest:request withResponse:mockHTTPURLResponse data:mockData];
         return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
     }
 
@@ -774,6 +775,7 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
                      responseCode:200
                      responseData:mockData
                             error:nil];
+        [self.mockResponseProvider fireDidMockRequest:request withResponse:mockHTTPURLResponse data:mockData];
     }
 
 	return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];

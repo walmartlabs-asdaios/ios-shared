@@ -12,6 +12,8 @@
 @interface SDWebServiceMockResponseQueueProvider()
 @property (nonatomic,strong,readwrite) NSHTTPURLResponse *lastMatchingHTTPURLResponse;
 @property (nonatomic,strong,readwrite) NSData *lastMatchingResponseData;
+@property (nonatomic,strong) NSMutableArray *mockResponseProviderObservers;
+@property (nonatomic,strong) NSMutableDictionary *mockResponseProviderObserverXref;
 @end
 
 
@@ -30,6 +32,8 @@
         _mockStack = [NSMutableArray array];
         _lastMatchingHTTPURLResponse = nil;
         _lastMatchingResponseData = nil;
+        _mockResponseProviderObservers = [NSMutableArray array];
+        _mockResponseProviderObserverXref = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -130,6 +134,41 @@
         {
             [_mockStack removeObjectAtIndex:0];
         }
+    }
+}
+
+
+#pragma mark - SDWebServiceMockResponseProviderObserver methods
+
+- (id) addMockResponseProviderObserver:(id<SDWebServiceMockResponseProviderObserver>)observer;
+{
+    NSString *observerIdentifier = [NSString stringWithNewUUID];
+    @synchronized(self.mockResponseProviderObservers) {
+        [self.mockResponseProviderObservers addObject:observer];
+        self.mockResponseProviderObserverXref[observerIdentifier] = observer;
+    }
+    return observerIdentifier;
+}
+
+- (void) removeMockResponseProviderObserver:(NSString *) observerIdentifier;
+{
+    @synchronized(self.mockResponseProviderObservers) {
+        id<SDWebServiceMockResponseProviderObserver> observer = self.mockResponseProviderObserverXref[observerIdentifier];
+        if (observer) {
+            [self.mockResponseProviderObservers removeObject:observer];
+            self.mockResponseProviderObserverXref[observerIdentifier] = nil;
+        }
+    }
+}
+
+- (void) fireDidMockRequest:(NSURLRequest *) request withResponse:(NSURLResponse *) response data:(NSData *) responseData;
+{
+    NSArray *observers = nil;
+    @synchronized(self.mockResponseProviderObservers) {
+        observers = [self.mockResponseProviderObservers copy];
+    }
+    for (id<SDWebServiceMockResponseProviderObserver> observer in observers) {
+        [observer mockResponseProvider:self didMockRequest:request withResponse:response data:responseData];
     }
 }
 
