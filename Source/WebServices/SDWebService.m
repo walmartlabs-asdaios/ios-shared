@@ -646,13 +646,13 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 
     if (mockHTTPURLResponse)
     {
+        [self.mockResponseProvider fireDidMockRequest:request withResponse:mockHTTPURLResponse data:mockData];
         [self addDataProcessBlock:dataProcessingBlock
                     uiUpdateBlock:uiUpdateBlock
                      withResponse:mockHTTPURLResponse
                      responseCode:mockHTTPURLResponse.statusCode
                      responseData:mockData
                             error:nil];
-        [self.mockResponseProvider fireDidMockRequest:request withResponse:mockHTTPURLResponse data:mockData];
         return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
     }
 
@@ -769,13 +769,13 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
         // we have mock data for this service call.
         // attempt to recreate the path as best we can.
 
+        [self.mockResponseProvider fireDidMockRequest:request withResponse:mockHTTPURLResponse data:mockData];
         [self addDataProcessBlock:dataProcessingBlock
                     uiUpdateBlock:uiUpdateBlock
                      withResponse:nil
                      responseCode:200
                      responseData:mockData
                             error:nil];
-        [self.mockResponseProvider fireDidMockRequest:request withResponse:mockHTTPURLResponse data:mockData];
     }
 
 	return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
