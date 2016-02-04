@@ -646,7 +646,9 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
 
     if (mockHTTPURLResponse)
     {
+#ifdef DEBUG
         [self.mockResponseProvider fireDidMockRequest:request withResponse:mockHTTPURLResponse data:mockData];
+#endif
         [self addDataProcessBlock:dataProcessingBlock
                     uiUpdateBlock:uiUpdateBlock
                      withResponse:mockHTTPURLResponse
@@ -769,7 +771,9 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
         // we have mock data for this service call.
         // attempt to recreate the path as best we can.
 
+#ifdef DEBUG
         [self.mockResponseProvider fireDidMockRequest:request withResponse:mockHTTPURLResponse data:mockData];
+#endif
         [self addDataProcessBlock:dataProcessingBlock
                     uiUpdateBlock:uiUpdateBlock
                      withResponse:nil
