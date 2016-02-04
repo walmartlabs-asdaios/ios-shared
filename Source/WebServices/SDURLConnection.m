@@ -303,11 +303,11 @@ static NSString const * SDNetworkOperationQueueControlContext = @"SDNetworkOpera
     
     SDURLConnectionAsyncDelegate *delegate = [[SDURLConnectionAsyncDelegate alloc] initWithResponseHandler:handler];
 
+#ifdef DEBUG
     // attempt to find any mock response or data if available, we need it going forward.
     NSHTTPURLResponse *mockHTTPURLResponse = nil;
     NSData *mockData = nil;
     BOOL usingMock = NO;
-#ifdef DEBUG
     mockHTTPURLResponse = [[self mockResponseProvider] getMockHTTPURLResponseForRequest:request];
     if (mockHTTPURLResponse) {
         mockData = self.mockResponseProvider.lastMatchingResponseData;
@@ -315,7 +315,6 @@ static NSString const * SDNetworkOperationQueueControlContext = @"SDNetworkOpera
         mockData = [self.mockResponseProvider getMockDataForRequest:request];
     }
     usingMock = (mockData != nil) || (mockHTTPURLResponse != nil);
-#endif
 
     if (usingMock)
     {
@@ -325,6 +324,7 @@ static NSString const * SDNetworkOperationQueueControlContext = @"SDNetworkOpera
     }
     else
     {
+#endif
         SDURLConnection *connection = [[SDURLConnection alloc] initWithRequest:request priority:priority delegate:delegate startImmediately:NO];
 
         if (!connection)
@@ -343,7 +343,9 @@ static NSString const * SDNetworkOperationQueueControlContext = @"SDNetworkOpera
         }];
         
         return connection;
+#ifdef DEBUG
     }
+#endif
 }
 
 #if DEBUG
