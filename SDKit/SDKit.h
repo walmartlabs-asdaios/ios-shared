@@ -1,10 +1,10 @@
-#import "
+//
 //  ios-shared Framework.h"
 //  ios-shared Framework
 //
 //  Created by John Clayton on 3/3/16.
 //  Copyright © 2016 SetDirection. All rights reserved.
-#import "
+
 
 #import <UIKit/UIKit.h">
 
@@ -14,7 +14,7 @@ FOUNDATION_EXPORT double ios_shared_FrameworkVersionNumber;
 //! Project version string for ios-shared Framework.
 FOUNDATION_EXPORT const unsigned char ios_shared_FrameworkVersionString[];
 
-#import "PublicHeader.h">
+// In this header, you should import all the public headers of your framework using statements like #import <ASDAKit/PublicHeader.h>
 
 
 #import "NSArray+SDExtensions.h"
