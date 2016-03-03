@@ -8,6 +8,7 @@
 
 #import "UINavigationController+SDExtensions.h"
 #import <QuartzCore/QuartzCore.h>
+#import "NSArray+SDExtensions.h"
 
 @implementation UINavigationController (SDExtensions)
 

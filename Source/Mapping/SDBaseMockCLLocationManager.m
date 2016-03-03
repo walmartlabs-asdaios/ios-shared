@@ -9,6 +9,7 @@
 #import "SDBaseMockCLLocationManager.h"
 #import "NSArray+SDExtensions.h"
 #import "SDLocationManager.h"
+#import "SDLog.h"
 
 #pragma mark - SDCLLocationManagerProxy
 

@@ -29,6 +29,7 @@
 #import "UIDevice+machine.h"
 #import "SDMacros.h"
 #import "UIView+SDExtensions.h"
+#import "UIColor+SDExtensions.h"
 
 SDTextFieldValidationBlock SDTextFieldOptionalFieldValidationBlock = ^(SDTextField *textField){ return YES; };
 

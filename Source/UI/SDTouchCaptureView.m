@@ -8,6 +8,7 @@
 
 #import "SDTouchCaptureView.h"
 #import "SDMacros.h"
+#import "SDLog.h"
 
 @interface SDTouchCaptureView ()
 
@@ -25,7 +26,6 @@
 
 @implementation SDTouchCaptureView
 
-SUPPORT_LUMBERJACK_LOGGING
 
 - (void) dealloc
 {
@@ -41,8 +41,8 @@ SUPPORT_LUMBERJACK_LOGGING
         UIView *rootView = [[[modalView window] subviews] lastObject];
         
         // AIOS-1985 Putting in some teporary logging in the hopes of catching something helpful
-        DDLogCWarn(@"Modal touch view clipping view: %@", clippingView);
-        DDLogCWarn(@"Modal touch view root view: %@", rootView);
+        SDLog(@"Modal touch view clipping view: %@", clippingView);
+        SDLog(@"Modal touch view root view: %@", rootView);
         
         UIView *touchCaptureView = [[UIView alloc] initWithFrame:[rootView bounds]];
         [touchCaptureView setBackgroundColor:[UIColor clearColor]];

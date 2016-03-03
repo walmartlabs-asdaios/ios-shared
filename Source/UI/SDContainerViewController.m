@@ -6,6 +6,8 @@
 //
 
 #import "SDContainerViewController.h"
+#import "SDMacros.h"
+#import "NSArray+SDExtensions.h"
 
 
 @interface SDContainerViewControllerTransitioningContext : NSObject <UIViewControllerContextTransitioning>
@@ -295,8 +297,9 @@
 }
 
 - (void) _completeAnimatedTransitionOperation:(NSBlockOperation *)op {
-    NSBlockOperation *nextOp = [_queuedTransitionOperations shift];
+    NSBlockOperation *nextOp = [_queuedTransitionOperations firstObject];
     if (nextOp) {
+		[_queuedTransitionOperations removeObject:nextOp];
         [self _runAnimatedTransitionOperation:nextOp];
     }
     else {

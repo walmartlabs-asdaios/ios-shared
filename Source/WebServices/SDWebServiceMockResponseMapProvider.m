@@ -8,6 +8,7 @@
 
 #import "SDWebServiceMockResponseMapProvider.h"
 #import "SDWebServiceMockResponseRequestMapping.h"
+#import "NSString+SDExtensions.h"
 
 @interface SDWebServiceMockResponseRequestMappingEntry : NSObject
 @property (nonatomic,strong) SDWebServiceMockResponseRequestMapping *requestMapping;
