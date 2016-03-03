@@ -43,7 +43,6 @@ FOUNDATION_EXPORT const unsigned char ios_shared_FrameworkVersionString[];
 #import "SDWeakArray.h"
 #import "UIDevice+machine.h"
 #import "UIResponder+SDExtensions.h"
-#import "ios-shared.h"
 #import "SDLog.h"
 #import "ObjectiveCGenerics.h"
 #import "SDAssert.h"
