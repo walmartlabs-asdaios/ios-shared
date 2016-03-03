@@ -30,6 +30,9 @@
 #import <Foundation/Foundation.h>
 #import "Reachability.h"
 #import "SDLog.h"
+#import <ifaddrs.h>
+#import <netdb.h>
+
 
 NSString *const kSDReachabilityChangedNotification = @"kSDReachabilityChangedNotification";
 
