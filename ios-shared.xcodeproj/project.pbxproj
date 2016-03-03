@@ -155,7 +155,6 @@
 		A4916A731C888E4300571424 /* SDWeakArray.h in Headers */ = {isa = PBXBuildFile; fileRef = F8AF65BF1A8547D600399389 /* SDWeakArray.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4916A741C888E4300571424 /* UIDevice+machine.h in Headers */ = {isa = PBXBuildFile; fileRef = F8AF65C11A8547D600399389 /* UIDevice+machine.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4916A751C888E4300571424 /* UIResponder+SDExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = F8AF65C31A8547D600399389 /* UIResponder+SDExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A4916A761C888E4400571424 /* ios-shared.h in Headers */ = {isa = PBXBuildFile; fileRef = F8AF65C51A8547D600399389 /* ios-shared.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4916A771C888E4400571424 /* SDLog.h in Headers */ = {isa = PBXBuildFile; fileRef = F8AF65C71A8547D600399389 /* SDLog.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4916A781C888E4400571424 /* ObjectiveCGenerics.h in Headers */ = {isa = PBXBuildFile; fileRef = F8AF65CA1A8547D600399389 /* ObjectiveCGenerics.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4916A791C888E4400571424 /* SDAssert.h in Headers */ = {isa = PBXBuildFile; fileRef = F8AF65CB1A8547D600399389 /* SDAssert.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -252,7 +251,7 @@
 		A4916AD41C888E5900571424 /* SDWebServiceMockResponseQueueProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = F8AF66831A8547D600399389 /* SDWebServiceMockResponseQueueProvider.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4916AD51C888E5A00571424 /* SDWebServiceMockResponseRequestMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = F8AF66851A8547D600399389 /* SDWebServiceMockResponseRequestMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A4916AD61C888E5A00571424 /* UIImageView+SDExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = F8AF66871A8547D600399389 /* UIImageView+SDExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A4916AD81C88932300571424 /* SDKit.h in Headers */ = {isa = PBXBuildFile; fileRef = A4916AD71C88932300571424 /* SDKit.h */; };
+		A4916AD81C88932300571424 /* SDKit.h in Headers */ = {isa = PBXBuildFile; fileRef = A4916AD71C88932300571424 /* SDKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CA01F1B117D7A6F000E7C553 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CA80792C17C94199009574BB /* Foundation.framework */; };
 		CA01F1B817D7A6F000E7C553 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = CA01F1B617D7A6F000E7C553 /* InfoPlist.strings */; };
 		CA01F1BA17D7A6F000E7C553 /* ios_shared_Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = CA01F1B917D7A6F000E7C553 /* ios_shared_Tests.m */; };
@@ -1370,6 +1369,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A4916AD81C88932300571424 /* SDKit.h in Headers */,
 				A4916A5C1C888E4300571424 /* NSArray+SDExtensions.h in Headers */,
 				A4916A5D1C888E4300571424 /* NSData+SDExtensions.h in Headers */,
 				A4916A5E1C888E4300571424 /* NSDate+SDExtensions.h in Headers */,
@@ -1378,7 +1378,6 @@
 				A4916A611C888E4300571424 /* NSLayoutConstraint+SDExtensions.h in Headers */,
 				A4916A621C888E4300571424 /* NSMutableAttributedString+SDExtensions.h in Headers */,
 				A4916A631C888E4300571424 /* NSNumber+SDExtensions.h in Headers */,
-				A4916AD81C88932300571424 /* SDKit.h in Headers */,
 				A4916A641C888E4300571424 /* NSRunLoop+SDExtensions.h in Headers */,
 				A4916A651C888E4300571424 /* NSString+SDExtensions.h in Headers */,
 				A4916A661C888E4300571424 /* NSUserDefaults+SDExtensions.h in Headers */,
@@ -1397,7 +1396,6 @@
 				A4916A731C888E4300571424 /* SDWeakArray.h in Headers */,
 				A4916A741C888E4300571424 /* UIDevice+machine.h in Headers */,
 				A4916A751C888E4300571424 /* UIResponder+SDExtensions.h in Headers */,
-				A4916A761C888E4400571424 /* ios-shared.h in Headers */,
 				A4916A771C888E4400571424 /* SDLog.h in Headers */,
 				A4916A781C888E4400571424 /* ObjectiveCGenerics.h in Headers */,
 				A4916A791C888E4400571424 /* SDAssert.h in Headers */,
@@ -2234,6 +2232,7 @@
 				A49169EB1C888D3700571424 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		CA01F1BE17D7A6F000E7C553 /* Build configuration list for PBXNativeTarget "ios-shared Tests" */ = {
 			isa = XCConfigurationList;
