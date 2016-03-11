@@ -303,49 +303,42 @@ static NSString const * SDNetworkOperationQueueControlContext = @"SDNetworkOpera
     
     SDURLConnectionAsyncDelegate *delegate = [[SDURLConnectionAsyncDelegate alloc] initWithResponseHandler:handler];
 
-#ifdef DEBUG
     // attempt to find any mock response or data if available, we need it going forward.
-    NSHTTPURLResponse *mockHTTPURLResponse = nil;
+#ifdef DEBUG
     NSData *mockData = nil;
-    BOOL usingMock = NO;
-    mockHTTPURLResponse = [[self mockResponseProvider] getMockHTTPURLResponseForRequest:request];
+    NSHTTPURLResponse *mockHTTPURLResponse = [[self mockResponseProvider] getMockHTTPURLResponseForRequest:request];
     if (mockHTTPURLResponse) {
         mockData = self.mockResponseProvider.lastMatchingResponseData;
     } else {
         mockData = [self.mockResponseProvider getMockDataForRequest:request];
     }
-    usingMock = (mockData != nil) || (mockHTTPURLResponse != nil);
-
+    BOOL usingMock = (mockData != nil) || (mockHTTPURLResponse != nil);
     if (usingMock)
     {
         [self.mockResponseProvider fireDidMockRequest:request withResponse:mockHTTPURLResponse data:mockData];
         handler(nil, mockHTTPURLResponse, mockData, nil);
         return nil;
     }
-    else
-    {
 #endif
-        SDURLConnection *connection = [[SDURLConnection alloc] initWithRequest:request priority:priority delegate:delegate startImmediately:NO];
 
-        if (!connection)
-            SDLog(@"Unable to create a connection!");
+    SDURLConnection *connection = [[SDURLConnection alloc] initWithRequest:request priority:priority delegate:delegate startImmediately:NO];
 
-        [connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+    if (!connection)
+        SDLog(@"Unable to create a connection!");
 
-        // the sole purpose of this is to enforce a maximum active connection count.
-        // eventually, these max connection numbers will change based on reachability data.
+    [connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 
-        SDNetworkOperationQueue *networkOperationQueue = [[self class] networkOperationQueueForPriority:priority];
-        [networkOperationQueue addOperationWithBlock:^{
-            [connection performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:YES];
-            while (delegate.isRunning)
-                sleep(1);
-        }];
-        
-        return connection;
-#ifdef DEBUG
-    }
-#endif
+    // the sole purpose of this is to enforce a maximum active connection count.
+    // eventually, these max connection numbers will change based on reachability data.
+
+    SDNetworkOperationQueue *networkOperationQueue = [[self class] networkOperationQueueForPriority:priority];
+    [networkOperationQueue addOperationWithBlock:^{
+        [connection performSelectorOnMainThread:@selector(start) withObject:nil waitUntilDone:YES];
+        while (delegate.isRunning)
+            sleep(1);
+    }];
+
+    return connection;
 }
 
 #if DEBUG

@@ -623,10 +623,9 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     NSNumber *cache = [requestDetails objectForKey:@"cache"];
 
     // attempt to find any mock response or data if available, we need it going forward.
-    NSHTTPURLResponse *mockHTTPURLResponse = nil;
-    NSData *mockData = nil;
 #ifdef DEBUG
-    mockHTTPURLResponse = [self.mockResponseProvider getMockHTTPURLResponseForRequest:request];
+    NSHTTPURLResponse *mockHTTPURLResponse = [self.mockResponseProvider getMockHTTPURLResponseForRequest:request];
+    NSData *mockData = nil;
     if (mockHTTPURLResponse) {
         mockData = self.mockResponseProvider.lastMatchingResponseData;
     } else {
@@ -642,7 +641,6 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
     {
         cache = [NSNumber numberWithBool:NO];
     }
-#endif
 
     if (mockHTTPURLResponse)
     {
@@ -657,6 +655,7 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
                             error:nil];
         return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
     }
+#endif
 
     // setup caching, default is to let the server decide.
     [request setCachePolicy:NSURLRequestUseProtocolCachePolicy];
@@ -738,23 +737,29 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
         [self decrementRequests];
 	};
     
+#ifdef DEBUG
     // check the cache if we're not working with a mock.
     if (!mockData)
     {
+#endif
         SDRequestResult *cachedResult = [self lookupCachedResultForRequest:request requestDetails:requestDetails urlCompletionBlock:urlCompletionBlock];
         if (cachedResult)
         {
             return cachedResult;
         }
+#ifdef DEBUG
     }
+#endif
     
 	[self incrementRequests];
 
 	// see if this is a singleton request.
     BOOL singleRequest = [self checkForSingleRequestWithRequestName:requestName requestDetails:requestDetails];
 
+#ifdef DEBUG
     if (!mockData)
     {
+#endif
         // no mock data was found, or we don't want to use mocks.  send out the request.
 
         SDURLConnection *connection = [SDURLConnection sendAsynchronousRequest:request withResponseHandler:urlCompletionBlock];
@@ -765,6 +770,7 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
             else
                 [_normalRequests setObject:connection forKey:identifier];
         }
+#ifdef DEBUG
     }
     else
     {
@@ -781,6 +787,7 @@ NSString *const SDWebServiceError = @"SDWebServiceError";
                      responseData:mockData
                             error:nil];
     }
+#endif
 
 	return [SDRequestResult objectForResult:SDWebServiceResultSuccess identifier:identifier request:request];
 }
